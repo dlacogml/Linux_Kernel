@@ -15,6 +15,9 @@
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
 
+int divide_by_zero_handler();
+
+
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
 void entry(unsigned long magic, unsigned long addr) {
@@ -152,9 +155,6 @@ void entry(unsigned long magic, unsigned long addr) {
 
     }
 
-int divide_by_zero_handler(){
-
-}
     /* Init the PIC */
     i8259_init();
 
@@ -176,4 +176,9 @@ int divide_by_zero_handler(){
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
+}
+
+
+int divide_by_zero_handler(){
+    return 0;
 }
