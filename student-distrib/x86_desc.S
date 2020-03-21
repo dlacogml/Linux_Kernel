@@ -77,14 +77,16 @@ gdt_ptr:
     # Set up an entry for TSS
 tss_desc_ptr:
     .quad 0
-gdt_desc_ptr:
-    .word gdt_bottom - gdt - 1
-    .long gdt
     # Set up one LDT
 ldt_desc_ptr:
     .quad 0
 
 gdt_bottom:
+
+    .align 16
+gdt_desc_ptr:
+    .word gdt_bottom - gdt - 1
+    .long gdt
 
     .align 16
 ldt:
