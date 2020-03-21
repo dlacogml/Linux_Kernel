@@ -112,5 +112,6 @@ _idt:
     .rept NUM_VEC
     .quad 0
     .endr
+    
 
 idt_bottom:
