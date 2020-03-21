@@ -11,7 +11,7 @@
 .globl tss, tss_desc_ptr, ldt, ldt_desc_ptr
 .globl gdt_ptr
 .globl idt_desc_ptr, idt
-.globl gdt_desc_ptr, gdt
+.globl gdt_desc_ptr
 .align 4
 
 
@@ -41,7 +41,7 @@ gdt_desc_ptr:
     .long gdt
 
 
-    .align  16
+    .align  8
 gdt:
 _gdt:
 
