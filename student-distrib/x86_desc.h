@@ -117,7 +117,7 @@ extern x86_desc_t gdt_desc;
 extern uint16_t ldt_desc;
 extern uint32_t ldt_size;
 extern seg_desc_t ldt_desc_ptr;
-extern seg_desc_t gdt_desc_ptr;
+extern x86_desc_t gdt_desc_ptr;
 extern seg_desc_t gdt_ptr;
 extern uint32_t ldt;
 
@@ -202,14 +202,6 @@ do {                                    \
     );                                  \
 } while (0)
 
-#define lgdt(desc)                      \
-do {                                    \
-    asm volatile ("lgdt (%0)"           \
-            :                           \
-            : "g" (desc)                \
-            : "memory"                  \
-    );                                  \
-} while (0)
 /* Load the local descriptor table (LDT) register.  This macro takes a
  * 16-bit index into the GDT, which points to the LDT entry.  x86 then
  * reads the GDT's LDT descriptor and loads the base address specified
