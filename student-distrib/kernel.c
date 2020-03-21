@@ -141,15 +141,16 @@ void entry(unsigned long magic, unsigned long addr) {
 
     {
         idt_desc_t desc;
-        desc.dpl = 0x0;
         desc.present = 0x1;
-        desc.reserved4 = 0x0;
+        desc.dpl = 0x0;
         desc.reserved0 = 0x0;
+        desc.size = 0x1;
         desc.reserved1 = 0x1;
         desc.reserved2 = 0x1;
         desc.reserved3 = 0x1;
-        desc.size = 0x1;
+        desc.reserved4 = 0x0;
         desc.seg_selector = KERNEL_CS;
+
         SET_IDT_ENTRY(desc, divide_by_zero_handler);
         idt[0] = desc;
 
