@@ -176,8 +176,11 @@ void handler32(){
     }
 }
 void handler33(){
+    disable_irq(1);
+    send_eoi(1);
+    sti();
     printf("Keyboard");
-
+    enable_irq(1);
     send_eoi(1);
 }
 

@@ -63,8 +63,17 @@ void enable_irq(uint32_t irq_num) {
 
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num) {
-    if(irq_num >= 8){
-		outb(EOI, SLAVE_8259_PORT);
+    unsigned char eoi;
+    if (irq_num >= 8){
+        irq_num -= 8;
+        eoi = EOI | irq_num;
+        outb(eoi, SLAVE_8259_PORT);
+        eoi = EOI | 0x02;
+        outb(eoi, MASTER_8259_PORT);
+    } else {
+        eoi = EOI | irq_num;
+        outb(eoi, MASTER_8259_PORT);
     }
-	outb(EOI, MASTER_8259_PORT);
+	// outb(eoi, SLAVE_8259_PORT);
+	// outb(eoi, MASTER_8259_PORT);
 }
