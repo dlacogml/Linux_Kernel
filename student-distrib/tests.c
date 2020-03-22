@@ -89,7 +89,7 @@ void launch_tests(){
     // TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
     // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
     // TEST_OUTPUT("device_not_available_test", device_not_available_test());
-    TEST_OUTPUT("overflow_test", overflow_test());
+    // TEST_OUTPUT("overflow_test", overflow_test());
 
 
 

@@ -37,6 +37,7 @@ void handler18();
 void handler19();
 void handler32();
 void handler33();
+void handler40();
 void handler128();
 
 void handler0(){
@@ -169,17 +170,21 @@ void handler19(){
 }
 
 void handler32(){
-    printf("Keyboard");
+    printf("PIC");
     while(1){
 
     }
 }
-
 void handler33(){
-    printf("RTC");
-    while(1){
+    printf("Keyboard");
 
-    }
+    send_eoi(33);
+}
+
+void handler40(){
+    printf("RTC");
+    
+    send_eoi(40);
 }
 
 void handler128(){
@@ -388,6 +393,9 @@ void entry(unsigned long magic, unsigned long addr) {
         SET_IDT_ENTRY(desc, handler33);
         idt[33] = desc;
 
+        SET_IDT_ENTRY(desc, handler40);
+        idt[40] = desc;
+
         /* System Call */
         desc.dpl = 0x3;
         desc.size = 0x0;
@@ -407,6 +415,14 @@ void entry(unsigned long magic, unsigned long addr) {
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
+    // int i;
+    // for (i = 32; i < 48; i++){
+    //     if (i != 33 && i != 34 && i != 40){
+    //         disable_irq(i);
+    //     }
+    // }
+    disable_irq(0);
+
 
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your
