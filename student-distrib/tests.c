@@ -14,7 +14,7 @@
 static inline void assertion_failure(){
 	/* Use exception #15 for assertions, otherwise
 	   reserved by Intel */
-	// asm volatile("int $15");
+	asm volatile("int $15");
 }
 
 
@@ -31,7 +31,8 @@ static inline void assertion_failure(){
  */
 int idt_test(){
 	TEST_HEADER;
-
+    int* ptr = NULL;
+    *ptr = 4;
 	int i;
 	int result = PASS;
 	for (i = 0; i < 10; ++i){
@@ -56,5 +57,6 @@ int idt_test(){
 /* Test suite entry point */
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
+
 	// launch your tests here
 }

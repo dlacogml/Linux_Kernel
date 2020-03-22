@@ -38,6 +38,155 @@ void handler19();
 void handler32();
 void handler33();
 void handler128();
+
+void handler0(){
+    printf("Divide by zero");
+    while(1){
+
+    }
+}
+
+void handler1(){
+    printf("Debug Exception");
+    while(1){
+
+    }
+}
+
+void handler2(){
+    printf("NMI Interrupt");
+    while(1){
+
+    }
+}
+void handler3(){
+    printf("Breakpoint Exception");
+    while(1){
+
+    }
+}
+void handler4(){
+    printf("Overflow Exception");
+    while(1){
+
+    }
+}
+
+void handler5(){
+    printf("BOUND Range Exceeded Exception");
+    while(1){
+
+    }
+}
+void handler6(){
+    printf("Invalid Opcode Exception");
+    while(1){
+
+    }
+}
+void handler7(){
+    printf("Device Not Available Exception");
+    while(1){
+
+    }
+}
+void handler8(){
+    printf("Double Fault Exception");
+    while(1){
+
+    }
+}
+void handler9(){
+    printf("Debug Exception");
+    while(1){
+
+    }
+}
+void handler10(){
+    printf("Invalid TSS Exception");
+    while(1){
+
+    }
+}
+
+void handler11(){
+    printf("Segment Not Present");
+    while(1){
+
+    }
+}
+void handler12(){
+    printf("Stack Fault Exception");
+    while(1){
+
+    }
+}
+void handler13(){
+    printf("General Protection Exception");
+    while(1){
+
+    }
+}
+
+void handler14(){
+    printf("Page Fault Exception");
+    while(1){
+
+    }
+}
+
+void handler15(){
+    printf("Nothing");
+    while(1){
+
+    }
+}
+void handler16(){
+    printf("x87 FPU Floating Point Error");
+    while(1){
+
+    }
+}
+void handler17(){
+    printf("Alignment Check Exception");
+    while(1){
+
+    }
+}
+
+void handler18(){
+    printf("Machine Check Exception");
+    while(1){
+
+    }
+}
+void handler19(){
+    printf("SIMD Floating Point Exception");
+    while(1){
+
+    }
+}
+
+void handler32(){
+    printf("Keyboard");
+    while(1){
+
+    }
+}
+
+void handler33(){
+    printf("RTC");
+    while(1){
+
+    }
+}
+
+void handler128(){
+    printf("System Call");
+    while(1){
+
+    }
+}
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
 void entry(unsigned long magic, unsigned long addr) {
@@ -197,6 +346,9 @@ void entry(unsigned long magic, unsigned long addr) {
         SET_IDT_ENTRY(desc, handler8);
         idt[8] = desc;
 
+        SET_IDT_ENTRY(desc, handler9);
+        idt[9] = desc;
+
         SET_IDT_ENTRY(desc, handler10);
         idt[10] = desc;
 
@@ -224,7 +376,6 @@ void entry(unsigned long magic, unsigned long addr) {
         SET_IDT_ENTRY(desc, handler19);
         idt[19] = desc;
         
-
         /* Interrupts */
         desc.reserved3 = 0x0; // change to interrupt
         SET_IDT_ENTRY(desc, handler2);
@@ -236,7 +387,6 @@ void entry(unsigned long magic, unsigned long addr) {
         SET_IDT_ENTRY(desc, handler33);
         idt[33] = desc;
 
-
         /* System Call */
         desc.dpl = 0x3;
         desc.size = 0x0;
@@ -246,6 +396,9 @@ void entry(unsigned long magic, unsigned long addr) {
 
         SET_IDT_ENTRY(desc, handler128);
         idt[0x80] = desc;
+        
+        lidt(idt_desc_ptr);
+
     }
 
     /* Init the PIC */
@@ -258,12 +411,12 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */
-    // printf("Enabling Interrupts\n");
-    // sti();
+    printf("Enabling Interrupts\n");
+    sti();
 
 #ifdef RUN_TESTS
     /* Run tests */
-    // launch_tests();
+    launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
 
@@ -272,151 +425,3 @@ void entry(unsigned long magic, unsigned long addr) {
 }
 
 
-void handler0(){
-    printf("Divide by zero");
-    while(1){
-
-    }
-}
-
-void handler1(){
-    printf("Debug Exception");
-    while(1){
-
-    }
-}
-
-void handler2(){
-    printf("NMI Interrupt");
-    while(1){
-
-    }
-}
-void handler3(){
-    printf("Breakpoint Exception");
-    while(1){
-
-    }
-}
-void handler4(){
-    printf("Overflow Exception");
-    while(1){
-
-    }
-}
-
-void handler5(){
-    printf("BOUND Range Exceeded Exception");
-    while(1){
-
-    }
-}
-void handler6(){
-    printf("Invalid Opcode Exception");
-    while(1){
-
-    }
-}
-void handler7(){
-    printf("Device Not Available Exception");
-    while(1){
-
-    }
-}
-void handler8(){
-    printf("Double Fault Exception");
-    while(1){
-
-    }
-}
-void handler9(){
-    printf("Debug Exception");
-    while(1){
-
-    }
-}
-void handler10(){
-    printf("Invalid TSS Exception");
-    while(1){
-
-    }
-}
-
-void handler11(){
-    printf("Segment Not Present");
-    while(1){
-
-    }
-}
-void handler12(){
-    printf("Stack Fault Exception");
-    while(1){
-
-    }
-}
-void handler13(){
-    printf("General Protection Exception");
-    while(1){
-
-    }
-}
-
-void handler14(){
-    printf("Page Fault Exception");
-    while(1){
-
-    }
-}
-
-void handler15(){
-    printf("Nothing");
-    while(1){
-
-    }
-}
-void handler16(){
-    printf("x87 FPU Floating Point Error");
-    while(1){
-
-    }
-}
-void handler17(){
-    printf("Alignment Check Exception");
-    while(1){
-
-    }
-}
-
-void handler18(){
-    printf("Machine Check Exception");
-    while(1){
-
-    }
-}
-void handler19(){
-    printf("SIMD Floating Point Exception");
-    while(1){
-
-    }
-}
-
-void handler32(){
-    printf("Keyboard");
-    while(1){
-
-    }
-}
-
-void handler33(){
-    printf("RTC");
-    while(1){
-
-    }
-}
-
-void handler128(){
-    printf("System Call");
-    while(1){
-
-    }
-}
