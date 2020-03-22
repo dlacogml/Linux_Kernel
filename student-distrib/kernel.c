@@ -121,6 +121,7 @@ void handler12(){
 
     }
 }
+
 void handler13(){
     printf("General Protection Exception");
     while(1){
@@ -396,7 +397,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
         SET_IDT_ENTRY(desc, handler128);
         idt[0x80] = desc;
-        
+
         lidt(idt_desc_ptr);
 
     }

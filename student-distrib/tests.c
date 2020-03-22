@@ -31,8 +31,10 @@ static inline void assertion_failure(){
  */
 int idt_test(){
 	TEST_HEADER;
-    int* ptr = NULL;
-    *ptr = 4;
+    // int* ptr = NULL;
+    // *ptr = 4;
+    // asm volatile("ud2");
+
 	int i;
 	int result = PASS;
 	for (i = 0; i < 10; ++i){
@@ -47,7 +49,33 @@ int idt_test(){
 }
 
 // add more tests here
-
+int breakpoint_test(){
+    TEST_HEADER;
+    asm volatile("int $3");
+    return FAIL;
+}
+int invalid_opcode_test(){
+    TEST_HEADER;
+    asm volatile("ud2");
+    return FAIL;
+}
+int device_not_available_test(){
+    TEST_HEADER;
+    asm volatile("fwait");
+    return FAIL;
+}
+int divide_by_zero_test(){
+    TEST_HEADER;
+    int i = 1 / 0;
+    return FAIL;
+}
+int overflow_test(){
+    TEST_HEADER;
+    int8_t i = 0x7f;
+    i += 1;
+    asm volatile("into");
+    return FAIL;
+}
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -56,7 +84,15 @@ int idt_test(){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	// TEST_OUTPUT("idt_test", idt_test());
+    // TEST_OUTPUT("breakpoint_test", breakpoint_test());
+    // TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
+    // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
+    // TEST_OUTPUT("device_not_available_test", device_not_available_test());
+    TEST_OUTPUT("overflow_test", overflow_test());
+
+
+
 
 	// launch your tests here
 }
