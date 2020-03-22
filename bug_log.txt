@@ -1,0 +1,12 @@
+Checkpoint 1 bugs:
+
+Bug #1:
+    Problem: We were still boot - looping as we were working on loading the idt
+    What was the issue: We realized we weren't calling lidt
+    What we did: we called lidt(idt_desc_ptr) after the handlers in the idt
+
+Bug #2:
+    Problem: The keyboard interrupt is detected but when we try to press a key repeatedly, it does not print every time we press/unpress. 
+    What was the issue: In the handler, we forgot to read from the keyboard data port so it wasn't sending the next interrupt. 
+    What we did: we added inb(0x60) in the keyboard handler.
+
