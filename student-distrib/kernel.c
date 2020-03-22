@@ -10,7 +10,11 @@
 #include "tests.h"
 
 #define RUN_TESTS
-
+#define RTC_PORT    0x70
+#define RTC_DATA    0x71
+#define RTC_A       0x8A
+#define RTC_B       0x8B
+#define RTC_C       0x8C
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
@@ -73,7 +77,7 @@ void handler16();
 void handler17();
 void handler18();
 void handler19();
-void handler32();
+// void handler32();
 void handler33();
 void handler40();
 void handler128();
@@ -207,34 +211,31 @@ void handler19(){
     }
 }
 
-void handler32(){
-    printf("PIC");
-    while(1){
+// void handler32(){
+//     printf("PIC");
+//     while(1){
 
-    }
-}
+//     }
+// }
+
 void handler33(){
-    // disable_irq(1);
-    // send_eoi(1);
-    // sti();
-    // printf("Keyboard");
-    // enable_irq(1);
-    // send_eoi(1);
     cli();
-    char key = inb(0x60);
-    if (key > 0 && keyboard_map[key]){
+    int8_t key = inb(0x60);
+    if (key > 0 && keyboard_map[key] != 0){
         printf("%c", keyboard_map[key]);
     }
-    // printf("%d\n", key);
     send_eoi(1);
     sti();
-    // enable_irq(1);
 }
 
 void handler40(){
+    cli();
     printf("RTC");
-    
+    test_interrupts();
+    outb(RTC_C, RTC_PORT);	// select register C
+    inb(RTC_DATA);		// just throw away contents
     send_eoi(8);
+    sti();
 }
 
 void handler128(){
@@ -437,8 +438,8 @@ void entry(unsigned long magic, unsigned long addr) {
         SET_IDT_ENTRY(desc, handler2);
         idt[2] = desc;
 
-        SET_IDT_ENTRY(desc, handler32);
-        idt[32] = desc;
+        // SET_IDT_ENTRY(desc, handler32);
+        // idt[32] = desc;
 
         SET_IDT_ENTRY(desc, handler33);
         idt[33] = desc;
@@ -471,7 +472,21 @@ void entry(unsigned long magic, unsigned long addr) {
     enable_irq(2);
     enable_irq(8);
 
+    cli();			// disable interrupts
+    outb(RTC_B, RTC_PORT);		// select register B, and disable NMI
+    char prev = inb(RTC_DATA);	// read the current value of register B
+    outb(RTC_B, RTC_PORT);		// set the index again (a read will reset the index to register D)
+    outb(prev | 0x40, RTC_DATA);	// write the previous value ORed with 0x40. This turns on bit 6 of register B
+    sti();
 
+    unsigned char rate = 6;
+    rate &= 0x0F;			// rate must be above 2 and not over 15
+    cli();
+    outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
+    prev = inb(RTC_DATA);	// get initial value of register A
+    outb(RTC_A, RTC_PORT);		// reset index to A
+    outb((prev & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+    sti();
 
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your

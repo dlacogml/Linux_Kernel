@@ -4,8 +4,13 @@
 
 #ifndef _LIB_H
 #define _LIB_H
+#define VIDEO       0xB8000
 
+#define NUM_COLS    80
+#define NUM_ROWS    25
 #include "types.h"
+
+static char* video_mem = (char *)VIDEO;
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
@@ -153,4 +158,14 @@ do {                                    \
     );                                  \
 } while (0)
 
+/* void test_interrupts(void)
+ * Inputs: void
+ * Return Value: void
+ * Function: increments video memory. To be used to test rtc */
+void test_interrupts(void) {
+    int32_t i;
+    for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
+        video_mem[i << 1]++;
+    }
+}
 #endif /* _LIB_H */

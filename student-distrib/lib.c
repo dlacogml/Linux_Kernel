@@ -10,7 +10,6 @@
 
 static int screen_x;
 static int screen_y;
-static char* video_mem = (char *)VIDEO;
 
 /* void clear(void);
  * Inputs: void
@@ -464,13 +463,4 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
     return dest;
 }
 
-/* void test_interrupts(void)
- * Inputs: void
- * Return Value: void
- * Function: increments video memory. To be used to test rtc */
-void test_interrupts(void) {
-    int32_t i;
-    for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
-    }
-}
+
