@@ -38,3 +38,13 @@ void rtc_set_rate(unsigned char rate) {
     sti();
 
 }
+
+void handler40(){
+    cli();
+    printf("RTC");
+    test_interrupts();
+    outb(RTC_C, RTC_PORT);	
+    inb(RTC_DATA);		
+    send_eoi(8);
+    sti();
+}

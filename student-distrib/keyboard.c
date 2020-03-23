@@ -50,4 +50,13 @@ unsigned char keyboard_map[128] =
     0,  /* All other keys are undefined */
 };
 
-
+void handler33(){
+    cli();
+    int8_t key = inb(0x60);
+    // printf("%d\n", key);
+    if (key > 0 && keyboard_map[key] != 0){
+        printf("%c", keyboard_map[key]);
+    }
+    send_eoi(1);
+    sti();
+}

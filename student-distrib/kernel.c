@@ -469,7 +469,7 @@ void entry(unsigned long magic, unsigned long addr) {
     enable_irq(8);
 
     rtc_init();
-    rtc_set_rate(15);
+    rtc_set_rate(6);
 
     // cli();			
     // outb(RTC_B, RTC_PORT);		
