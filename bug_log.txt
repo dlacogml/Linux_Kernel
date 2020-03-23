@@ -10,3 +10,7 @@ Bug #2:
     What was the issue: In the handler, we forgot to read from the keyboard data port so it wasn't sending the next interrupt. 
     What we did: we added inb(0x60) in the keyboard handler.
 
+Bug #3:
+    Problem: Our paging wasn't working 
+    What was the issue: We did the wrong offset because we were overthinking the entire thing with initializing the paging
+    What we did: we changed the offset for page_director[1] to 0x40000 | 0x193
