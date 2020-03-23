@@ -77,7 +77,6 @@ void handler16();
 void handler17();
 void handler18();
 void handler19();
-// void handler32();
 void handler33();
 void handler40();
 void handler128();
@@ -211,12 +210,6 @@ void handler19(){
     }
 }
 
-// void handler32(){
-//     printf("PIC");
-//     while(1){
-
-//     }
-// }
 
 void handler33(){
     cli();
@@ -435,12 +428,8 @@ void entry(unsigned long magic, unsigned long addr) {
         idt[19] = desc;
         
         /* Interrupts */
-        desc.reserved3 = 0x0; // change to interrupt
         SET_IDT_ENTRY(desc, handler2);
         idt[2] = desc;
-
-        // SET_IDT_ENTRY(desc, handler32);
-        // idt[32] = desc;
 
         SET_IDT_ENTRY(desc, handler33);
         idt[33] = desc;
@@ -449,11 +438,8 @@ void entry(unsigned long magic, unsigned long addr) {
         idt[40] = desc;
 
         /* System Call */
-        // desc.dpl = 0x3;
-        // desc.size = 0x0;
-        // desc.reserved2 = 0x0;
-        // desc.reserved3 = 0x1;
-        // desc.seg_selector = KERNEL_TSS;
+        desc.dpl = 0x3;
+
 
         SET_IDT_ENTRY(desc, handler128);
         idt[0x80] = desc;
