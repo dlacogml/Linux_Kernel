@@ -26,6 +26,8 @@ void init_paging()
     // (
 
     // );
-
+    loadPageDirectory(page_directory);
+    enablePaging();
 
 }
+
