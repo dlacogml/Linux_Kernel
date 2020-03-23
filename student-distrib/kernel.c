@@ -149,7 +149,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     /* Init the PIC */
     i8259_init();
-    init_paging();
+    
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
@@ -160,7 +160,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     // rtc_init();
     // rtc_set_rate(15);
-
+    init_paging();
     
 
     /* Enable interrupts */
