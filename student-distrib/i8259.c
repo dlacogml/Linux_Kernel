@@ -26,8 +26,8 @@ void i8259_init(void) {
     outb(ICW3_SLAVE, SLAVE_8259_DATA);
     outb(ICW4, SLAVE_8259_DATA);
 
-    printf("master: %x\n", master_mask);
-    printf("slave: %x\n", slave_mask);
+    // printf("master: %x\n", master_mask);
+    // printf("slave: %x\n", slave_mask);
 
 
 }
@@ -43,8 +43,8 @@ void disable_irq(uint32_t irq_num) {
         slave_mask = slave_mask | (1 << irq_num);
         outb(slave_mask, SLAVE_8259_DATA);
     }
-    printf("master: %x\n", master_mask);
-    printf("slave: %x\n", slave_mask);
+    // printf("master: %x\n", master_mask);
+    // printf("slave: %x\n", slave_mask);
 }
 
 /* Disable (mask) the specified IRQ */
@@ -57,8 +57,8 @@ void enable_irq(uint32_t irq_num) {
         slave_mask = slave_mask & ~(1 << irq_num);
         outb(slave_mask, SLAVE_8259_DATA);
     }
-    printf("master: %x\n", master_mask);
-    printf("slave: %x\n", slave_mask);
+    // printf("master: %x\n", master_mask);
+    // printf("slave: %x\n", slave_mask);
 }
 
 /* Send end-of-interrupt signal for the specified IRQ */
