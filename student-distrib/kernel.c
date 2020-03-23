@@ -145,30 +145,20 @@ void entry(unsigned long magic, unsigned long addr) {
         ltr(KERNEL_TSS);
     }
     
-    init_idt();
-
-    /* Init the PIC */
-    i8259_init();
-    
-
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
-    
-    enable_irq(1);
-    enable_irq(2);
-    enable_irq(8);
-
-    // rtc_init();
-    // rtc_set_rate(15);
+        /* Init the PIC */
+    i8259_init();
+    init_idt();
     init_paging();
     
-
     /* Enable interrupts */
-    /* Do not enable the following until after you have set up your
-     * IDT correctly otherwise QEMU will triple fault and simple close
-     * without showing you any output */
     printf("Enabling Interrupts\n");
+    init_keyboard();
+    rtc_init();
+    rtc_set_rate(15);
     sti();
+
 
 #ifdef RUN_TESTS
     /* Run tests */

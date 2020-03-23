@@ -17,7 +17,8 @@
  */
 void rtc_init() {
     
-    cli();			
+    cli();	
+    enable_irq(8);
     outb(RTC_B, RTC_PORT);		
     char prev = inb(RTC_DATA);	
     outb(RTC_B, RTC_PORT);		
