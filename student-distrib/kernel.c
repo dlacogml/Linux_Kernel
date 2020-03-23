@@ -161,8 +161,9 @@ void entry(unsigned long magic, unsigned long addr) {
     init_keyboard();
     //enable rtc interrupt
     rtc_init();
-    //set the rtc rate to 15, which is the slowest rate
-    rtc_set_rate(RTC_RATE_15);
+    //set the rtc rate
+    unsigned char rate = 15; // rtc rate: between 3 and 15
+    rtc_set_rate(rate);
     sti();
 
 
