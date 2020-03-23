@@ -9,7 +9,14 @@
 #define KERNEL_DPL 3
 #define SYSCALL_INT_NUM 0x80
 
+/*
+ * This function initializes IDT
+ */ 
 void init_idt();
+
+/*
+ * Handler functions
+ */
 void handler0();
 void handler1();
 void handler2();
