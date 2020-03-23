@@ -58,4 +58,3 @@ asmHandler128:
     addl $4, %esp          # pop the interrupt number
     iret
 
-    
