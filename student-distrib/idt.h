@@ -6,6 +6,8 @@
 #define IDT_H
 
 #define KERNEL_CS   0x0010
+#define KERNEL_DPL 3
+#define SYSCALL_INT_NUM 0x80
 
 void init_idt();
 void handler0();
