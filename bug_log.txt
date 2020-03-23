@@ -6,11 +6,32 @@ Bug #1:
     What we did: we called lidt(idt_desc_ptr) after the handlers in the idt
 
 Bug #2:
+    Problem: The keyboard interrupt is detected but we couldn't press a key repeatedly
+    What was the issue: Our send_eoi was wrong - we saw on piazza that our send_eoi needed to be correct for it to be able to do it
+    What we did: we forgot to -=8 the irq number for if the IRQ is a slave
+
+Bug #3:
     Problem: The keyboard interrupt is detected but when we try to press a key repeatedly, it does not print every time we press/unpress. 
     What was the issue: In the handler, we forgot to read from the keyboard data port so it wasn't sending the next interrupt. 
     What we did: we added inb(0x60) in the keyboard handler.
 
-Bug #3:
+Bug #4:
+    Problem: out paging wasn't working
+    What was the issue: we weren't loading the proper values into cr3
+    What we did: We read the intel ISA manual and found out that we need to AND cr3 with 0x0000fff to clear the base address but preserve the other bits
+        and then OR that with the parameter
+
+Bug #5:
     Problem: Our paging wasn't working 
-    What was the issue: We did the wrong offset because we were overthinking the entire thing with initializing the paging
-    What we did: we changed the offset for page_director[1] to 0x40000 | 0x193
+    What was the issue: We did the wrong offset because we were overthinking the entire thing with initializing paging
+    What we did: we changed the offset for page_directory[1] to 0x40000 | 0x193
+
+Bug #6:
+    Problem: When we commented out the cli/sti in the keyboard handler, the keyboard wasn't working
+    What was the issue: we weren't returning from the interrupt handler properly
+    What we did: we created an assembly linkage so that we can iret instead of just the normal ret
+
+Bug #7:
+    Problem: our paging wasn't working properly because it wouldn't print out the "Enabling Interrupts" after initializing paging
+    What was the issue: we were bit shifting the VIDEO (page 0xB8000) by 12 when we didn't need to
+    What we did: we got rid of the bit shift 12 and it worked
