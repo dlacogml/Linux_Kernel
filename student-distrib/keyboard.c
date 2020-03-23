@@ -64,8 +64,8 @@ unsigned char keyboard_map[128] =
  */
 void handler33() {
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
-    if (key > 0 && keyboard_map[key] != 0) { //if conditions are met, putc the corresponding key
-        putc(keyboard_map[key]);
+    if (key > 0 && keyboard_map[(int)key] != 0) { //if conditions are met, putc the corresponding key
+        putc(keyboard_map[(int)key]);
     }
     send_eoi(1); //end of interrupt
 }
