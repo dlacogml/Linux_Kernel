@@ -35,7 +35,7 @@ void init_paging()
     page_directory[1] = (KERNEL_ADDR | 0x193);//set the second page for kernel memory 
 
     //enable paging
-    loadPageDirectory((unsigned int)page_directory);
+    loadPageDirectory((unsigned int*)page_directory);
     enablePaging();
 
 }
