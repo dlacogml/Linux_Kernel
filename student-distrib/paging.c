@@ -17,7 +17,7 @@ void init_paging()
         first_page_table[i] = 0x00000002;  
     }
     // add video memory
-    first_page_table[VIDEO/4096] =  (VIDEO << 3) | 3;
+    first_page_table[VIDEO/4096] =  (VIDEO << 12) | 3;
 
     //add the page
     page_directory[0] = ((unsigned int)first_page_table) | 3;
