@@ -5,9 +5,9 @@
 #ifndef IDT_H
 #define IDT_H
 
-#define KERNEL_CS   0x0010
-#define KERNEL_DPL 3
-#define SYSCALL_INT_NUM 0x80
+#define KERNEL_CS   0x0010   
+#define KERNEL_DPL 3         //dpl for kernel
+#define SYSCALL_INT_NUM 0x80 //system call irq numbers
 
 /*
  * This function initializes IDT

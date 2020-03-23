@@ -6,8 +6,8 @@
 #include "lib.h"
 #include "paging_init.h"
 #define DIRECTORY_SIZE 1024
-#define TABLE_SIZE 1024
-#define ALIGNED_SIZE 4096
+#define TABLE_SIZE     1024
+#define ALIGNED_SIZE   4096
 
 //allocate memories for page_directory and first page_table
 uint32_t page_directory[DIRECTORY_SIZE] __attribute__((aligned(ALIGNED_SIZE)));

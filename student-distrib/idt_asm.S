@@ -17,9 +17,9 @@
  * side effect: returns from the interrupt properly
  */
 asmHandler2:
-    pushl $2            // interrupt handler #2, push the interrupt number
-    call handler2       // call the handler
-    addl $4, %esp       // pop the interrupt number
+    pushl $2            # interrupt handler #2, push the interrupt number
+    call handler2       # call the handler
+    addl $4, %esp       # pop the interrupt number
     iret
 
 /* asmHandler33
@@ -29,9 +29,9 @@ asmHandler2:
  * side effect: returns from the interrupt properly
  */
 asmHandler33:
-    pushl $33           // interrupt handler #33, push the interrupt number
-    call handler33      // call the handler
-    addl $4, %esp       // pop the interrupt number
+    pushl $33           # interrupt handler #33, push the interrupt number
+    call handler33      # call the handler
+    addl $4, %esp       # pop the interrupt number
     iret
 
 /* asmHandler40
@@ -41,9 +41,9 @@ asmHandler33:
  * side effect: returns from the interrupt properly
  */
 asmHandler40:
-    pushl $40           // interrupt handler #140, push the interrupt number
-    call handler40      // call the handler
-    addl $4, %esp       // pop the interrupt number
+    pushl $40           # interrupt handler #140, push the interrupt number
+    call handler40      # call the handler
+    addl $4, %esp       # pop the interrupt number
     iret
 
 /* asmHandler128
@@ -53,9 +53,9 @@ asmHandler40:
  * side effect: returns from the interrupt properly
  */
 asmHandler128:    
-    pushl $128          // interrupt handler #128, push the interrupt number
-    call handler128        // call the handler
-    addl $4, %esp           // pop the interrupt number
+    pushl $128             # interrupt handler #128, push the interrupt number
+    call handler128        # call the handler
+    addl $4, %esp          # pop the interrupt number
     iret
 
     

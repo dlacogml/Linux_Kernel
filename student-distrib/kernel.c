@@ -19,6 +19,7 @@
 #define RTC_A       0x8A
 #define RTC_B       0x8B
 #define RTC_C       0x8C
+#define RTC_RATE_15 15
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
@@ -147,16 +148,21 @@ void entry(unsigned long magic, unsigned long addr) {
     
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
-        /* Init the PIC */
+    //Init the PIC 
     i8259_init();
+    //Init idt
     init_idt();
+    //Init paging 
     init_paging();
     
     /* Enable interrupts */
     printf("Enabling Interrupts\n");
+    //enable keyboard interrupt
     init_keyboard();
+    //enable rtc interrupt
     rtc_init();
-    rtc_set_rate(15);
+    //set the rtc rate to 15, which is the slowest rate
+    rtc_set_rate(RTC_RATE_15);
     sti();
 
 
