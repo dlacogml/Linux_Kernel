@@ -8,6 +8,7 @@ loadPageDirectory:
     movl %esp, %ebp
 
     pushl %ebx
+    pushl %eax
     movl 8(%ebp), %eax
 
     movl %cr3, %ebx
@@ -21,6 +22,7 @@ loadPageDirectory:
     orl $0x90, %eax
     movl %eax, %cr4
     
+    popl %eax
     popl %ebx
     leave
     ret
@@ -28,12 +30,13 @@ loadPageDirectory:
 
 enablePaging:
     pushl %ebp
+    pushl %eax
     movl %esp, %ebp
     # enable paging 
     movl %cr0, %eax
     orl $0x80000000, %eax
     movl %eax, %cr0
-
+    popl %eax
     leave
     ret
 

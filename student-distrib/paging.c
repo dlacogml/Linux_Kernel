@@ -1,7 +1,5 @@
 #include "paging.h"
 
-uint32_t page_directory[1024] __attribute__((aligned(4096)));
-uint32_t first_page_table[1024] __attribute__((aligned(4096)));
 
 void init_paging()
 {
@@ -21,7 +19,7 @@ void init_paging()
 
     //add the page
     page_directory[0] = ((unsigned int)first_page_table) | 3;
-    page_directory[1] = (0x40000000 | 0x193);
+    page_directory[1] = (0x400000 | 0x193);
 
     //enable paging
     loadPageDirectory((unsigned int)page_directory);
