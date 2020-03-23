@@ -6,8 +6,19 @@
 loadPageDirectory:
     push %ebp
     mov %esp, %ebp
+
     mov 8(%esp), %eax
-    mov %eax, %cr3
+
+    mov %cr3, %ebx
+    and $0x0000fff, %ebx
+    or %eax, %ebx
+    mov %ebx, %cr3
+
+         
+    mov %cr4, %eax
+    and $0xffffffcf, %eax
+    or $0x10, %eax
+    mov %eax, %cr4
     mov %ebp, %esp
     pop %ebp
     ret
@@ -16,10 +27,6 @@ loadPageDirectory:
 enablePaging:
     push %ebp
     mov %esp, %ebp
-    # 
-    mov %cr4, %eax
-    or $0x10, %eax
-    mov %eax, %cr4
     # enable paging 
     mov %cr0, %eax
     or $0x80000000, %eax

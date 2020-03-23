@@ -11,6 +11,7 @@
 #include "rtc.h"
 #include "keyboard.h"
 #include "idt.h"
+#include "paging.h"
 
 #define RUN_TESTS
 #define RTC_PORT    0x70
@@ -148,7 +149,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     /* Init the PIC */
     i8259_init();
-    
+    init_paging();
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */

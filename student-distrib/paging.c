@@ -21,10 +21,10 @@ void init_paging()
 
     //add the page
     page_directory[0] = ((unsigned int)first_page_table) | 3;
-    page_directory[1] = (0x40000000 | 0x83);
+    page_directory[1] = (0x40000000 | 0x193);
 
     //enable paging
-    loadPageDirectory(page_directory);
+    loadPageDirectory((unsigned int)page_directory);
     enablePaging();
 
 }
