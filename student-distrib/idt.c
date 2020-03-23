@@ -270,7 +270,7 @@ void init_idt() {
     idt[40] = desc;
 
     /* System Call */
-    desc.dpl = KERNEL_DPL;
+    desc.dpl = USER_DPL;
     SET_IDT_ENTRY(desc, asmHandler128);
     idt[SYSCALL_INT_NUM] = desc;
 
