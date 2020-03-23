@@ -9,7 +9,9 @@
 #include "i8259.h"
 
 
-/**/
+/*
+ * keyboard_map is a scancode table used to layout a standard US keyboard
+ */
 unsigned char keyboard_map[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',     /* 9 */
@@ -50,19 +52,32 @@ unsigned char keyboard_map[128] =
     0,  /* All other keys are undefined */
 };
 
-void handler33(){
-    // cli();
-    int8_t key = inb(0x60);
-    // printf("%d\n", key);
-    if (key > 0 && keyboard_map[key] != 0){
+/*
+ * void handler33()
+ * 
+ * Description: Handler for the keyboard. Checks if the keycode
+ * retrieved from the scancode is positive and its corresponding
+ * scancode doesn't return 0 and if both conditions are met,
+ * will putc the corresponding key onto the screen
+ * 
+ * No inputs nor outputs
+ */
+void handler33() {
+    int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
+    if (key > 0 && keyboard_map[key] != 0) { //if conditions are met, putc the corresponding key
         putc(keyboard_map[key]);
     }
-    send_eoi(1);
-    // asm volatile ("iret");
-    // sti();
+    send_eoi(1); //end of interrupt
 }
 
-void inti_keyboard()
+/*
+ * void init_keyboard()
+ * 
+ * Description: enables interrupt request into initialize keyboard
+ * 
+ * No inputs nor outputs
+ */
+void init_keyboard()
 {
     enable_irq(1);
 }
