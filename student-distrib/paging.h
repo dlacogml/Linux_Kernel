@@ -1,3 +1,3 @@
-#include "lib.c"
+#include "lib.h"
 
 extern void init_paging();

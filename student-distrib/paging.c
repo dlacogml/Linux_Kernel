@@ -22,10 +22,10 @@ void init_paging()
     page_directory[0] = ((unsigned int)first_page_table) | 3;
     page_directory[1] = (0x40000000 | 0x83);
     //enable paging
-    asm
-    (
+    // asm
+    // (
 
-    );
+    // );
 
 
 }
