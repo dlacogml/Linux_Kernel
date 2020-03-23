@@ -1,11 +1,13 @@
 #ifndef PAGING_H
 #define PAGING_H
 
+#ifndef ASM
+
 #include "lib.h"
-
+#include "paging_init.h"
 extern void init_paging();
-extern void loadPageDirectory(unsigned int*);
-extern void enablePaging();
 
+
+#endif
 #endif 
 

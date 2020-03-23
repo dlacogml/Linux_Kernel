@@ -18,14 +18,12 @@ void init_paging()
     }
     // add video memory
     first_page_table[VIDEO/4096] =  (VIDEO << 3) | 3;
+
     //add the page
     page_directory[0] = ((unsigned int)first_page_table) | 3;
     page_directory[1] = (0x40000000 | 0x83);
-    //enable paging
-    // asm
-    // (
 
-    // );
+    //enable paging
     loadPageDirectory(page_directory);
     enablePaging();
 
