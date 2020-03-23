@@ -61,3 +61,10 @@ void handler33(){
     // asm volatile ("iret");
     // sti();
 }
+
+void inti_keyboard()
+{
+    enable_irq(1);
+}
+
+

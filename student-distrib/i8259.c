@@ -26,6 +26,8 @@ void i8259_init(void) {
     outb(ICW3_SLAVE, SLAVE_8259_DATA);
     outb(ICW4, SLAVE_8259_DATA);
 
+    enable_irq(2);
+
     // printf("master: %x\n", master_mask);
     // printf("slave: %x\n", slave_mask);
 
