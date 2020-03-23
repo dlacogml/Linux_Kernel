@@ -19,6 +19,7 @@
 */
 
 void handler0(){
+    clear();
     printf("Divide by zero");
     while(1){
 
@@ -26,6 +27,7 @@ void handler0(){
 }
 
 void handler1(){
+    clear();
     printf("Debug Exception");
     while(1){
 
@@ -33,18 +35,21 @@ void handler1(){
 }
 
 void handler2(){
+    clear();
     printf("NMI Interrupt");
     while(1){
 
     }
 }
 void handler3(){
+    clear();
     printf("Breakpoint Exception");
     while(1){
 
     }
 }
 void handler4(){
+    clear();
     printf("Overflow Exception");
     while(1){
 
@@ -52,6 +57,7 @@ void handler4(){
 }
 
 void handler5(){
+    clear();
     printf("BOUND Range Exceeded Exception");
     while(1){
 
@@ -59,6 +65,7 @@ void handler5(){
 }
 
 void handler6(){
+    clear();
     printf("Invalid Opcode Exception");
     while(1){
 
@@ -66,6 +73,7 @@ void handler6(){
 }
 
 void handler7(){
+    clear();
     printf("Device Not Available Exception");
     while(1){
 
@@ -73,6 +81,7 @@ void handler7(){
 }
 
 void handler8(){
+    clear();
     printf("Double Fault Exception");
     while(1){
 
@@ -80,6 +89,7 @@ void handler8(){
 }
 
 void handler9(){
+    clear();
     printf("Debug Exception");
     while(1){
 
@@ -87,6 +97,7 @@ void handler9(){
 }
 
 void handler10(){
+    clear();
     printf("Invalid TSS Exception");
     while(1){
 
@@ -94,6 +105,7 @@ void handler10(){
 }
 
 void handler11(){
+    clear();
     printf("Segment Not Present");
     while(1){
 
@@ -101,6 +113,7 @@ void handler11(){
 }
 
 void handler12(){
+    clear();
     printf("Stack Fault Exception");
     while(1){
 
@@ -108,6 +121,7 @@ void handler12(){
 }
 
 void handler13(){
+    clear();
     printf("General Protection Exception");
     while(1){
 
@@ -115,6 +129,7 @@ void handler13(){
 }
 
 void handler14(){
+    clear();
     printf("Page Fault Exception");
     while(1){
 
@@ -122,6 +137,7 @@ void handler14(){
 }
 
 void handler15(){
+    clear();
     printf("Nothing");
     while(1){
 
@@ -129,6 +145,7 @@ void handler15(){
 }
 
 void handler16(){
+    clear();
     printf("x87 FPU Floating Point Error");
     while(1){
 
@@ -136,6 +153,7 @@ void handler16(){
 }
 
 void handler17(){
+    clear();
     printf("Alignment Check Exception");
     while(1){
 
@@ -143,6 +161,7 @@ void handler17(){
 }
 
 void handler18(){
+    clear();
     printf("Machine Check Exception");
     while(1){
 
@@ -150,6 +169,7 @@ void handler18(){
 }
 
 void handler19(){
+    clear();
     printf("SIMD Floating Point Exception");
     while(1){
 
@@ -158,9 +178,7 @@ void handler19(){
 
 void handler128(){
     printf("System Call");
-    while(1){
 
-    }
 }
 
 /* init_idt()
