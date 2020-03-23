@@ -28,7 +28,7 @@ void rtc_init() {
 
 void rtc_set_rate(unsigned char rate) {
 
-    rate &= 0x0F;
+    rate &= 0x0F; //rate is and-ed with 0x0F (15 base 10) to make sure rate is not above 15
     cli();
 
     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
