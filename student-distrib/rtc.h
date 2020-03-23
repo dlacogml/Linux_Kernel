@@ -15,4 +15,6 @@
 
 void rtc_init();
 
+void rtc_set_rate(unsigned char rate);
+
 #endif

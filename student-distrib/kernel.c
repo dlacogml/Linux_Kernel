@@ -8,6 +8,9 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
+#include "rtc.h"
+#include "keyboard.h"
+#include "idt.h"
 
 #define RUN_TESTS
 #define RTC_PORT    0x70
@@ -18,45 +21,47 @@
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
-unsigned char keyboard_map[128] =
-{
-    0,  27, '1', '2', '3', '4', '5', '6', '7', '8',     /* 9 */
-  '9', '0', '-', '=', '\b',     /* Backspace */
-  '\t',                 /* Tab */
-  'q', 'w', 'e', 'r',   /* 19 */
-  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', /* Enter key */
-    0,                  /* 29   - Control */
-  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',     /* 39 */
- '\'', '`',   0,                /* Left shift */
- '\\', 'z', 'x', 'c', 'v', 'b', 'n',                    /* 49 */
-  'm', ',', '.', '/',   0,                              /* Right shift */
-  '*',
-    0,  /* Alt */
-  ' ',  /* Space bar */
-    0,  /* Caps lock */
-    0,  /* 59 - F1 key ... > */
-    0,   0,   0,   0,   0,   0,   0,   0,
-    0,  /* < ... F10 */
-    0,  /* 69 - Num lock*/
-    0,  /* Scroll Lock */
-    0,  /* Home key */
-    0,  /* Up Arrow */
-    0,  /* Page Up */
-  '-',
-    0,  /* Left Arrow */
-    0,
-    0,  /* Right Arrow */
-  '+',
-    0,  /* 79 - End key*/
-    0,  /* Down Arrow */
-    0,  /* Page Down */
-    0,  /* Insert Key */
-    0,  /* Delete Key */
-    0,   0,   0,
-    0,  /* F11 Key */
-    0,  /* F12 Key */
-    0,  /* All other keys are undefined */
-};
+// unsigned char keyboard_map[128] =
+// {
+//     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',     /* 9 */
+//   '9', '0', '-', '=', '\b',     /* Backspace */
+//   '\t',                 /* Tab */
+//   'q', 'w', 'e', 'r',   /* 19 */
+//   't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', /* Enter key */
+//     0,                  /* 29   - Control */
+//   'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',     /* 39 */
+//  '\'', '`',   0,                /* Left shift */
+//  '\\', 'z', 'x', 'c', 'v', 'b', 'n',                    /* 49 */
+//   'm', ',', '.', '/',   0,                              /* Right shift */
+//   '*',
+//     0,  /* Alt */
+//   ' ',  /* Space bar */
+//     0,  /* Caps lock */
+//     0,  /* 59 - F1 key ... > */
+//     0,   0,   0,   0,   0,   0,   0,   0,
+//     0,  /* < ... F10 */
+//     0,  /* 69 - Num lock*/
+//     0,  /* Scroll Lock */
+//     0,  /* Home key */
+//     0,  /* Up Arrow */
+//     0,  /* Page Up */
+//   '-',
+//     0,  /* Left Arrow */
+//     0,
+//     0,  /* Right Arrow */
+//   '+',
+//     0,  /* 79 - End key*/
+//     0,  /* Down Arrow */
+//     0,  /* Page Down */
+//     0,  /* Insert Key */
+//     0,  /* Delete Key */
+//     0,   0,   0,
+//     0,  /* F11 Key */
+//     0,  /* F12 Key */
+//     0,  /* All other keys are undefined */
+// };
+
+/*
 void handler0();
 void handler1();
 void handler2();
@@ -238,6 +243,8 @@ void handler128(){
 
     }
 }
+*/
+
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
 void entry(unsigned long magic, unsigned long addr) {
@@ -358,95 +365,97 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
     }
+    
+    init_idt();
 
-    {
-        idt_desc_t desc;
+    // {
+    //     idt_desc_t desc;
 
-        /* Exceptions */
-        desc.present = 0x1;
-        desc.dpl = 0x0;
-        desc.reserved0 = 0x0;
-        desc.size = 0x1;
-        desc.reserved1 = 0x1;
-        desc.reserved2 = 0x1;
-        desc.reserved3 = 0x0;
-        desc.reserved4 = 0x0;
-        desc.seg_selector = KERNEL_CS;
+    //     /* Exceptions */
+    //     desc.present = 0x1;
+    //     desc.dpl = 0x0;
+    //     desc.reserved0 = 0x0;
+    //     desc.size = 0x1;
+    //     desc.reserved1 = 0x1;
+    //     desc.reserved2 = 0x1;
+    //     desc.reserved3 = 0x0;
+    //     desc.reserved4 = 0x0;
+    //     desc.seg_selector = KERNEL_CS;
 
-        SET_IDT_ENTRY(desc, handler0);
-        idt[0] = desc;
+    //     SET_IDT_ENTRY(desc, handler0);
+    //     idt[0] = desc;
 
-        SET_IDT_ENTRY(desc, handler1);
-        idt[1] = desc;
+    //     SET_IDT_ENTRY(desc, handler1);
+    //     idt[1] = desc;
 
-        SET_IDT_ENTRY(desc, handler3);
-        idt[3] = desc;
+    //     SET_IDT_ENTRY(desc, handler3);
+    //     idt[3] = desc;
 
-        SET_IDT_ENTRY(desc, handler4);
-        idt[4] = desc;
+    //     SET_IDT_ENTRY(desc, handler4);
+    //     idt[4] = desc;
 
-        SET_IDT_ENTRY(desc, handler5);
-        idt[5] = desc;
+    //     SET_IDT_ENTRY(desc, handler5);
+    //     idt[5] = desc;
 
-        SET_IDT_ENTRY(desc, handler6);
-        idt[6] = desc;
+    //     SET_IDT_ENTRY(desc, handler6);
+    //     idt[6] = desc;
 
-        SET_IDT_ENTRY(desc, handler7);
-        idt[7] = desc;
+    //     SET_IDT_ENTRY(desc, handler7);
+    //     idt[7] = desc;
 
-        SET_IDT_ENTRY(desc, handler8);
-        idt[8] = desc;
+    //     SET_IDT_ENTRY(desc, handler8);
+    //     idt[8] = desc;
 
-        SET_IDT_ENTRY(desc, handler9);
-        idt[9] = desc;
+    //     SET_IDT_ENTRY(desc, handler9);
+    //     idt[9] = desc;
 
-        SET_IDT_ENTRY(desc, handler10);
-        idt[10] = desc;
+    //     SET_IDT_ENTRY(desc, handler10);
+    //     idt[10] = desc;
 
-        SET_IDT_ENTRY(desc, handler11);
-        idt[11] = desc;
+    //     SET_IDT_ENTRY(desc, handler11);
+    //     idt[11] = desc;
 
-        SET_IDT_ENTRY(desc, handler12);
-        idt[12] = desc;
+    //     SET_IDT_ENTRY(desc, handler12);
+    //     idt[12] = desc;
 
-        SET_IDT_ENTRY(desc, handler13);
-        idt[13] = desc;
+    //     SET_IDT_ENTRY(desc, handler13);
+    //     idt[13] = desc;
 
-        SET_IDT_ENTRY(desc, handler14);
-        idt[14] = desc;
+    //     SET_IDT_ENTRY(desc, handler14);
+    //     idt[14] = desc;
 
-        SET_IDT_ENTRY(desc, handler16);
-        idt[16] = desc;
+    //     SET_IDT_ENTRY(desc, handler16);
+    //     idt[16] = desc;
 
-        SET_IDT_ENTRY(desc, handler17);
-        idt[17] = desc;
+    //     SET_IDT_ENTRY(desc, handler17);
+    //     idt[17] = desc;
 
-        SET_IDT_ENTRY(desc, handler18);
-        idt[18] = desc;
+    //     SET_IDT_ENTRY(desc, handler18);
+    //     idt[18] = desc;
 
-        SET_IDT_ENTRY(desc, handler19);
-        idt[19] = desc;
+    //     SET_IDT_ENTRY(desc, handler19);
+    //     idt[19] = desc;
         
-        /* Interrupts */
-        SET_IDT_ENTRY(desc, handler2);
-        idt[2] = desc;
+    //     /* Interrupts */
+    //     SET_IDT_ENTRY(desc, handler2);
+    //     idt[2] = desc;
 
-        SET_IDT_ENTRY(desc, handler33);
-        idt[33] = desc;
+    //     SET_IDT_ENTRY(desc, handler33);
+    //     idt[33] = desc;
 
-        SET_IDT_ENTRY(desc, handler40);
-        idt[40] = desc;
+    //     SET_IDT_ENTRY(desc, handler40);
+    //     idt[40] = desc;
 
-        /* System Call */
-        desc.dpl = 0x3;
+    //     /* System Call */
+    //     desc.dpl = 0x3;
 
 
-        SET_IDT_ENTRY(desc, handler128);
-        idt[0x80] = desc;
+    //     SET_IDT_ENTRY(desc, handler128);
+    //     idt[0x80] = desc;
 
-        lidt(idt_desc_ptr);
+    //     lidt(idt_desc_ptr);
 
-    }
+    // } */
 
     /* Init the PIC */
     i8259_init();
@@ -458,6 +467,9 @@ void entry(unsigned long magic, unsigned long addr) {
     enable_irq(1);
     enable_irq(2);
     enable_irq(8);
+
+    rtc_init();
+    rtc_set_rate(15);
 
     // cli();			
     // outb(RTC_B, RTC_PORT);		

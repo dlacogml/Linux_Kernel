@@ -11,6 +11,188 @@
 #include "keyboard.h"
 
 
+void handler0();
+void handler1();
+void handler2();
+void handler3();
+void handler4();
+void handler5();
+void handler6();
+void handler7();
+void handler8();
+void handler9();
+void handler10();
+void handler11();
+void handler12();
+void handler13();
+void handler14();
+void handler15();
+void handler16();
+void handler17();
+void handler18();
+void handler19();
+void handler33();
+void handler40();
+void handler128();
+
+void handler0(){
+    printf("Divide by zero");
+    while(1){
+
+    }
+}
+
+void handler1(){
+    printf("Debug Exception");
+    while(1){
+
+    }
+}
+
+void handler2(){
+    printf("NMI Interrupt");
+    while(1){
+
+    }
+}
+void handler3(){
+    printf("Breakpoint Exception");
+    while(1){
+
+    }
+}
+void handler4(){
+    printf("Overflow Exception");
+    while(1){
+
+    }
+}
+
+void handler5(){
+    printf("BOUND Range Exceeded Exception");
+    while(1){
+
+    }
+}
+void handler6(){
+    printf("Invalid Opcode Exception");
+    while(1){
+
+    }
+}
+void handler7(){
+    printf("Device Not Available Exception");
+    while(1){
+
+    }
+}
+void handler8(){
+    printf("Double Fault Exception");
+    while(1){
+
+    }
+}
+void handler9(){
+    printf("Debug Exception");
+    while(1){
+
+    }
+}
+void handler10(){
+    printf("Invalid TSS Exception");
+    while(1){
+
+    }
+}
+
+void handler11(){
+    printf("Segment Not Present");
+    while(1){
+
+    }
+}
+void handler12(){
+    printf("Stack Fault Exception");
+    while(1){
+
+    }
+}
+
+void handler13(){
+    printf("General Protection Exception");
+    while(1){
+
+    }
+}
+
+void handler14(){
+    printf("Page Fault Exception");
+    while(1){
+
+    }
+}
+
+void handler15(){
+    printf("Nothing");
+    while(1){
+
+    }
+}
+void handler16(){
+    printf("x87 FPU Floating Point Error");
+    while(1){
+
+    }
+}
+void handler17(){
+    printf("Alignment Check Exception");
+    while(1){
+
+    }
+}
+
+void handler18(){
+    printf("Machine Check Exception");
+    while(1){
+
+    }
+}
+void handler19(){
+    printf("SIMD Floating Point Exception");
+    while(1){
+
+    }
+}
+
+
+void handler33(){
+    cli();
+    int8_t key = inb(0x60);
+    printf("%d\n", key);
+    // if (key > 0 && keyboard_map[key] != 0){
+    //     printf("%c", keyboard_map[key]);
+    // }
+    send_eoi(1);
+    sti();
+}
+
+void handler40(){
+    cli();
+    printf("RTC");
+    test_interrupts();
+    outb(RTC_C, RTC_PORT);	
+    inb(RTC_DATA);		
+    send_eoi(8);
+    sti();
+}
+
+void handler128(){
+    printf("System Call");
+    while(1){
+
+    }
+}
+
 /* init_idt()
  * DESCRIPTION: initializes the idt
  * INPUT: none
@@ -104,3 +286,5 @@ void init_idt() {
 
         lidt(idt_desc_ptr);
 }
+
+
