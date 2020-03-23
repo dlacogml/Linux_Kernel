@@ -1,5 +1,5 @@
 /*
- * idt.c - 
+ * idt.c
  * 
  */
 
@@ -252,11 +252,9 @@ void init_idt() {
     idt[40] = desc;
 
     /* System Call */
-    desc.dpl = 0x3;
-
-
+    desc.dpl = KERNEL_DPL;
     SET_IDT_ENTRY(desc, asmHandler128);
-    idt[0x80] = desc;
+    idt[SYSCALL_INT_NUM] = desc;
 
     /* Load IDT */
     lidt(idt_desc_ptr);
