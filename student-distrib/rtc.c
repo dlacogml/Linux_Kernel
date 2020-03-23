@@ -49,3 +49,4 @@ void handler40(){
     send_eoi(8);
     sti();
 }
+
