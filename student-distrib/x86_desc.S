@@ -11,7 +11,7 @@
 .globl tss, tss_desc_ptr, ldt, ldt_desc_ptr
 .globl gdt_ptr
 .globl idt_desc_ptr, idt
-.globl gdt_desc_ptr
+.globl gdt_desc_ptr # a ptr for gdt_descriptor
 .align 4
 
 
@@ -36,12 +36,10 @@ tss_bottom:
 
 .align 4
     .word 0 # Padding
-gdt_desc_ptr:
-    .word gdt_bottom - gdt - 1
+gdt_desc_ptr: # define the gdt descriptor ptr
+    .word gdt_bottom - gdt - 1 
     .long gdt
-
-
-    .align  8
+    .align  8 # align gdt to be 8 
 gdt:
 _gdt:
 
@@ -101,7 +99,7 @@ ldt_bottom:
 
 .align 4
     .word 0 # Padding
-idt_desc_ptr:
+idt_desc_ptr: 
     .word idt_bottom - idt - 1
     .long idt
 
