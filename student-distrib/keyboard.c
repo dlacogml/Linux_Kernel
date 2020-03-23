@@ -7,12 +7,12 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
-
-
+#define MAP_SIZE 128 //the size of keyboard map
+#define KEYBOARD_IRQ 1 //the irq num for keybaord 
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
-unsigned char keyboard_map[128] =
+unsigned char keyboard_map[MAP_SIZE] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',     /* 9 */
   '9', '0', '-', '=', '\b',     /* Backspace */
@@ -67,7 +67,7 @@ void handler33() {
     if (key > 0 && keyboard_map[(int)key] != 0) { //if conditions are met, putc the corresponding key
         putc(keyboard_map[(int)key]);
     }
-    send_eoi(1); //end of interrupt
+    send_eoi(KEYBOARD_IRQ); //end of interrupt
 }
 
 /*
@@ -79,7 +79,7 @@ void handler33() {
  */
 void init_keyboard()
 {
-    enable_irq(1);
+    enable_irq(KEYBOARD_IRQ);
 }
 
 
