@@ -66,7 +66,10 @@ int device_not_available_test(){
 }
 int divide_by_zero_test(){
     TEST_HEADER;
-    int i = 1 / 0;
+    int i;
+    int j = 1;
+    j--;
+    i = 1 / j;
     return FAIL;
 }
 int overflow_test(){
