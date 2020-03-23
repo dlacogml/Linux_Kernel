@@ -9,7 +9,7 @@
 #include "i8259.h"
 #include "rtc.h"
 #include "keyboard.h"
-
+#include "idt_asm.h"
 
 
 
@@ -226,20 +226,20 @@ void init_idt() {
     idt[19] = desc;
     
     /* Interrupts */
-    SET_IDT_ENTRY(desc, handler2);
+    SET_IDT_ENTRY(desc, asmHandler2);
     idt[2] = desc;
 
-    SET_IDT_ENTRY(desc, handler33);
+    SET_IDT_ENTRY(desc, asmHandler33);
     idt[33] = desc;
 
-    SET_IDT_ENTRY(desc, handler40);
+    SET_IDT_ENTRY(desc, asmHandler40);
     idt[40] = desc;
 
     /* System Call */
     desc.dpl = 0x3;
 
 
-    SET_IDT_ENTRY(desc, handler128);
+    SET_IDT_ENTRY(desc, asmHandler128);
     idt[0x80] = desc;
 
     lidt(idt_desc_ptr);

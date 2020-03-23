@@ -58,5 +58,6 @@ void handler33(){
         putc(keyboard_map[key]);
     }
     send_eoi(1);
+    // asm volatile ("iret");
     // sti();
 }
