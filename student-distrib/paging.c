@@ -26,7 +26,7 @@ void init_paging()
     //add the pages for video memory
     //shift 12 to shift VIDEO 3 left of the hex so it's aligned in the base address section
     //OR with 3 to enable P and R/W
-    first_page_table[VIDEO/ALIGNED_SIZE] =  (VIDEO << 12) | 3;
+    first_page_table[VIDEO/ALIGNED_SIZE] =  VIDEO | 3;
 
     //add the page
     //OR with 3 to enable P and R/W
