@@ -8,6 +8,10 @@
 
 #include "types.h"
 
+#define SLAVE_OFFSET        8
+#define SLAVE_PIN           2
+#define MASK                0xff
+
 /* Ports that each PIC sits on */
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
