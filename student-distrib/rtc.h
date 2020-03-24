@@ -1,7 +1,6 @@
 /* 
- *
- * rtc.h - 
- * 
+ * rtc.h - Defines used in interactions with the rtc interrupt
+ * controller
  */
 
 #ifndef _RTC_H

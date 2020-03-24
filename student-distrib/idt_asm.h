@@ -1,3 +1,8 @@
+/* 
+ * idt_asm.h - Defines used in interactions with the idt interrupt handlers
+ */
+
+
 #include "keyboard.h"
 #include "rtc.h"
 #include "idt.h"

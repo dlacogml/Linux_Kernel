@@ -1,6 +1,5 @@
 /*
- * 
- * keyboard.c - 
+ * keyboard.c - functions to interact with the keyboard
  *
  */
 

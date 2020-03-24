@@ -1,6 +1,6 @@
 /*
- * idt.c
- * 
+ * idt.c - functions to interact with idt
+ *
  */
 
 #include "idt.h"

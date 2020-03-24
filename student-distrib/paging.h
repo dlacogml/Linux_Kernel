@@ -1,3 +1,7 @@
+/* 
+ * paging.h - Defines used in interactions with the paging interrupt
+ * controller
+ */
 #ifndef PAGING_H
 #define PAGING_H
 

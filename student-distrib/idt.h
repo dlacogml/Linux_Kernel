@@ -1,5 +1,7 @@
-/* idt.h
- *
+/* 
+ * 
+ * idt.h - Defines used in interactions with the idt interrupt
+ * 
  */
 
 #ifndef IDT_H

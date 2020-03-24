@@ -1,6 +1,6 @@
 /*
  *
- * keyboard.h - 
+ * keyboard.h - defines used in interactions with the keyboard interrupt 
  * 
  */
 

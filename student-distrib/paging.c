@@ -1,3 +1,7 @@
+/*
+ * paging.c - functions to interact with paging
+ *
+ */
 #include "paging.h"
 #define NOT_PRESENT 0x02
 #define KERNEL_ADDR 0x400000

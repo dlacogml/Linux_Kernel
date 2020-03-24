@@ -1,4 +1,7 @@
-
+/*
+ *  idt_asm.S - assembly code for the paging functions
+ *
+ */
 .text
 .globl loadPageDirectory
 .globl enablePaging

@@ -1,6 +1,6 @@
 /* 
  * 
- * rtc.c - 
+ * rtc.c - functions to interact with the rtc 
  * 
  */
 
