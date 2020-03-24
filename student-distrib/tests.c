@@ -14,7 +14,7 @@
 static inline void assertion_failure(){
 	/* Use exception #15 for assertions, otherwise
 	   reserved by Intel */
-	// asm volatile("int $15");
+	asm volatile("int $15");
 }
 
 
@@ -29,17 +29,13 @@ static inline void assertion_failure(){
  * Coverage: Load IDT, IDT definition
  * Files: x86_desc.h/S
  */
-int idt_test(){
+int idt_test() {
 	TEST_HEADER;
-    // int* ptr = NULL;
-    // *ptr = 4;
-    // asm volatile("ud2");
-
 	int i;
 	int result = PASS;
 	for (i = 0; i < 10; ++i){
 		if ((idt[i].offset_15_00 == NULL) && 
-			(idt[i].offset_31_16 == NULL)){
+			(idt[i].offset_31_16 == NULL)) {
 			assertion_failure();
 			result = FAIL;
 		}
@@ -49,6 +45,10 @@ int idt_test(){
 }
 
 // add more tests here
+/*
+ * divide_by_zero_test()
+ * Description: tests the divide by zero exception
+ */
 int divide_by_zero_test(){
     TEST_HEADER;
     int i;
@@ -57,97 +57,158 @@ int divide_by_zero_test(){
     i = 1 / j;
     return FAIL;
 }
+/*
+ * breakpoint_test()
+ * Description: tests the breakpoint exception
+ */
 int breakpoint_test(){
     TEST_HEADER;
     asm volatile("int $3");
     return FAIL;
 }
+/*
+ * overflow_test()
+ * Description: tests the overflow exception
+ */
 int overflow_test(){
     TEST_HEADER;
     asm volatile("int $4");
     return FAIL;
 }
+/*
+ * bound_exceeded_test()
+ * Description: tests the bounds exceeded exception
+ */
 int bound_exceeded_test(){
     TEST_HEADER;
     asm volatile("int $5");
     return FAIL;
 }
+/*
+ * invalid_opcode_test()
+ * Description: tests the invalid opcode exception
+ */
 int invalid_opcode_test(){
     TEST_HEADER;
     asm volatile("ud2");
     return FAIL;
 }
+/*
+ * device_not_available_test()
+ * Description: tests the device not available exception
+ */
 int device_not_available_test(){
     TEST_HEADER;
     asm volatile("int $7");
     return FAIL;
 }
+/*
+ * double_fault_test()
+ * Description: tests the double fault exception
+ */
 int double_fault_test(){
     TEST_HEADER;
     asm volatile("int $8");
     return FAIL;
 }
+/*
+ * invalid_tss_test()
+ * Description: tests the invalid TSS exception
+ */
 int invalid_tss_test(){
     TEST_HEADER;
     asm volatile("int $10");
     return FAIL;
 }
+/*
+ * segment_not_present_test()
+ * Description: tests the segment not present exception
+ */
 int segment_not_present_test(){
     TEST_HEADER;
     asm volatile("int $11");
     return FAIL;
 }
+/*
+ * stack_segment_test()()
+ * Description: tests the stack segment exception
+ */
 int stack_segment_test(){
     TEST_HEADER;
     asm volatile("int $12");
     return FAIL;
 }
+/*
+ * general_protection_test()
+ * Description: tests the general protection exception
+ */
 int general_protection_test(){
     TEST_HEADER;
     asm volatile("int $13");
     return FAIL;
 }
+/*
+ * page_fault_test()
+ * Description: tests the page fault exception
+ */
 int page_fault_test(){
     TEST_HEADER;
     int* ptr = NULL;
     *ptr = 1;
     return FAIL;
 }
+/*
+ * math_fault_test()
+ * Description: tests the divide by zero exception
+ */
 int math_fault_test(){
     TEST_HEADER;
     asm volatile("int $16");
     return FAIL;
 }
+/*
+ * alignment_check_test()
+ * Description: tests the divide by zero exception
+ */
 int alignment_check_test(){
     TEST_HEADER;
     asm volatile("int $17");
     return FAIL;
 }
+/*
+ * machine_check_test()
+ * Description: tests the machine check test exception
+ */
 int machine_check_test(){
     TEST_HEADER;
     asm volatile("int $18");
     return FAIL;
 }
+/*
+ * simd_check_test()
+ * Description: tests the simd check test exception
+ */
 int simd_check_test(){
     TEST_HEADER;
     asm volatile("int $19");
     return FAIL;
 }
+/*
+ * system_call_test()
+ * Description: tests the system call test
+ */
 int system_call_test(){
     TEST_HEADER;
     asm volatile("int $0x80");
     return PASS;
 }
 
-
-/* Checkpoint 2 tests */
-/* Checkpoint 3 tests */
-/* Checkpoint 4 tests */
-/* Checkpoint 5 tests */
-
-
-/* Test suite entry point */
-void launch_tests(){
+/*
+ * launch_tests_checkpoint_1()
+ * 
+ * Description: Launches tests for the 1st checkpoint
+ */
+void launch_tests_checkpoint_1(){
 	// TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
     // TEST_OUTPUT("breakpoint_test", breakpoint_test());
@@ -158,18 +219,17 @@ void launch_tests(){
     // TEST_OUTPUT("double_fault_test", double_fault_test()); 
     // TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
     // TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
-    // TEST_OUTPUT("stack_segment_test", stack_segment_test()); // not working
+    // TEST_OUTPUT("stack_segment_test", stack_segment_test());
     // TEST_OUTPUT("general_protection_test", general_protection_test());
     // TEST_OUTPUT("page_fault_test", page_fault_test());
-    // TEST_OUTPUT("math_fault_test", math_fault_test()); // not working
-    // TEST_OUTPUT("alignment_check_test", alignment_check_test()); // not working
-    // TEST_OUTPUT("machine_check_test", machine_check_test()); // not working
-    // TEST_OUTPUT("simd_check_test", simd_check_test()); // not working
+    // TEST_OUTPUT("math_fault_test", math_fault_test());
+    // TEST_OUTPUT("alignment_check_test", alignment_check_test());
+    // TEST_OUTPUT("machine_check_test", machine_check_test());
+    // TEST_OUTPUT("simd_check_test", simd_check_test());
     // TEST_OUTPUT("system_call_test", system_call_test());
-
-
-
-
-
 	// launch your tests here
 }
+/* Checkpoint 2 tests */
+/* Checkpoint 3 tests */
+/* Checkpoint 4 tests */
+/* Checkpoint 5 tests */
