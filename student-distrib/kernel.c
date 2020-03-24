@@ -160,16 +160,16 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable keyboard interrupt
     init_keyboard();
     //enable rtc interrupt
-    // rtc_init();
-    // //set the rtc rate
-    // unsigned char rate = 15; // rtc rate: between 3 and 15
-    // rtc_set_rate(rate);
+    rtc_init();
+    //set the rtc rate
+    unsigned char rate = 15; // rtc rate: between 3 and 15
+    rtc_set_rate(rate);
     sti();
 
 
 #ifdef RUN_TESTS
     /* Run tests */
-    launch_tests();
+    launch_tests_checkpoint_1();
 #endif
     /* Execute the first program ("shell") ... */
 
