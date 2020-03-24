@@ -64,15 +64,12 @@ int breakpoint_test(){
 }
 int overflow_test(){
     TEST_HEADER;
-    // int8_t i = 0x7f;
-    // i += 1;
-    asm volatile("movl $0x7f, %eax; incl %eax; into");
+    asm volatile("int $4");
     return FAIL;
 }
 int bound_exceeded_test(){
     TEST_HEADER;
-    int arr[2];
-    arr[3] = 0;
+    asm volatile("int $5");
     return FAIL;
 }
 int invalid_opcode_test(){
@@ -82,32 +79,32 @@ int invalid_opcode_test(){
 }
 int device_not_available_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $7");
     return FAIL;
 }
 int double_fault_test(){
     TEST_HEADER;
-    asm volatile("int $32");
+    asm volatile("int $8");
     return FAIL;
 }
 int invalid_tss_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $10");
     return FAIL;
 }
-// int segment_not_present_test(){
-//     TEST_HEADER;
-//     asm volatile("mov $30, %ss");
-//     return FAIL;
-// }
+int segment_not_present_test(){
+    TEST_HEADER;
+    asm volatile("int $11");
+    return FAIL;
+}
 int stack_segment_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $12");
     return FAIL;
 }
 int general_protection_test(){
     TEST_HEADER;
-    asm volatile("int $60");
+    asm volatile("int $13");
     return FAIL;
 }
 int page_fault_test(){
@@ -118,22 +115,22 @@ int page_fault_test(){
 }
 int math_fault_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $16");
     return FAIL;
 }
 int alignment_check_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $17");
     return FAIL;
 }
 int machine_check_test(){
     TEST_HEADER;
-    asm volatile("movl %cr4, %eax; orl $0x40, %eax; movl %eax, %cr4");
+    asm volatile("int $18");
     return FAIL;
 }
 int simd_check_test(){
     TEST_HEADER;
-    asm volatile("fwait");
+    asm volatile("int $19");
     return FAIL;
 }
 int system_call_test(){
@@ -154,13 +151,13 @@ void launch_tests(){
 	// TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
     // TEST_OUTPUT("breakpoint_test", breakpoint_test());
-    // TEST_OUTPUT("overflow_test", overflow_test()); // not working
-    // TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); // not working
+    // TEST_OUTPUT("overflow_test", overflow_test()); 
+    // TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); 
     // TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
-    // TEST_OUTPUT("device_not_available_test", device_not_available_test()); // not working
-    // TEST_OUTPUT("double_fault_test", double_fault_test()); // not working
-    // TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); // not working
-    // TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); // not working
+    // TEST_OUTPUT("device_not_available_test", device_not_available_test()); 
+    // TEST_OUTPUT("double_fault_test", double_fault_test()); 
+    // TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
+    // TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
     // TEST_OUTPUT("stack_segment_test", stack_segment_test()); // not working
     // TEST_OUTPUT("general_protection_test", general_protection_test());
     // TEST_OUTPUT("page_fault_test", page_fault_test());
