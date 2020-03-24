@@ -11,8 +11,8 @@
 #include "keyboard.h"
 #include "idt_asm.h"
 
-/* void handler[#]()
-    DESCRIPTION: These functions prints the descriptions of the specific interrupt called
+/* void handler0()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
     and freezes the kernel for an indefinite amount of time
     INPUT: NONE
     OUTPUT: NONE
@@ -26,6 +26,12 @@ void handler0(){
     }
 }
 
+/* void handler1()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler1(){
     clear();
     printf("Debug Exception");
@@ -34,6 +40,12 @@ void handler1(){
     }
 }
 
+/* void handler2()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler2(){
     clear();
     printf("NMI Interrupt");
@@ -41,6 +53,13 @@ void handler2(){
 
     }
 }
+
+/* void handler3()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler3(){
     clear();
     printf("Breakpoint Exception");
@@ -48,6 +67,13 @@ void handler3(){
 
     }
 }
+
+/* void handler4()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler4(){
     clear();
     printf("Overflow Exception");
@@ -56,6 +82,12 @@ void handler4(){
     }
 }
 
+/* void handler5()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler5(){
     clear();
     printf("BOUND Range Exceeded Exception");
@@ -64,6 +96,12 @@ void handler5(){
     }
 }
 
+/* void handler6()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler6(){
     clear();
     printf("Invalid Opcode Exception");
@@ -72,6 +110,12 @@ void handler6(){
     }
 }
 
+/* void handler7()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler7(){
     clear();
     printf("Device Not Available Exception");
@@ -80,6 +124,12 @@ void handler7(){
     }
 }
 
+/* void handler8()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler8(){
     clear();
     printf("Double Fault Exception");
@@ -88,6 +138,12 @@ void handler8(){
     }
 }
 
+/* void handler9()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler9(){
     clear();
     printf("Debug Exception");
@@ -96,6 +152,12 @@ void handler9(){
     }
 }
 
+/* void handler10()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler10(){
     clear();
     printf("Invalid TSS Exception");
@@ -104,6 +166,12 @@ void handler10(){
     }
 }
 
+/* void handler11()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler11(){
     clear();
     printf("Segment Not Present");
@@ -112,6 +180,12 @@ void handler11(){
     }
 }
 
+/* void handler12()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler12(){
     clear();
     printf("Stack Fault Exception");
@@ -120,6 +194,12 @@ void handler12(){
     }
 }
 
+/* void handler13()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler13(){
     clear();
     printf("General Protection Exception");
@@ -128,6 +208,12 @@ void handler13(){
     }
 }
 
+/* void handler14()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler14(){
     clear();
     printf("Page Fault Exception");
@@ -136,6 +222,12 @@ void handler14(){
     }
 }
 
+/* void handler15()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler15(){
     clear();
     printf("Nothing");
@@ -144,6 +236,12 @@ void handler15(){
     }
 }
 
+/* void handler16()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler16(){
     clear();
     printf("x87 FPU Floating Point Error");
@@ -152,6 +250,12 @@ void handler16(){
     }
 }
 
+/* void handler17()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler17(){
     clear();
     printf("Alignment Check Exception");
@@ -160,6 +264,12 @@ void handler17(){
     }
 }
 
+/* void handler18()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler18(){
     clear();
     printf("Machine Check Exception");
@@ -168,6 +278,12 @@ void handler18(){
     }
 }
 
+/* void handler19()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler19(){
     clear();
     printf("SIMD Floating Point Exception");
@@ -176,6 +292,12 @@ void handler19(){
     }
 }
 
+/* void handler128()
+    DESCRIPTION: prints the descriptions of the specific interrupt called
+    and freezes the kernel for an indefinite amount of time
+    INPUT: NONE
+    OUTPUT: NONE
+*/
 void handler128(){
     printf("System Call");
 
@@ -261,13 +383,13 @@ void init_idt() {
     
     /* Interrupts */
     SET_IDT_ENTRY(desc, asmHandler2);
-    idt[2] = desc;
+    idt[2] = desc;                      // set desc equal to this index (2) of IDT
 
     SET_IDT_ENTRY(desc, asmHandler33);
-    idt[33] = desc;
+    idt[33] = desc;                     //set desc equal to this index (33) of IDT
 
     SET_IDT_ENTRY(desc, asmHandler40);
-    idt[40] = desc;
+    idt[40] = desc;                     //set desc equal to this index (40) of IDT
 
     /* System Call */
     desc.dpl = USER_DPL;
