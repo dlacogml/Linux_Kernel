@@ -150,6 +150,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
     //Init the PIC 
+    clear();
     i8259_init();
     //Init idt
     init_idt();
@@ -161,12 +162,12 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable keyboard interrupt
     init_keyboard();
     //enable rtc interrupt
-    rtc_init();
+    // rtc_init();
     //set the rtc rate
     // unsigned char rate = 15; // rtc rate: between 3 and 15
     // rtc_set_rate(rate);
-    int freq = 2;
-    rtc_write(0,&freq,0);
+    // int freq = 2;
+    // rtc_write(0,&freq,0);
     sti();
 
 

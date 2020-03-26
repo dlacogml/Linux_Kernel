@@ -73,7 +73,34 @@ unsigned char shift_map[MAP_SIZE] =
   'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',     /* 39 */
  '\"', '~',   0,                /* Left shift */
  '\\', 'Z', 'X', 'C', 'V', 'B', 'N',                    /* 49 */
-  'M', '<', '>', '?'
+  'M', '<', '>', '?',
+   0,                              /* Right shift */
+  '*',
+    0,  /* Alt */
+  ' ',  /* Space bar */
+    0,  /* Caps lock */
+    0,  /* 59 - F1 key ... > */
+    0,   0,   0,   0,   0,   0,   0,   0,
+    0,  /* < ... F10 */
+    0,  /* 69 - Num lock*/
+    0,  /* Scroll Lock */
+    0,  /* Home key */
+    0,  /* Up Arrow */
+    0,  /* Page Up */
+  '-',
+    0,  /* Left Arrow */
+    0,
+    0,  /* Right Arrow */
+  '+',
+    0,  /* 79 - End key*/
+    0,  /* Down Arrow */
+    0,  /* Page Down */
+    0,  /* Insert Key */
+    0,  /* Delete Key */
+    0,   0,   0,
+    0,  /* F11 Key */
+    0,  /* F12 Key */
+    0,  /* All other keys are undefined */
 };
 /*
  * void handler33()
@@ -130,8 +157,17 @@ void handler33()
       int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
       
       //checking if ctrl + l or ctrl + L
-      if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) {
+      if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
+      {
         clear();
+        send_eoi(KEYBOARD_IRQ);
+        return;
+      }
+      //check if backspace is pressed
+      if (key == 14)
+      {
+        backspace();
+        send_eoi(KEYBOARD_IRQ);
         return;
       }
       //when capslock is pressed 
