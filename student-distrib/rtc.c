@@ -126,7 +126,7 @@ uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
     //frequency = MAX_INT_RATE >> (RATE - 1)
     //maximum kernel can hace is 6 which corresponds to frequency of 1024HZ
     //K_MAX_INT_RATE = MAX_INT_RATE >> (6-1)
-    unsigned char rate = 6;
+    unsigned char rate = K_MAX_INT_RATE;
     while(MAX_INT_FREQ >> (rate - 1) != freq)
     {
         rate++; //increment rate until we find the correct rate corresponding to the right frequency

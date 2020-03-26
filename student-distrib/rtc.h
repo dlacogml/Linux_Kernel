@@ -13,7 +13,7 @@
 #define RTC_C          0x8C
 #define MAX_INT_FREQ   32768   //maximum interrupt frequency by rtc 2^15
 #define K_MAX_INT_FREQ 1024    //maximum interrupt frequency by kernel 2^10 
-#define K_MAX_INT_RATE 6       //
+#define K_MAX_INT_RATE 6       //maximum interrupt rate by kernel is 6
 
 //initialize rtc
 void rtc_init();
