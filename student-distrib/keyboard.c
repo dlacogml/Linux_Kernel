@@ -13,6 +13,10 @@
 
 static volatile unsigned CAPS_PRESSED = 0;
 static volatile unsigned SHIFT_PRESSED = 0;
+static volatile unsigned CONTROL_PRESSED = 0;
+static volatile unsigned ALT_PRESSED = 0;
+static volatile unsigned TAB_PRESSED = 0;
+
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -84,43 +88,47 @@ unsigned char shift_map[MAP_SIZE] =
 void handler33() 
 {
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
-    // printf("%d",key);
-    //when left shift and right shift is released
-    if((key == -86 || key == -74) && SHIFT_PRESSED == 1) //scancodes of releasing left shift and right shift are -86, -74
-      SHIFT_PRESSED = 0; //set pressed to 0
-    if (key > 0) 
-    { 
-      //when left shift and right is pressed 
-      if(key == 42 || key == 54) //scancodes of pressing left shift and right shift are 42, 54
-        SHIFT_PRESSED = 1;
-      int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
-      int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
-      //when capslock is pressed 
-      if(key == CAPS_IDX)
-      {
-        CAPS_PRESSED ^= 1; //caps lock is enabled
-      }
-      //if the key thats a character
-      if(ascii_val >= 97 && ascii_val <= 122) //the range of lower case ascii letters are from 97 to 122
-      {
-        //if only one of those is pressed 
-        if(CAPS_PRESSED ^ SHIFT_PRESSED) 
-        {
-          putc(ascii_val - CAPS_OFFSET); //print the caps char of the key, and when a shift is not pressed 
-        }
-        else //when both are pressed or neither is pressed
-        {
-          putc(ascii_val);
-        }
-      }
-      else if(ascii_val != 0) //if the input is not a character 
-      {
-        if(SHIFT_PRESSED)
-          putc(sh_ascii_val);
-        else
-          putc(ascii_val);
-      }
-    }
+    printf("%d",key);
+
+    // //when left shift and right shift is released
+    // if((key == -86 || key == -74) && SHIFT_PRESSED == 1) //scancodes of releasing left shift and right shift are -86, -74
+    //   SHIFT_PRESSED = 0; //set pressed to 0
+    // //when tab is pressed 
+    // if()
+
+    // if (key > 0) 
+    // { 
+    //   //when left shift and right is pressed 
+    //   if(key == 42 || key == 54) //scancodes of pressing left shift and right shift are 42, 54
+    //     SHIFT_PRESSED = 1;
+    //   int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
+    //   int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
+    //   //when capslock is pressed 
+    //   if(key == CAPS_IDX)
+    //   {
+    //     CAPS_PRESSED ^= 1; //caps lock is enabled
+    //   }
+    //   //if the key thats a character
+    //   if(ascii_val >= 97 && ascii_val <= 122) //the range of lower case ascii letters are from 97 to 122
+    //   {
+    //     //if only one of those is pressed 
+    //     if(CAPS_PRESSED ^ SHIFT_PRESSED) 
+    //     {
+    //       putc(ascii_val - CAPS_OFFSET); //print the caps char of the key, and when a shift is not pressed 
+    //     }
+    //     else //when both are pressed or neither is pressed
+    //     {
+    //       putc(ascii_val);
+    //     }
+    //   }
+    //   else if(ascii_val != 0) //if the input is not a character 
+    //   {
+    //     if(SHIFT_PRESSED)
+    //       putc(sh_ascii_val);
+    //     else
+    //       putc(ascii_val);
+    //   }
+    // }
     send_eoi(KEYBOARD_IRQ); //end of interrupt
 }
 
