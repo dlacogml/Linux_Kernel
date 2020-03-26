@@ -151,6 +151,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * PIC, any other initialization stuff... */
     //Init the PIC 
     clear();
+    init_filesystem();
     i8259_init();
     //Init idt
     init_idt();
