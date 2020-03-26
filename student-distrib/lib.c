@@ -21,8 +21,31 @@ void clear(void) {
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+    screen_x = 0;
+    screen_y = 0;
 }
 
+void backspace(void)
+{
+        //when it's at the top left corner, then do nothing
+    if(screen_x == 0 && screen_y == 0)
+        return;
+    else if(screen_x == 0) //when go back to the previous line
+    {   
+        screen_y--;
+        screen_x = 80;
+        uint32_t i = NUM_COLS * screen_y + screen_x;
+        *(uint8_t *)(video_mem + (i << 1)) = ' ';
+        *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+    } 
+    else 
+    {   
+        screen_x--;
+        uint32_t i = NUM_COLS * screen_y + screen_x;
+        *(uint8_t *)(video_mem + (i << 1)) = ' ';
+        *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+    }
+}
 /* Standard printf().
  * Only supports the following format strings:
  * %%  - print a literal '%' character
