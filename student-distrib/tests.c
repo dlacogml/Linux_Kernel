@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "filesystem.h"
 
 #define PASS 1
 #define FAIL 0
@@ -205,6 +206,7 @@ int system_call_test(){
 
 /* Checkpoint 2 tests */
 
+
 /*
  * launch_tests_checkpoint_1()
  * 
@@ -230,6 +232,8 @@ void launch_tests_checkpoint_1(){
     // TEST_OUTPUT("simd_check_test", simd_check_test());
     // TEST_OUTPUT("system_call_test", system_call_test());
 	// launch your tests here
+    uint8_t* buf;
+    file_read(2, 0, buf, 32);
 }
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
