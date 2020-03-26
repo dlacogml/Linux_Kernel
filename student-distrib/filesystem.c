@@ -12,7 +12,7 @@
 inode_t* inodes;
 boot_block_t* boot_block;
 data_block_t* data_blocks;
-int open_flag;
+int file_pos;
 int dir_index;
 
 void init_filesystem(){
@@ -24,7 +24,6 @@ void init_filesystem(){
 
     /* init data block array */
     data_blocks = (data_block_t*) (filesys_start + sizeof(boot_block_t) + sizeof(inode_t) * boot_block->inode_count);
-    open_flag = 0;
 }
 
 /* file_open
@@ -38,8 +37,8 @@ int32_t file_open(const uint8_t* filename) {
     /* check if file exists */
     if (read_dentry_by_name(filename, dentry) == 0){
         /* check if valid file */
-        if (dentry->filetype == 2 && dentry->inode_num < boot_block->inode_count && dentry->inode_num >= 0 && open_flag == 0){
-            open_flag = 1;
+        if (dentry->filetype == 2 && dentry->inode_num < boot_block->inode_count && dentry->inode_num >= 0){
+            file_pos = 0;
             return 0;
         }
     }
@@ -47,16 +46,20 @@ int32_t file_open(const uint8_t* filename) {
 }
 
 int32_t file_close(int32_t fd) {
-    if (open_flag == 1){
-        open_flag = 0;
-        return 0;
-    }
-    return -1;
+    return 0;
 }
 
-int32_t file_read(uint32_t inode_num, uint32_t position, void* buf, int32_t nbytes) {
+int32_t file_read(uint32_t inode_num, uint32_t position, uint8_t* buf, int32_t nbytes) {
     /* read data from file and store in buf */
-    return read_data(inode_num, position, buf, nbytes);
+    int num_bytes = read_data(inode_num, file_pos, buf, nbytes);
+    file_pos = file_pos + num_bytes;
+    int i;
+    for (i = 0; i < nbytes; i++){
+        putc(*buf);
+        buf++;
+    }
+    
+    return num_bytes;
 }
 
 int32_t file_write(int32_t fd, const void* buf, int32_t nbytes) {
@@ -81,8 +84,8 @@ int32_t dir_close(int32_t fd) {
     return 0;
 }
 
-int32_t dir_read(int32_t fd, void* buf, int32_t nbytes) {
-    uint8_t* buffer = (uint8_t*) buf;
+int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
+
     dentry_t dentry;
 
     /* read dentry, if fail return 0 */
@@ -98,8 +101,8 @@ int32_t dir_read(int32_t fd, void* buf, int32_t nbytes) {
 
     /* copy filename into buffer until either limit is reached or end of filename */
     while (dentry.filename[filename_index] != '\0' && num_copied < nbytes){
-        *buffer = dentry.filename[filename_index];
-        buffer++;
+        *buf = dentry.filename[filename_index];
+        buf++;
         num_copied++;
         filename_index++;
     }

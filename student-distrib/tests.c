@@ -203,6 +203,8 @@ int system_call_test(){
     return PASS;
 }
 
+/* Checkpoint 2 tests */
+
 /*
  * launch_tests_checkpoint_1()
  * 
