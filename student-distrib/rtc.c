@@ -80,6 +80,7 @@ uint32_t rtc_open(const uint8_t* filename)
     outb(RTC_A, RTC_PORT);		// reset index to A
     outb((curr & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     sti();
+    return 0;
 }
 //uint32_t rtc_close(int32_t fd)
 //interface: nothing
@@ -121,7 +122,7 @@ uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
 {
     int freq = *((int*)buf);
     //check if buf is NULL, frequency is NULL, frequency is power of 2, frequency is within the range
-    if(!buf || freq <=0 || !(freq & (freq-1)) || freq > K_MAX_INT_FREQ)
+    if(!buf || freq <=0 || (freq & (freq-1)) || freq > K_MAX_INT_FREQ)
         return -1;
     //frequency = MAX_INT_RATE >> (RATE - 1)
     //maximum kernel can hace is 6 which corresponds to frequency of 1024HZ
