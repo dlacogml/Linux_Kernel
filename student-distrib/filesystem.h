@@ -41,7 +41,7 @@ typedef struct data_block {
 
 int32_t file_open(const uint8_t* filename);
 int32_t file_close(int32_t fd);
-int32_t file_read(int32_t fd, void* buf, int32_t nbytes);
+int32_t file_read(uint32_t inode_num, uint32_t position, void* buf, int32_t nbytes);
 int32_t file_write(int32_t fd, const void* buf, int32_t nbytes);
 
 int32_t dir_open(const uint8_t* filename);
