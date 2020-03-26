@@ -59,8 +59,7 @@ void handler40(){
     test_interrupts();      // checks if the rtc works
     outb(RTC_C, RTC_PORT);	// set index to register A, disable NMI
     inb(RTC_DATA);		    // retrieve rtc_data
-    send_eoi(8);            // end of interrupt
-    
+    send_eoi(RTC_IRQ);            // end of interrupt
     sti();
 }
 

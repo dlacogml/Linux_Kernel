@@ -162,8 +162,10 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable rtc interrupt
     rtc_init();
     //set the rtc rate
-    unsigned char rate = 15; // rtc rate: between 3 and 15
-    rtc_set_rate(rate);
+    // unsigned char rate = 15; // rtc rate: between 3 and 15
+    // rtc_set_rate(rate);
+    int freq = 2;
+    rtc_write(0,&freq,0);
     sti();
 
 
