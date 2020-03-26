@@ -22,17 +22,10 @@ typedef struct inode {
     int32_t data_block_num[1023];
 } inode_t;
 
-typedef struct boot_block {
-    int32_t dir_count;
-    int32_t inode_count;
-    int32_t data_count;
-    int8_t reserved[52];
-    dentry_t dir_entries[63];
 
-} boot_block_t;
 
-int32_t file_open(const uint8_t* filename);
-int32_t file_close(int32_t fd);
+int32_t file_open();
+int32_t file_close();
 int32_t file_read();
 int32_t file_write();
 
