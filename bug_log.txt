@@ -35,3 +35,10 @@ Bug #7:
     Problem: our paging wasn't working properly because it wouldn't print out the "Enabling Interrupts" after initializing paging
     What was the issue: we were bit shifting the VIDEO (page 0xB8000) by 12 when we didn't need to
     What we did: we got rid of the bit shift 12 and it worked
+
+Checkpoint 2 bugs:
+
+Bug #1:
+    Problem: verylargetextwithverylongname.txt doesn't print out properly for dir_read
+    What was the issue: WE DON'T KNOW YET
+    What we did: HAVEN'T DONE IT YET
