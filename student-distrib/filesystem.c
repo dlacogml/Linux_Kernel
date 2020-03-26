@@ -13,12 +13,14 @@ inode_t* inodes;
 boot_block_t* boot_block;
 data_block_t* data_blocks;
 int flag;
+int dir_index;
 
 void init_filesystem(){
     boot_block = (boot_block_t*) filesys_start;
     inodes = (inode_t*) (filesys_start + sizeof(boot_block_t));
     data_blocks = (data_block_t*) (filesys_start + sizeof(boot_block_t) + sizeof(inode_t) * boot_block->inode_count);
     flag = 0;
+    dir_index = 0;
 }
 
 /* file_open
@@ -48,8 +50,8 @@ int32_t file_close(int32_t fd) {
     return -1;
 }
 
-int32_t file_read(int32_t fd, void* buf, int32_t nbytes) {
-
+int32_t file_read(uint32_t inode_num, uint32_t position, void* buf, int32_t nbytes) {
+    return read_data(inode_num, position, buf, nbytes);
 }
 
 int32_t file_write(int32_t fd, const void* buf, int32_t nbytes) {
@@ -72,7 +74,22 @@ int32_t dir_close(int32_t fd) {
     return 0;
 }
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes) {
+    uint8_t* buffer = (uint8_t*) buf;
+    dentry_t dentry;
+    if (read_dentry_by_index(dir_index, &dentry) == -1){
+        return 0;
+    }
+    int num_copied = 0;
+    int filename_index = 0;
+    while (dentry.filename[filename_index] != '\0' && num_copied < nbytes){
+        *buffer = dentry.filename[filename_index];
+        buffer++;
+        num_copied++;
+        filename_index++;
+    }
 
+    dir_index++;
+    return num_copied;
 }
 
 int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes) {
@@ -94,17 +111,16 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
 }
 
 int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry) {
-    int i;
-    /* search for inode index in dentry list, then copy all fields if found, else return -1 */
-    for (i = 0; i < boot_block->dir_count; i++){
-        if (boot_block->dir_entries[i].inode_num == index){
-            strcpy(dentry->filename, boot_block->dir_entries[i].filename);
-            dentry->filetype = boot_block->dir_entries[i].filetype;
-            dentry->inode_num = boot_block->dir_entries[i].inode_num;
-            return 0;
-        }
+    /* check for valid index */
+    if (index >= boot_block->dir_count || index < 0){
+        return -1;
     }
-    return -1;
+
+    /* copy all fields */
+    strcpy(dentry->filename, boot_block->dir_entries[index].filename);
+    dentry->filetype = boot_block->dir_entries[index].filetype;
+    dentry->inode_num = boot_block->dir_entries[index].inode_num;
+    return 0;
 }
 
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length) {
