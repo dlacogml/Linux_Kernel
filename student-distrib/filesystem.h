@@ -9,6 +9,9 @@
 #include "lib.h"
 
 #define FILENAME_LENGTH     32
+#define BLOCK_SIZE          4096
+#define EOF                 -1
+
 int32_t* filesys_start;
 
 typedef struct dentry {
