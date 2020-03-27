@@ -222,6 +222,18 @@ int test_dir_read(){
 
 }
 
+int test_file_read(){
+    uint8_t buf[1000];
+    if (file_open("frame1.txt") == 0){
+        int num_bytes = file_read(0, buf, 1000);
+        int i;
+        for (i = 0; i < num_bytes; i++){
+            putc(buf[i]);
+        }
+        return PASS;
+    }
+    return FAIL;
+}
 
 /*
  * launch_tests_checkpoint_1()
@@ -248,19 +260,9 @@ void launch_tests_checkpoint_1(){
     // TEST_OUTPUT("simd_check_test", simd_check_test());
     // TEST_OUTPUT("system_call_test", system_call_test());
 	// launch your tests here
-    // dentry_t dentry;
-    // read_dentry_by_name("frame0.txt", &dentry);
-    // printf("%s\n", dentry.filename);
-    // printf("%d\n", dentry.inode_num);
-    uint8_t buf[1000];
-    if (file_open("frame1.txt") == 0){
-        int num_bytes = file_read(0, buf, 1000);
-        int i;
-        for (i = 0; i < num_bytes; i++){
-            putc(buf[i]);
-        }
-    }
 
+
+    TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
         
 
