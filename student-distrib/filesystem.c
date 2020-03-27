@@ -4,9 +4,7 @@
  * 
  */
 
-#include "lib.h"
 #include "filesystem.h"
-#include "i8259.h"
 
 
 inode_t* inodes;

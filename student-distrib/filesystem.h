@@ -15,8 +15,10 @@
 #define FILE_CODE           2
 #define DIR_CODE            1
 
+/* starting address for filesystem */
 int8_t* filesys_start;
 
+/* struct for a directory entry */
 typedef struct dentry {
     uint8_t filename[FILENAME_LENGTH];
     int32_t filetype;
@@ -24,11 +26,13 @@ typedef struct dentry {
     int8_t reserved[24];
 } dentry_t;
 
+/* struct for inode */
 typedef struct inode {
     int32_t length;
     int32_t data_block_num[1023];
 } inode_t;
 
+/* struct for boot block */
 typedef struct boot_block {
     int32_t dir_count;
     int32_t inode_count;
@@ -37,11 +41,12 @@ typedef struct boot_block {
     dentry_t dir_entries[63];
 } boot_block_t;
 
+/* struct for data block */
 typedef struct data_block {
     int8_t byte[4096];
 } data_block_t;
 
-
+/* all functions for filesystems, function interfaces in .c file */
 int32_t file_open(const uint8_t* filename);
 int32_t file_close(int32_t fd);
 int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes);

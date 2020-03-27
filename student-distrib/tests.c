@@ -205,11 +205,23 @@ int system_call_test(){
 }
 
 /* Checkpoint 2 tests */
+
+/*
+ * test_dir_read()
+ * Description: tests the dir read function by listing all dentries
+ */
 int test_dir_read(){
-    uint8_t buf[32];
+    uint8_t buf[FILENAME_LENGTH];
     int cnt;
-    if (dir_open(".") == 0){
-        while (0 != (cnt = dir_read (2, buf, 32))) {
+
+    /* directory name */
+    int8_t* filename = ".";
+
+    /* check if valid directory */
+    if (dir_open((uint8_t*)filename) == 0){
+
+        /* print each filename */
+        while (0 != (cnt = dir_read (0, buf, FILENAME_LENGTH))) {
             int i;
             for (i = 0; i < cnt; i++){
                 putc(buf[i]);
@@ -222,11 +234,27 @@ int test_dir_read(){
 
 }
 
+/*
+ * test_file_read()
+ * Description: tests the file read function by read a file
+ */
 int test_file_read(){
-    uint8_t buf[10000];
-    if (file_open("frame0.txt") == 0){
-        int num_bytes = file_read(0, buf, 10000);
+    int32_t buf_length = 10000; // length of buffer for test
+
+    uint8_t buf[buf_length];
+
+    /* file name */
+    int8_t* filename = "frame0.txt";
+
+    /* check if valid file */
+    if (file_open((uint8_t*)filename) == 0){
+
+        /* read from file */
+        int num_bytes = file_read(0, buf, buf_length);
+
         int i;
+
+        /* print file to console */
         for (i = 0; i < num_bytes; i++){
             putc(buf[i]);
         }
