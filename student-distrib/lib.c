@@ -46,6 +46,31 @@ void backspace(void)
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
 }
+
+void scroll(void){
+    if (screen_y == NUM_ROWS - 1){
+        // move all previous lines up
+        int i;
+        int j;
+        for (j = 1; j < NUM_ROWS; j++){
+            for (i = 0; i < NUM_COLS; i++){
+                *(uint8_t *)(video_mem + ((NUM_COLS * (j - 1) + i) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * j + i) << 1));
+                *(uint8_t *)(video_mem + ((NUM_COLS * (j - 1) + i) << 1) + 1) = ATTRIB;
+            }
+        }
+
+        // create new line
+        for (i = 0; i < NUM_COLS; i++){
+            *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = ATTRIB;
+        }
+        // place cursor at beginning of new line
+        screen_x = 0;
+    }
+
+}
+
+
 /* Standard printf().
  * Only supports the following format strings:
  * %%  - print a literal '%' character
