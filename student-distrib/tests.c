@@ -263,42 +263,49 @@ int test_file_read(){
     return FAIL;
 }
 
+int terminal_test()
+{
+    uint8_t buf[4];
+    while(1)
+    {
+        int a = terminal_read(0, buf, 4);
+        printf(" bytes read: %d ", a);
+        terminal_write(0, buf, a);
+    }
+}
 /*
  * launch_tests_checkpoint_1()
  * 
  * Description: Launches tests for the 1st checkpoint
  */
-void launch_tests_checkpoint_1(){
-	// TEST_OUTPUT("idt_test", idt_test());
-    // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
-    // TEST_OUTPUT("breakpoint_test", breakpoint_test());
-    // TEST_OUTPUT("overflow_test", overflow_test()); 
-    // TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); 
-    // TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
-    // TEST_OUTPUT("device_not_available_test", device_not_available_test()); 
-    // TEST_OUTPUT("double_fault_test", double_fault_test()); 
-    // TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
-    // TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
-    // TEST_OUTPUT("stack_segment_test", stack_segment_test());
-    // TEST_OUTPUT("general_protection_test", general_protection_test());
-    // TEST_OUTPUT("page_fault_test", page_fault_test());
-    // TEST_OUTPUT("math_fault_test", math_fault_test());
-    // TEST_OUTPUT("alignment_check_test", alignment_check_test());
-    // TEST_OUTPUT("machine_check_test", machine_check_test());
-    // TEST_OUTPUT("simd_check_test", simd_check_test());
-    // TEST_OUTPUT("system_call_test", system_call_test());
-	// launch your tests here
-
-
-    // TEST_OUTPUT("test_file_read", test_file_read());
-    TEST_OUTPUT("test_dir_read", test_dir_read());
-        
-
-    
-
-
+void launch_tests_checkpoint_1()
+{
+	TEST_OUTPUT("idt_test", idt_test());
+    TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
+    TEST_OUTPUT("breakpoint_test", breakpoint_test());
+    TEST_OUTPUT("overflow_test", overflow_test()); 
+    TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); 
+    TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
+    TEST_OUTPUT("device_not_available_test", device_not_available_test()); 
+    TEST_OUTPUT("double_fault_test", double_fault_test()); 
+    TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
+    TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
+    TEST_OUTPUT("stack_segment_test", stack_segment_test());
+    TEST_OUTPUT("general_protection_test", general_protection_test());
+    TEST_OUTPUT("page_fault_test", page_fault_test());
+    TEST_OUTPUT("math_fault_test", math_fault_test());
+    TEST_OUTPUT("alignment_check_test", alignment_check_test());
+    TEST_OUTPUT("machine_check_test", machine_check_test());
+    TEST_OUTPUT("simd_check_test", simd_check_test());
+    TEST_OUTPUT("system_call_test", system_call_test());
 }
 /* Checkpoint 2 tests */
+void launch_tests_checkpoint_2()
+{
+    // TEST_OUTPUT("test_file_read", test_file_read());
+    // TEST_OUTPUT("test_dir_read", test_dir_read());
+    TEST_OUTPUT("terminal_tets", terminal_test());
+}
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

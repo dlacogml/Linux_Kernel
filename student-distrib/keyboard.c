@@ -15,7 +15,6 @@ static volatile uint8_t NEWLINE_FLAG = 0;
 static uint32_t buf_idx = 0;
 static uint32_t read_idx = 0; //how many times we have read the string
 static uint8_t  keyboard_buffer[BUF_SIZE];
-static uint8_t  NN_BUFFER[1] = {'\n'};
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -199,33 +198,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         return -1;
     //wait until the newline signal is triggered
     while(!NEWLINE_FLAG);
-    //reset the newline flag
     cli();
-    NEWLINE_FLAG = 0;
-    // if(nbytes < buf_idx+1)
-    // {
-    //     /*nbytes < actual size*/
-    //     memcpy(buf, keyboard_buffer, nbytes);
-    //     // clear_buffer();
-    //     sti();
-    //     return nbytes;
-    // }
-    // else if(nbytes == buf_idx+1)
-    // {
-    //     /*perfect situation*/
-    //     memcpy(buf, keyboard_buffer, nbytes);
-    //     clear_buffer();
-    //     sti();
-    //     return nbytes;
-    // }
-    // else if(nbytes > buf_idx+1)
-    // {
-    //     /*nbytes > actual size*/
-    //     memcpy(buf, keyboard_buffer, buf_idx+1);
-    //     clear_buffer();
-    //     sti();
-    //     return buf_idx+1;
-    // }
     uint32_t i;
     uint32_t count = 0;
     uint8_t *buffer = (uint8_t *)buf;
@@ -236,6 +209,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
       if(buffer[i] == '\n')
       {
         clear_buffer();
+        NEWLINE_FLAG = 0;
         sti();
         return count;
       }

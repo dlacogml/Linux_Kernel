@@ -3,5 +3,6 @@
 
 // test launcher
 void launch_tests_checkpoint_1();
+void launch_tests_checkpoint_2();
 
 #endif /* TESTS_H */
