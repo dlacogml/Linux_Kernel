@@ -78,7 +78,6 @@ void handler33()
         NEWLINE_FLAG = 1;
         keyboard_buffer[buf_idx] = '\n'; 
         putc('\n');
-        // scroll();
         send_eoi(KEYBOARD_IRQ);
         return;
       }
