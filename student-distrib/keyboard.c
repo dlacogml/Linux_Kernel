@@ -77,7 +77,7 @@ void handler33()
       {
         NEWLINE_FLAG = 1;
         keyboard_buffer[buf_idx] = '\n'; 
-        // putc('\n');
+        putc('\n');
         // scroll();
         send_eoi(KEYBOARD_IRQ);
         return;
@@ -170,28 +170,59 @@ void init_keyboard()
 {
     enable_irq(KEYBOARD_IRQ);
 }
-
+/*
+ * void clear_buffer()
+ * interface: clear the key_board buffer and reset the buffer index and read index
+ * input: none
+ * output: one
+ * return value: 0
+ * side effects: clear the buff index
+ */
 void clear_buffer()
 {
   uint32_t i = 0;
-  for (i = 0; i < 128; i++)
+  for (i = 0; i < BUF_SIZE; i++)
   {
-    keyboard_buffer[i] = 0;
+    keyboard_buffer[i] = 0; //clearing the buffer
   }
+  /* reseting the index */
   buf_idx = 0;
   read_idx = 0;
 }
-
+/*
+ * void terminal_open(const uint8_t* filename)
+ * interface: do nothing
+ * input: filename
+ * output: one
+ * return value: 0
+ * side effects: nothing
+ */
 uint32_t terminal_open(const uint8_t* filename)
 {
-    //do nothing
-    return 0;
+    return 0;  //do nothing
 }
+/*
+ * void terminal_open(int32_t fd)
+ * interface: do nothing
+ * input: fd
+ * output: one
+ * return value: 0
+ * side effects: nothing
+ */
 uint32_t terminal_close(int32_t fd)
 {
-    //do nothing
-    return 0;
+    return 0; //do nothing
 }
+/*
+ * void terminal_read(int32_t fd, void* buf, int32_t nbytes)
+ * interface: wait until enter is pressed then read the the number of bytes into the buf
+ * input: fd : not used
+ *        buf: user-level buffer to copy to
+ *        
+ * output: one
+ * return value: 0
+ * side effects: nothing
+ */
 uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
     if(nbytes < 1 || buf == NULL)
@@ -199,7 +230,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     //wait until the newline signal is triggered
     while(!NEWLINE_FLAG);
     cli();
-    uint32_t i;
+    uint32_t i; //loop counter
     uint32_t count = 0;
     uint8_t *buffer = (uint8_t *)buf;
     for(i = 0; i < nbytes && keyboard_buffer[i] != 0; i++)
