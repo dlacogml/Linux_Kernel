@@ -25,6 +25,10 @@ void clear(void) {
     screen_y = 0;
 }
 
+/* void backspace(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: delete character */
 void backspace(void)
 {
         //when it's at the top left corner, then do nothing
@@ -33,12 +37,12 @@ void backspace(void)
     else if(screen_x == 0) //when go back to the previous line
     {   
         screen_y--;
-        screen_x = 80;
+        screen_x = NUM_COLS;
         uint32_t i = NUM_COLS * screen_y + screen_x;
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     } 
-    else 
+    else // regular backspace
     {   
         screen_x--;
         uint32_t i = NUM_COLS * screen_y + screen_x;
@@ -47,7 +51,12 @@ void backspace(void)
     }
 }
 
+/* void scroll(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: scrolls screen up */
 void scroll(void){
+    /* check if at bottom of screen */
     if (screen_y == NUM_ROWS){
         /* move all previous lines up one */
         int i;
@@ -217,10 +226,13 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
+    /* new line character case */
     if(c == '\n' || c == '\r') {
         screen_y++;
         screen_x = 0;
         scroll();
+
+    /* if screen_x is at the end of row, go to next row */
     } else if (screen_x == NUM_COLS){
         screen_y++;
         screen_x = 0;
@@ -228,6 +240,8 @@ void putc(uint8_t c) {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
+
+    /* else just place character in video memory */
     } else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
