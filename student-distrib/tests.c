@@ -205,16 +205,21 @@ int system_call_test(){
 }
 
 /* Checkpoint 2 tests */
-void test_dir_read(){
+int test_dir_read(){
     uint8_t buf[32];
     int cnt;
-    while (0 != (cnt = dir_read (2, buf, 32))) {
-        int i;
-        for (i = 0; i < cnt; i++){
-            putc(buf[i]);
+    if (dir_open(".") == 0){
+        while (0 != (cnt = dir_read (2, buf, 32))) {
+            int i;
+            for (i = 0; i < cnt; i++){
+                putc(buf[i]);
+            }
+            putc('\n');
         }
-        putc('\n');
+        return PASS;
     }
+    return FAIL;
+
 }
 
 
@@ -245,11 +250,20 @@ void launch_tests_checkpoint_1(){
 	// launch your tests here
     // dentry_t dentry;
     // read_dentry_by_name("frame0.txt", &dentry);
-    // uint8_t buf[1000];
-    // file_read(dentry.inode_num, 0, buf, 1000);
-    if (dir_open(".") == 0){
-        test_dir_read();
+    // printf("%s\n", dentry.filename);
+    // printf("%d\n", dentry.inode_num);
+    uint8_t buf[10];
+    if (file_open("frame0.txt") == 0){
+        int num_bytes = file_read(0, buf, 10);
+        int i;
+        for (i = 0; i < num_bytes; i++){
+            putc(buf[i]);
+        }
     }
+
+    // TEST_OUTPUT("test_dir_read", test_dir_read());
+        
+
     
 
 
