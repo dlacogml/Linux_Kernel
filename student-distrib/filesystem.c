@@ -14,11 +14,12 @@ boot_block_t* boot_block;
 data_block_t* data_blocks;
 int file_pos;
 int dir_index;
+int inode_num;
 
 void init_filesystem(){
     /* init bootblock */
     boot_block = (boot_block_t*) filesys_start;
-
+    printf("%d\n", sizeof(boot_block_t));
     /* init inode array */
     inodes = (inode_t*) (filesys_start + sizeof(boot_block_t));
 
@@ -33,12 +34,14 @@ void init_filesystem(){
  * SIDE EFFECT: 
  */
 int32_t file_open(const uint8_t* filename) {
-    dentry_t* dentry;
+    dentry_t dentry;
     /* check if file exists */
-    if (read_dentry_by_name(filename, dentry) == 0){
+    if (read_dentry_by_name(filename, &dentry) == 0){
         /* check if valid file */
-        if (dentry->filetype == 2 && dentry->inode_num < boot_block->inode_count && dentry->inode_num >= 0){
+        if (dentry.filetype == 2){
             file_pos = 0;
+            inode_num = dentry.inode_num;
+            printf("%d %d %s\n", file_pos, inode_num, dentry.filename);
             return 0;
         }
     }
@@ -49,15 +52,10 @@ int32_t file_close(int32_t fd) {
     return 0;
 }
 
-int32_t file_read(uint32_t inode_num, uint32_t position, uint8_t* buf, int32_t nbytes) {
+int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     /* read data from file and store in buf */
-    int num_bytes = read_data(inode_num, position, buf, nbytes);
+    int num_bytes = read_data(inode_num, file_pos, buf, nbytes);
     file_pos = file_pos + num_bytes;
-    int i;
-    for (i = 0; i < nbytes; i++){
-        putc(*buf);
-        buf++;
-    }
     
     return num_bytes;
 }
@@ -121,7 +119,7 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
     int i;
     /* search for file name in dentry list, then copy all fields if found, else return -1 */
     for (i = 0; i < boot_block->dir_count; i++){
-        if (boot_block->dir_entries[i].filename == fname){
+        if (strncmp(boot_block->dir_entries[i].filename, fname, strlen(fname)) == 0){
             strcpy(dentry->filename, boot_block->dir_entries[i].filename);
             dentry->filetype = boot_block->dir_entries[i].filetype;
             dentry->inode_num = boot_block->dir_entries[i].inode_num;
@@ -145,7 +143,8 @@ int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry) {
 }
 
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length) {
-
+    printf("Reading Data");
+    printf("%d %d\n", inode, boot_block->inode_count);
     /* check for valid inode index */
     if (inode >= boot_block->inode_count || inode < 0){
         return -1;
@@ -158,7 +157,8 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     int32_t data_block_idx = offset / BLOCK_SIZE;
 
     /* check for valid data block */
-    if (data_block_idx >= file_inode.length){
+    printf("%d %d\n", offset, file_inode.length);
+    if (offset >= file_inode.length){
         return -1;
     }
 
@@ -171,10 +171,12 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     /* number of bytes copied already */
     int num_copied = 0;
 
+    printf("Data offset:%d Num Copied:%d Offset:%d Length:%d File length %d", data_offset, num_copied, offset, length, file_inode.length);
     /* loop to copy bytes, stop when num_copied = length */
     while (num_copied < length){
+
         /* if end of file, break */
-        if (block->byte[data_offset] == EOF){
+        if (offset + num_copied == file_inode.length){
             break;
         }
 
@@ -189,7 +191,8 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
         buf++;
         data_offset++;
         num_copied++;
+        printf("Num_copied:%d data_offset:%d last char: %c", num_copied, data_offset, *(buf - 1));
     }
-
+    printf("%d", num_copied);
     return num_copied;
 }
