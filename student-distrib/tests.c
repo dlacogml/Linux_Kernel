@@ -290,8 +290,8 @@ void launch_tests_checkpoint_1(){
 	// launch your tests here
 
 
-    TEST_OUTPUT("test_file_read", test_file_read());
-    // TEST_OUTPUT("test_dir_read", test_dir_read());
+    // TEST_OUTPUT("test_file_read", test_file_read());
+    TEST_OUTPUT("test_dir_read", test_dir_read());
         
 
     

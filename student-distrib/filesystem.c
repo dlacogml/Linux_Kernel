@@ -6,7 +6,7 @@
 
 #include "filesystem.h"
 
-
+/* global variables/structures */
 inode_t* inodes;
 boot_block_t* boot_block;
 data_block_t* data_blocks;

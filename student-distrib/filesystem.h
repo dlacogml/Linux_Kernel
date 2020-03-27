@@ -14,6 +14,10 @@
 #define EOS                 0
 #define FILE_CODE           2
 #define DIR_CODE            1
+#define NUM_DATA_BLOCKS     1023
+#define NUM_DENTRIES        63
+#define NUM_DENTRY_RESERVED 24
+#define NUM_BOOT_RESERVED   52
 
 /* starting address for filesystem */
 int8_t* filesys_start;
@@ -23,13 +27,13 @@ typedef struct dentry {
     uint8_t filename[FILENAME_LENGTH];
     int32_t filetype;
     int32_t inode_num;
-    int8_t reserved[24];
+    int8_t reserved[NUM_DENTRY_RESERVED];
 } dentry_t;
 
 /* struct for inode */
 typedef struct inode {
     int32_t length;
-    int32_t data_block_num[1023];
+    int32_t data_block_num[NUM_DATA_BLOCKS];
 } inode_t;
 
 /* struct for boot block */
@@ -37,13 +41,13 @@ typedef struct boot_block {
     int32_t dir_count;
     int32_t inode_count;
     int32_t data_count;
-    int8_t reserved[52];
-    dentry_t dir_entries[63];
+    int8_t reserved[NUM_BOOT_RESERVED];
+    dentry_t dir_entries[NUM_DENTRIES];
 } boot_block_t;
 
 /* struct for data block */
 typedef struct data_block {
-    int8_t byte[4096];
+    int8_t byte[BLOCK_SIZE];
 } data_block_t;
 
 /* all functions for filesystems, function interfaces in .c file */
