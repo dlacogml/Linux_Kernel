@@ -223,9 +223,9 @@ int test_dir_read(){
 }
 
 int test_file_read(){
-    uint8_t buf[1000];
-    if (file_open("frame1.txt") == 0){
-        int num_bytes = file_read(0, buf, 1000);
+    uint8_t buf[10000];
+    if (file_open("cat") == 0){
+        int num_bytes = file_read(0, buf, 10000);
         int i;
         for (i = 0; i < num_bytes; i++){
             putc(buf[i]);
