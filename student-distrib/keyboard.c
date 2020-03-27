@@ -12,9 +12,9 @@ static volatile uint8_t CONTROL_PRESSED = 0;
 static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
 static volatile uint8_t NEWLINE_FLAG = 0;
-static uint32_t buf_idx = 0;
-static uint32_t read_idx = 0; //how many times we have read the string
-static uint8_t  keyboard_buffer[BUF_SIZE];
+static uint32_t buf_idx = 0;                  //current index of the keyboard buffer
+static uint32_t read_idx = 0;                 //how many times we have read the string
+static uint8_t  keyboard_buffer[BUF_SIZE];    //buffer for the keyboard string
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -75,10 +75,9 @@ void handler33()
       //check if enter is presssed, scancode for enter is 28
       if(key == 28 || buf_idx == 127)
       {
-        NEWLINE_FLAG = 1;
-        keyboard_buffer[buf_idx] = '\n'; 
+        NEWLINE_FLAG = 1; //set the newline flag to be 1
+        keyboard_buffer[buf_idx] = '\n'; //append newline at the end
         putc('\n');
-        // scroll();
         send_eoi(KEYBOARD_IRQ);
         return;
       }
@@ -174,7 +173,7 @@ void init_keyboard()
  * void clear_buffer()
  * interface: clear the key_board buffer and reset the buffer index and read index
  * input: none
- * output: one
+ * output: none
  * return value: 0
  * side effects: clear the buff index
  */
@@ -205,7 +204,7 @@ uint32_t terminal_open(const uint8_t* filename)
  * void terminal_open(int32_t fd)
  * interface: do nothing
  * input: fd
- * output: one
+ * output: none
  * return value: 0
  * side effects: nothing
  */
@@ -215,13 +214,14 @@ uint32_t terminal_close(int32_t fd)
 }
 /*
  * void terminal_read(int32_t fd, void* buf, int32_t nbytes)
- * interface: wait until enter is pressed then read the the number of bytes into the buf
+ * interface: wait until enter is pressed then read the the number of bytes from key board buffer into the buf
  * input: fd : not used
  *        buf: user-level buffer to copy to
- *        
- * output: one
- * return value: 0
- * side effects: nothing
+ *        nbytes: number of bytes to copy to
+ * output: none
+ * return value: success - number of bytes read
+ *               fail    - -1
+ * side effects: read the the number of bytes into the buf
  */
 uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
@@ -231,37 +231,50 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     while(!NEWLINE_FLAG);
     cli();
     uint32_t i; //loop counter
-    uint32_t count = 0;
-    uint8_t *buffer = (uint8_t *)buf;
+    uint32_t count = 0; //number of bytes read
+    uint8_t *buffer = (uint8_t *)buf; //cast the buffer
     for(i = 0; i < nbytes && keyboard_buffer[i] != 0; i++)
     {
-      buffer[i] = keyboard_buffer[read_idx * nbytes+i];
-      count++;
+      buffer[i] = keyboard_buffer[read_idx * nbytes+i]; //copy key board buffer to buf
+      count++; //increment the count every time a byte is read into buf
+      /*when we reach the end*/
       if(buffer[i] == '\n')
       {
         clear_buffer();
-        NEWLINE_FLAG = 0;
+        NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
         sti();
         return count;
       }
     }
+    //increment the number of times a keyboard string has being read
     read_idx++;
-    //same 
     sti();
     return count;
 }
-
+/*
+ * void terminal_write(int32_t fd, const void* buf, int32_t nbytes)
+ * interface: write the the number of bytes from input buffer on screen
+ * input: fd : not used
+ *        buf: user-level buffer to write
+ *        nbytes: number of bytes to write
+ * output: output buf on the screen
+ * return value: success - number of bytes write
+ *               fail    - -1
+ * side effects: write the number of bytes from the buffer on screen
+ */
 uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 {
+    /*check if buf is NULL*/
     if(buf == NULL)
         return -1;
-    uint32_t i;
-    uint8_t * a = (uint8_t*) buf;
+    uint32_t i; //loop counter
+    uint8_t * a = (uint8_t*) buf; //cast the void ptr
     for(i = 0; i < nbytes; i++)
     {
+        /* when we have reach the end of the buf*/
         if(a[i] == 0)
             return i;
-        putc(a[i]);
+        putc(a[i]); //output char on screen
     }
     return nbytes;
 }
