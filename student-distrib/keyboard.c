@@ -6,16 +6,6 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
-#define MAP_SIZE 128     //the size of keyboard map
-#define KEYBOARD_IRQ 1   //the irq num for keybaord 
-#define CAPS_IDX 58      //index of caps
-#define CAPS_OFFSET 32  //offset to make print out the caps char
-
-static volatile unsigned CAPS_PRESSED = 0;
-static volatile unsigned SHIFT_PRESSED = 0;
-static volatile unsigned CONTROL_PRESSED = 0;
-static volatile unsigned ALT_PRESSED = 0;
-static volatile unsigned TAB_PRESSED = 0;
 
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
@@ -118,7 +108,14 @@ void handler33()
     // printf("%d",key);
 
     /* checking for any specific keys being released */
-
+    //check if enter is presssed, scancode for enter is 28
+    if(key == 28 || buf_idx == 126)
+    {
+      NEWLINE_FLAG = 1;
+      // printf("111");
+      // send_eoi(KEYBOARD_IRQ);
+      // return;
+    }
     //when left shift and right shift is released
     if((key == -86 || key == -74) && SHIFT_PRESSED == 1) //scancodes of releasing left shift and right shift are -86, -74
       SHIFT_PRESSED = 0; //set shift pressed to 0
@@ -159,13 +156,20 @@ void handler33()
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
-        clear();
+        buf_idx = 0;
+        clear_buffer(); //clear th buffer 
+        clear();        //clear the screen
         send_eoi(KEYBOARD_IRQ);
         return;
       }
       //check if backspace is pressed
       if (key == 14)
       {
+        if(buf_idx) //check if the index is 0
+        {
+          keyboard_buffer[buf_idx] = 0;
+          buf_idx--;
+        } 
         backspace();
         send_eoi(KEYBOARD_IRQ);
         return;
@@ -183,18 +187,30 @@ void handler33()
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
+          keyboard_buffer[buf_idx] = sh_ascii_val;
+          buf_idx++;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
+          keyboard_buffer[buf_idx] = ascii_val;
+          buf_idx++;
         }
       }
       else if(ascii_val != 0) //if the input is not a character 
       {
         if(SHIFT_PRESSED)
+        {
           putc(sh_ascii_val);
+          keyboard_buffer[buf_idx] = sh_ascii_val;
+          buf_idx++;
+        }
         else
+        {
           putc(ascii_val);
+          keyboard_buffer[buf_idx] = ascii_val;
+          buf_idx++;
+        }
       }
     }
     send_eoi(KEYBOARD_IRQ); //end of interrupt
@@ -213,3 +229,11 @@ void init_keyboard()
 }
 
 
+void clear_buffer()
+{
+  uint32_t i = 0;
+  for (i = 0; i < 129; i++)
+  {
+    keyboard_buffer[i] = 0;
+  }
+}
