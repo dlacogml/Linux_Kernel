@@ -205,6 +205,17 @@ int system_call_test(){
 }
 
 /* Checkpoint 2 tests */
+void test_dir_read(){
+    uint8_t buf[32];
+    int cnt;
+    while (0 != (cnt = dir_read (2, buf, 32))) {
+        int i;
+        for (i = 0; i < cnt; i++){
+            putc(buf[i]);
+        }
+        putc('\n');
+    }
+}
 
 
 /*
@@ -232,8 +243,25 @@ void launch_tests_checkpoint_1(){
     // TEST_OUTPUT("simd_check_test", simd_check_test());
     // TEST_OUTPUT("system_call_test", system_call_test());
 	// launch your tests here
-    uint8_t* buf;
-    file_read(2, 0, buf, 32);
+    // dentry_t dentry = boot_block->
+    // uint8_t buf[32];
+    // // file_read(1, 0, buf, 32);
+    // int cnt;
+    // while (0 != (cnt = dir_read (2, buf, 32))) {
+    //     // if (-1 == cnt) {
+	//     //     ece391_fdputs (1, (uint8_t*)"directory entry read failed\n");
+	//     // }
+    //     int i;
+    //     for (i = 0; i < cnt; i++){
+    //         putc(buf[i]);
+    //     }
+    //     putc('\n');
+	//     // buf[cnt] = '\n';
+
+	//     // if (-1 == ece391_write (1, buf, cnt + 1))
+	//     //     return 3;
+    // }
+    test_dir_read();
 }
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
