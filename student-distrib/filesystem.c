@@ -19,7 +19,7 @@ int inode_num;
 void init_filesystem(){
     /* init bootblock */
     boot_block = (boot_block_t*) filesys_start;
-    printf("%d\n", sizeof(boot_block_t));
+    // printf("%d\n", sizeof(boot_block_t));
     /* init inode array */
     inodes = (inode_t*) (filesys_start + sizeof(boot_block_t));
 
@@ -41,7 +41,7 @@ int32_t file_open(const uint8_t* filename) {
         if (dentry.filetype == 2){
             file_pos = 0;
             inode_num = dentry.inode_num;
-            printf("%d %d %s\n", file_pos, inode_num, dentry.filename);
+            // printf("%d %d %s\n", file_pos, inode_num, dentry.filename);
             return 0;
         }
     }
@@ -143,8 +143,8 @@ int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry) {
 }
 
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length) {
-    printf("Reading Data");
-    printf("%d %d\n", inode, boot_block->inode_count);
+    // printf("Reading Data");
+    // printf("%d %d\n", inode, boot_block->inode_count);
     /* check for valid inode index */
     if (inode >= boot_block->inode_count || inode < 0){
         return -1;
@@ -157,7 +157,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     int32_t data_block_idx = offset / BLOCK_SIZE;
 
     /* check for valid data block */
-    printf("%d %d\n", offset, file_inode.length);
+    // printf("%d %d\n", offset, file_inode.length);
     if (offset >= file_inode.length){
         return -1;
     }
@@ -171,7 +171,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     /* number of bytes copied already */
     int num_copied = 0;
 
-    printf("Data offset:%d Num Copied:%d Offset:%d Length:%d File length %d", data_offset, num_copied, offset, length, file_inode.length);
+    // printf("Data offset:%d Num Copied:%d Offset:%d Length:%d File length %d", data_offset, num_copied, offset, length, file_inode.length);
     /* loop to copy bytes, stop when num_copied = length */
     while (num_copied < length){
 
@@ -191,8 +191,8 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
         buf++;
         data_offset++;
         num_copied++;
-        printf("Num_copied:%d data_offset:%d last char: %c", num_copied, data_offset, *(buf - 1));
+        // printf("Num_copied:%d data_offset:%d last char: %c", num_copied, data_offset, *(buf - 1));
     }
-    printf("%d", num_copied);
+    // printf("%d", num_copied);
     return num_copied;
 }
