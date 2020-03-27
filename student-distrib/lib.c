@@ -48,8 +48,8 @@ void backspace(void)
 }
 
 void scroll(void){
-    if (screen_y == NUM_ROWS - 1){
-        // move all previous lines up
+    if (screen_y == NUM_ROWS){
+        /* move all previous lines up one */
         int i;
         int j;
         for (j = 1; j < NUM_ROWS; j++){
@@ -59,13 +59,15 @@ void scroll(void){
             }
         }
 
-        // create new line
+        /* create new line */
         for (i = 0; i < NUM_COLS; i++){
             *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1)) = ' ';
             *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = ATTRIB;
         }
-        // place cursor at beginning of new line
+
+        /* place cursor at beginning of new line */
         screen_x = 0;
+        screen_y = NUM_ROWS - 1;
     }
 
 }
@@ -218,12 +220,18 @@ void putc(uint8_t c) {
     if(c == '\n' || c == '\r') {
         screen_y++;
         screen_x = 0;
+        scroll();
+    } else if (screen_x == NUM_COLS){
+        screen_y++;
+        screen_x = 0;
+        scroll();
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        screen_x++;
     } else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
-        screen_x %= NUM_COLS;
-        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
 }
 
