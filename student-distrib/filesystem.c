@@ -181,8 +181,8 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
     int i;
     /* search for file name in dentry list, then copy all fields if found, else return -1 */
     for (i = 0; i < boot_block->dir_count; i++){
-        if (strncmp(boot_block->dir_entries[i].filename, fname, strlen(fname)) == 0){
-            strcpy(dentry->filename, boot_block->dir_entries[i].filename);
+        if (strncmp((int8_t*)boot_block->dir_entries[i].filename, (int8_t*)fname, strlen((int8_t*)fname)) == 0){
+            strcpy((int8_t*)dentry->filename, (int8_t*)boot_block->dir_entries[i].filename);
             dentry->filetype = boot_block->dir_entries[i].filetype;
             dentry->inode_num = boot_block->dir_entries[i].inode_num;
             return 0;
@@ -205,7 +205,7 @@ int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry) {
     }
 
     /* copy all fields */
-    strcpy(dentry->filename, boot_block->dir_entries[index].filename);
+    strcpy((int8_t*)dentry->filename, (int8_t*)boot_block->dir_entries[index].filename);
     dentry->filetype = boot_block->dir_entries[index].filetype;
     dentry->inode_num = boot_block->dir_entries[index].inode_num;
     return 0;
