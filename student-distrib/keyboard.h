@@ -7,25 +7,20 @@
 
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
+/* defined constant */
 #define KEYBOARD_DATA_REG 0x60
 #define MAP_SIZE     128     //the size of keyboard map
 #define KEYBOARD_IRQ 1       //the irq num for keybaord 
-#define CAPS_IDX     58      //index of caps
-#define CAPS_OFFSET  32      //offset to make print out the caps char
-#define BUF_SIZE     129     //maximum number of chars 127 buffer can hold + NULL + line feed
-static volatile unsigned CAPS_PRESSED = 0;
-static volatile unsigned SHIFT_PRESSED = 0;
-static volatile unsigned CONTROL_PRESSED = 0;
-static volatile unsigned ALT_PRESSED = 0;
-static volatile unsigned TAB_PRESSED = 0;
-static volatile unsigned buf_idx = 0;
-/*global flag and buffer*/
-static unsigned char keyboard_buffer[BUF_SIZE];
-static unsigned char NEWLINE_FLAG = 0;
+#define BUF_SIZE     128     //maximum number of chars 127 buffer can hold + line feed
 
-extern void clear_buffer();
-
-/* This function initializes the keyboard */
+/*function essential to keyboards*/
+void clear_buffer();
 void init_keyboard();
+
+/*function essential to terminal*/
+uint32_t terminal_open(const uint8_t* filename);
+uint32_t terminal_close(int32_t fd);
+uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes);
+uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 
 #endif

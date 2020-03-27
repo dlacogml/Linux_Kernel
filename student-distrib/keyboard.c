@@ -6,91 +6,34 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
-
+static volatile uint8_t CAPS_PRESSED = 0;
+static volatile uint8_t SHIFT_PRESSED = 0;
+static volatile uint8_t CONTROL_PRESSED = 0;
+static volatile uint8_t ALT_PRESSED = 0;
+static volatile uint8_t TAB_PRESSED = 0;
+static volatile uint8_t NEWLINE_FLAG = 0;
+static uint32_t buf_idx = 0;
+static uint8_t  keyboard_buffer[BUF_SIZE];
+static uint8_t  NN_BUFFER[1] = {'\n'};
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
-unsigned char keyboard_map[MAP_SIZE] =
+uint8_t keyboard_map[MAP_SIZE] =
 {
-    0,  27, '1', '2', '3', '4', '5', '6', '7', '8',     /* 9 */
-  '9', '0', '-', '=', '\b',     /* Backspace */
-  0,                 /* Tab */
-  'q', 'w', 'e', 'r',   /* 19 */
-  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', /* Enter key */
-    0,                  /* 29   - Control */
-  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',     /* 39 */
- '\'', '`',   0,                /* Left shift */
- '\\', 'z', 'x', 'c', 'v', 'b', 'n',                    /* 49 */
-  'm', ',', '.', '/',   0,                              /* Right shift */
-  '*',
-    0,  /* Alt */
-  ' ',  /* Space bar */
-    0,  /* Caps lock */
-    0,  /* 59 - F1 key ... > */
-    0,   0,   0,   0,   0,   0,   0,   0,
-    0,  /* < ... F10 */
-    0,  /* 69 - Num lock*/
-    0,  /* Scroll Lock */
-    0,  /* Home key */
-    0,  /* Up Arrow */
-    0,  /* Page Up */
-  '-',
-    0,  /* Left Arrow */
-    0,
-    0,  /* Right Arrow */
-  '+',
-    0,  /* 79 - End key*/
-    0,  /* Down Arrow */
-    0,  /* Page Down */
-    0,  /* Insert Key */
-    0,  /* Delete Key */
-    0,   0,   0,
-    0,  /* F11 Key */
-    0,  /* F12 Key */
-    0,  /* All other keys are undefined */
+  0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',  
+  0,'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,            
+  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\', 
+  'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, 
 };
 /*
   shift_map is a scancode table used to layout a shifted standard US keyboard
 */
-unsigned char shift_map[MAP_SIZE] =
+uint8_t shift_map[MAP_SIZE] =
 {
-    0,  27, '!', '@', '#', '$', '%', '^', '&', '*',     /* 9 */
-  '(', ')', '_', '+', '\b',     /* Backspace */
-  0,                 /* Tab */
-  'Q', 'W', 'E', 'R',   /* 19 */
-  'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n', /* Enter key */
-    0,                  /* 29   - Control */
-  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',     /* 39 */
- '\"', '~',   0,                /* Left shift */
- '\\', 'Z', 'X', 'C', 'V', 'B', 'N',                    /* 49 */
-  'M', '<', '>', '?',
-   0,                              /* Right shift */
-  '*',
-    0,  /* Alt */
-  ' ',  /* Space bar */
-    0,  /* Caps lock */
-    0,  /* 59 - F1 key ... > */
-    0,   0,   0,   0,   0,   0,   0,   0,
-    0,  /* < ... F10 */
-    0,  /* 69 - Num lock*/
-    0,  /* Scroll Lock */
-    0,  /* Home key */
-    0,  /* Up Arrow */
-    0,  /* Page Up */
-  '-',
-    0,  /* Left Arrow */
-    0,
-    0,  /* Right Arrow */
-  '+',
-    0,  /* 79 - End key*/
-    0,  /* Down Arrow */
-    0,  /* Page Down */
-    0,  /* Insert Key */
-    0,  /* Delete Key */
-    0,   0,   0,
-    0,  /* F11 Key */
-    0,  /* F12 Key */
-    0,  /* All other keys are undefined */
+  0, 27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',  
+  0,'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', 0,            
+  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~', 0, '|', 
+  'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, 
 };
 /*
  * void handler33()
@@ -105,17 +48,8 @@ unsigned char shift_map[MAP_SIZE] =
 void handler33() 
 {
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
-    // printf("%d",key);
-
     /* checking for any specific keys being released */
-    //check if enter is presssed, scancode for enter is 28
-    if(key == 28 || buf_idx == 126)
-    {
-      NEWLINE_FLAG = 1;
-      // printf("111");
-      // send_eoi(KEYBOARD_IRQ);
-      // return;
-    }
+
     //when left shift and right shift is released
     if((key == -86 || key == -74) && SHIFT_PRESSED == 1) //scancodes of releasing left shift and right shift are -86, -74
       SHIFT_PRESSED = 0; //set shift pressed to 0
@@ -138,7 +72,16 @@ void handler33()
       else {
         TAB_PRESSED = 0;
       }
-
+      //check if enter is presssed, scancode for enter is 28
+      if(key == 28 || buf_idx == 127)
+      {
+        NEWLINE_FLAG = 1;
+        keyboard_buffer[buf_idx++] = '\n'; 
+        // printf("111");
+        send_eoi(KEYBOARD_IRQ);
+        clear_buffer();
+        return;
+      }
       //when alt is pressed
       if (key == 56)
         ALT_PRESSED = 1;
@@ -166,16 +109,13 @@ void handler33()
       if (key == 14)
       {
         if(buf_idx) //check if the index is 0
-        {
-          keyboard_buffer[buf_idx] = 0;
-          buf_idx--;
-        } 
+          keyboard_buffer[buf_idx--] = 0;
         backspace();
         send_eoi(KEYBOARD_IRQ);
         return;
       }
-      //when capslock is pressed 
-      if(key == CAPS_IDX)
+      /* when capslock is pressed */
+      if(key == 58)
       {
         CAPS_PRESSED ^= 1; //caps lock is enabled
       }
@@ -187,14 +127,12 @@ void handler33()
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
-          keyboard_buffer[buf_idx] = sh_ascii_val;
-          buf_idx++;
+          keyboard_buffer[buf_idx++] = sh_ascii_val;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx] = ascii_val;
-          buf_idx++;
+          keyboard_buffer[buf_idx++] = ascii_val;
         }
       }
       else if(ascii_val != 0) //if the input is not a character 
@@ -202,14 +140,12 @@ void handler33()
         if(SHIFT_PRESSED)
         {
           putc(sh_ascii_val);
-          keyboard_buffer[buf_idx] = sh_ascii_val;
-          buf_idx++;
+          keyboard_buffer[buf_idx++] = sh_ascii_val;
         }
         else
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx] = ascii_val;
-          buf_idx++;
+          keyboard_buffer[buf_idx++] = ascii_val;
         }
       }
     }
@@ -228,12 +164,71 @@ void init_keyboard()
     enable_irq(KEYBOARD_IRQ);
 }
 
-
 void clear_buffer()
 {
   uint32_t i = 0;
-  for (i = 0; i < 129; i++)
+  for (i = 0; i < 128; i++)
   {
     keyboard_buffer[i] = 0;
   }
+}
+
+uint32_t terminal_open(const uint8_t* filename)
+{
+    //do nothing
+    return 0;
+}
+uint32_t terminal_close(int32_t fd)
+{
+    //do nothing
+    return 0;
+}
+uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
+{
+    if(nbytes < 1 || buf == NULL)
+        return -1;
+    //wait until the newline signal is triggered
+    while(!NEWLINE_FLAG);
+    //reset the newline flag
+    cli();
+    NEWLINE_FLAG = 0;
+    if(nbytes < buf_idx+1)
+    {
+        /*nbytes < actual size*/
+        memcpy(buf, keyboard_buffer, nbytes-1);
+        memcpy(buf+nbytes-1, NN_BUFFER, 1);
+        clear_buffer();
+        return nbytes;
+    }
+    else if(nbytes == buf_idx+1)
+    {
+        /*perfecrt situation*/
+        memcpy(buf, keyboard_buffer, nbytes);
+        clear_buffer();
+        return nbytes;
+    }
+    else if(nbytes > buf_idx+1)
+    {
+        /*nbytes > actual size*/
+        memcpy(buf, keyboard_buffer, buf_idx+1);
+        clear_buffer();
+        return buf_idx+1;
+    }
+    sti();
+    return 0;
+}
+
+uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
+{
+    if(buf == NULL)
+        return -1;
+    uint32_t i;
+    uint8_t * a = (uint8_t*) buf;
+    for(i = 0; i < nbytes; i++)
+    {
+        if(a[i] == 0)
+            return i;
+        putc(a[i]);
+    }
+    return nbytes;
 }
