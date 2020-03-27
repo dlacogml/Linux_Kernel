@@ -73,13 +73,13 @@ void handler33()
         TAB_PRESSED = 0;
       }
       //check if enter is presssed, scancode for enter is 28
-      if(key == 28 || buf_idx == 127)
+      if(key == 28 || buf_idx == 126)
       {
         NEWLINE_FLAG = 1;
-        keyboard_buffer[buf_idx++] = '\n'; 
+        keyboard_buffer[buf_idx] = '\n'; 
         // printf("111");
         send_eoi(KEYBOARD_IRQ);
-        clear_buffer();
+        // clear_buffer();
         return;
       }
       //when alt is pressed
@@ -171,6 +171,7 @@ void clear_buffer()
   {
     keyboard_buffer[i] = 0;
   }
+  buf_idx = 0;
 }
 
 uint32_t terminal_open(const uint8_t* filename)
@@ -198,13 +199,15 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         memcpy(buf, keyboard_buffer, nbytes-1);
         memcpy(buf+nbytes-1, NN_BUFFER, 1);
         clear_buffer();
+        sti();
         return nbytes;
     }
     else if(nbytes == buf_idx+1)
     {
-        /*perfecrt situation*/
+        /*perfect situation*/
         memcpy(buf, keyboard_buffer, nbytes);
         clear_buffer();
+        sti();
         return nbytes;
     }
     else if(nbytes > buf_idx+1)
@@ -212,7 +215,8 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         /*nbytes > actual size*/
         memcpy(buf, keyboard_buffer, buf_idx+1);
         clear_buffer();
-        return buf_idx+1;
+        sti();
+        return buf_idx+2;
     }
     sti();
     return 0;
