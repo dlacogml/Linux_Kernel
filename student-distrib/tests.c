@@ -2,6 +2,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "filesystem.h"
+#include "keyboard.h"
 
 #define PASS 1
 #define FAIL 0
