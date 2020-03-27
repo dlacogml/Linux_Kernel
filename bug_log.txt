@@ -40,5 +40,10 @@ Checkpoint 2 bugs:
 
 Bug #1:
     Problem: verylargetextwithverylongname.txt doesn't print out properly for dir_read
-    What was the issue: WE DON'T KNOW YET
-    What we did: HAVEN'T DONE IT YET
+    What was the issue:  the new line character was in the the buffer
+    What we did: fixed it so the new line is printed after the whole buffer is printed
+
+Bug #2:
+    Problem: file_inode.length was returning 0 so the file wasn't being read properly
+    What was the issue: the filesys_start was an int
+    What we did: changed so the filesys_start was a char (int8_t)
