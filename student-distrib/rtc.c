@@ -9,6 +9,8 @@
 #include "i8259.h"
 
 #define RTC_IRQ     8
+#define BIT6        0x40
+#define HIGH_MASK   0xF0
 
 static volatile char INT_RECEIVED = 0; //check if an rtc int is received
 /* rtc_init
@@ -24,7 +26,7 @@ void rtc_init()
     outb(RTC_B, RTC_PORT);		 //select reg B and disabke nmi
     char prev = inb(RTC_DATA);	 //read the current value of register B
     outb(RTC_B, RTC_PORT);		 //reset
-    outb(prev | 0x40, RTC_DATA); //or with 0x40 to enbable bit 6 of Reg B PIE
+    outb(prev | BIT6, RTC_DATA); //or with 0x40 to enbable bit 6 of Reg B PIE
     sti(); 
 }
 
@@ -42,7 +44,7 @@ void rtc_set_rate(unsigned char rate)
     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
     char curr = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_A, RTC_PORT);		// reset index to A
-    outb((curr & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+    outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     sti();
 
 }
@@ -77,7 +79,7 @@ uint32_t rtc_open(const uint8_t* filename)
     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
     char curr = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_A, RTC_PORT);		// reset index to A
-    outb((curr & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+    outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     sti();
     return 0;
 }
@@ -135,7 +137,7 @@ uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
     outb(RTC_A, RTC_PORT);		          // set index to register A, disable NMI
     char curr = inb(RTC_DATA);	          // get initial value of register A
     outb(RTC_A, RTC_PORT);		          // reset index to A
-    outb((curr & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+    outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     sti();
     return 0;
 }
