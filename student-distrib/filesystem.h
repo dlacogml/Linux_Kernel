@@ -11,6 +11,9 @@
 #define FILENAME_LENGTH     32
 #define BLOCK_SIZE          4096
 #define EOF                 -1
+#define EOS                 0
+#define FILE_CODE           2
+#define DIR_CODE            1
 
 int8_t* filesys_start;
 
