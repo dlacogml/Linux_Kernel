@@ -13,6 +13,7 @@ static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
 static volatile uint8_t NEWLINE_FLAG = 0;
 static uint32_t buf_idx = 0;
+static uint32_t read_idx = 0; //how many times we have read the string
 static uint8_t  keyboard_buffer[BUF_SIZE];
 static uint8_t  NN_BUFFER[1] = {'\n'};
 /*
@@ -73,13 +74,13 @@ void handler33()
         TAB_PRESSED = 0;
       }
       //check if enter is presssed, scancode for enter is 28
-      if(key == 28 || buf_idx == 126)
+      if(key == 28 || buf_idx == 127)
       {
         NEWLINE_FLAG = 1;
         keyboard_buffer[buf_idx] = '\n'; 
-        // printf("111");
+        // putc('\n');
+        // scroll();
         send_eoi(KEYBOARD_IRQ);
-        // clear_buffer();
         return;
       }
       //when alt is pressed
@@ -109,7 +110,10 @@ void handler33()
       if (key == 14)
       {
         if(buf_idx) //check if the index is 0
-          keyboard_buffer[buf_idx--] = 0;
+        {
+          keyboard_buffer[buf_idx] = 0;
+          buf_idx--;
+        }
         backspace();
         send_eoi(KEYBOARD_IRQ);
         return;
@@ -127,12 +131,14 @@ void handler33()
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
-          keyboard_buffer[buf_idx++] = sh_ascii_val;
+          keyboard_buffer[buf_idx] = sh_ascii_val;
+          buf_idx++;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx++] = ascii_val;
+          keyboard_buffer[buf_idx] = ascii_val;
+          buf_idx++;
         }
       }
       else if(ascii_val != 0) //if the input is not a character 
@@ -140,12 +146,14 @@ void handler33()
         if(SHIFT_PRESSED)
         {
           putc(sh_ascii_val);
-          keyboard_buffer[buf_idx++] = sh_ascii_val;
+          keyboard_buffer[buf_idx] = sh_ascii_val;
+          buf_idx++;
         }
         else
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx++] = ascii_val;
+          keyboard_buffer[buf_idx] = ascii_val;
+          buf_idx++;
         }
       }
     }
@@ -172,6 +180,7 @@ void clear_buffer()
     keyboard_buffer[i] = 0;
   }
   buf_idx = 0;
+  read_idx = 0;
 }
 
 uint32_t terminal_open(const uint8_t* filename)
@@ -193,33 +202,48 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     //reset the newline flag
     cli();
     NEWLINE_FLAG = 0;
-    if(nbytes < buf_idx+1)
+    // if(nbytes < buf_idx+1)
+    // {
+    //     /*nbytes < actual size*/
+    //     memcpy(buf, keyboard_buffer, nbytes);
+    //     // clear_buffer();
+    //     sti();
+    //     return nbytes;
+    // }
+    // else if(nbytes == buf_idx+1)
+    // {
+    //     /*perfect situation*/
+    //     memcpy(buf, keyboard_buffer, nbytes);
+    //     clear_buffer();
+    //     sti();
+    //     return nbytes;
+    // }
+    // else if(nbytes > buf_idx+1)
+    // {
+    //     /*nbytes > actual size*/
+    //     memcpy(buf, keyboard_buffer, buf_idx+1);
+    //     clear_buffer();
+    //     sti();
+    //     return buf_idx+1;
+    // }
+    uint32_t i;
+    uint32_t count = 0;
+    uint8_t *buffer = (uint8_t *)buf;
+    for(i = 0; i < nbytes && keyboard_buffer[i] != 0; i++)
     {
-        /*nbytes < actual size*/
-        memcpy(buf, keyboard_buffer, nbytes-1);
-        memcpy(buf+nbytes-1, NN_BUFFER, 1);
+      buffer[i] = keyboard_buffer[read_idx * nbytes+i];
+      count++;
+      if(buffer[i] == '\n')
+      {
         clear_buffer();
         sti();
-        return nbytes;
+        return count;
+      }
     }
-    else if(nbytes == buf_idx+1)
-    {
-        /*perfect situation*/
-        memcpy(buf, keyboard_buffer, nbytes);
-        clear_buffer();
-        sti();
-        return nbytes;
-    }
-    else if(nbytes > buf_idx+1)
-    {
-        /*nbytes > actual size*/
-        memcpy(buf, keyboard_buffer, buf_idx+1);
-        clear_buffer();
-        sti();
-        return buf_idx+2;
-    }
+    read_idx++;
+    //same 
     sti();
-    return 0;
+    return count;
 }
 
 uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
