@@ -7,6 +7,8 @@
 #define PASS 1
 #define FAIL 0
 
+#define USER_BUF_SIZE 4
+
 /* format these macros as you see fit */
 #define TEST_HEADER 	\
 	printf("[TEST %s] Running %s at %s:%d\n", __FUNCTION__, __FUNCTION__, __FILE__, __LINE__)
@@ -263,15 +265,20 @@ int test_file_read(){
     }
     return FAIL;
 }
-
+/* terminal_test()
+ * Description: tests the terminal_read and terminal_write functions
+ */
 int terminal_test()
 {
-    uint8_t buf[4];
-    while(1)
+    //creates a user buffer used for the read parameter
+    uint8_t buf[USER_BUF_SIZE];
+
+    while (1)
     {
-        int a = terminal_read(0, buf, 4);
-        printf(" bytes read: %d ", a);
-        terminal_write(0, buf, a);
+        //calls read and write functions for terminal to print onto screen
+        int read = terminal_read(0, buf, USER_BUF_SIZE);
+        printf(" Bytes read: %d ", read);
+        terminal_write(0, buf, read);
     }
 }
 /*
@@ -305,7 +312,7 @@ void launch_tests_checkpoint_2()
 {
     TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
-    // TEST_OUTPUT("terminal_tets", terminal_test());
+    // TEST_OUTPUT("terminal_test", terminal_test());
 }
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
