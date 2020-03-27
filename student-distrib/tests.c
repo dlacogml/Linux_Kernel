@@ -3,7 +3,7 @@
 #include "lib.h"
 #include "filesystem.h"
 #include "keyboard.h"
-
+#include "rtc.h"
 #define PASS 1
 #define FAIL 0
 
@@ -265,10 +265,32 @@ int test_file_read(){
     }
     return FAIL;
 }
+/* rtc_read_test
+ *  Description: tests the rtc_read
+ */
+int rtc_read_test()
+{
+    int freq = 2;
+    int a;
+    a = rtc_read(0,&freq,0);
+    if(a == 0)
+        return PASS;
+    else 
+        return FAIL;
+}
+/* rtc_write_test
+ *  Description: tests rtc_write function
+ */
+int rtc_write_test()
+{
+    int freq = 2;
+    rtc_write(0,&freq,0);   
+    return PASS;
+}
 /* terminal_test()
  * Description: tests the terminal_read and terminal_write functions
  */
-int terminal_test()
+void terminal_test()
 {
     //creates a user buffer used for the read parameter
     uint8_t buf[USER_BUF_SIZE];
@@ -310,9 +332,12 @@ void launch_tests_checkpoint_1()
 /* Checkpoint 2 tests */
 void launch_tests_checkpoint_2()
 {
-    TEST_OUTPUT("test_file_read", test_file_read());
+    // TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
     // TEST_OUTPUT("terminal_test", terminal_test());
+    // TEST_OUTPUT("rtc_read_test", rtc_test());
+    TEST_OUTPUT("rtc_write_test", rtc_write_test());
+
 }
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
