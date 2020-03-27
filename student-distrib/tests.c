@@ -303,9 +303,9 @@ void launch_tests_checkpoint_1()
 /* Checkpoint 2 tests */
 void launch_tests_checkpoint_2()
 {
-    // TEST_OUTPUT("test_file_read", test_file_read());
+    TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
-    TEST_OUTPUT("terminal_tets", terminal_test());
+    // TEST_OUTPUT("terminal_tets", terminal_test());
 }
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
