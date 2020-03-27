@@ -215,7 +215,7 @@ void handler13(){
     OUTPUT: NONE
 */
 void handler14(){
-    clear();
+    // clear();
     printf("Page Fault Exception");
     while(1){
 

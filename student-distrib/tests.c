@@ -243,25 +243,16 @@ void launch_tests_checkpoint_1(){
     // TEST_OUTPUT("simd_check_test", simd_check_test());
     // TEST_OUTPUT("system_call_test", system_call_test());
 	// launch your tests here
-    // dentry_t dentry = boot_block->
-    // uint8_t buf[32];
-    // // file_read(1, 0, buf, 32);
-    // int cnt;
-    // while (0 != (cnt = dir_read (2, buf, 32))) {
-    //     // if (-1 == cnt) {
-	//     //     ece391_fdputs (1, (uint8_t*)"directory entry read failed\n");
-	//     // }
-    //     int i;
-    //     for (i = 0; i < cnt; i++){
-    //         putc(buf[i]);
-    //     }
-    //     putc('\n');
-	//     // buf[cnt] = '\n';
+    // dentry_t dentry;
+    // read_dentry_by_name("frame0.txt", &dentry);
+    // uint8_t buf[1000];
+    // file_read(dentry.inode_num, 0, buf, 1000);
+    if (dir_open(".") == 0){
+        test_dir_read();
+    }
+    
 
-	//     // if (-1 == ece391_write (1, buf, cnt + 1))
-	//     //     return 3;
-    // }
-    test_dir_read();
+
 }
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */

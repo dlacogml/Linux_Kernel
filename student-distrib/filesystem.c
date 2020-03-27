@@ -51,7 +51,7 @@ int32_t file_close(int32_t fd) {
 
 int32_t file_read(uint32_t inode_num, uint32_t position, uint8_t* buf, int32_t nbytes) {
     /* read data from file and store in buf */
-    int num_bytes = read_data(inode_num, file_pos, buf, nbytes);
+    int num_bytes = read_data(inode_num, position, buf, nbytes);
     file_pos = file_pos + num_bytes;
     int i;
     for (i = 0; i < nbytes; i++){
