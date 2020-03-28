@@ -23,6 +23,7 @@ void clear(void) {
     }
     screen_x = 0;
     screen_y = 0;
+    update_cursor(0);
 }
 
 /* void backspace(void);
