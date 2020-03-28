@@ -6,6 +6,7 @@
 #define _LIB_H
 
 #include "types.h"
+#include "cursor.h"
 
 #define VIDEO       0xB8000
 

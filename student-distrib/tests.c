@@ -333,10 +333,10 @@ void launch_tests_checkpoint_1()
 void launch_tests_checkpoint_2()
 {
     // TEST_OUTPUT("test_file_read", test_file_read());
-    // TEST_OUTPUT("test_dir_read", test_dir_read());
+    TEST_OUTPUT("test_dir_read", test_dir_read());
     // TEST_OUTPUT("terminal_test", terminal_test());
     // TEST_OUTPUT("rtc_read_test", rtc_test());
-    TEST_OUTPUT("rtc_write_test", rtc_write_test());
+    // TEST_OUTPUT("rtc_write_test", rtc_write_test());
 
 }
 /* Checkpoint 3 tests */

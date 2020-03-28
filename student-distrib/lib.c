@@ -247,6 +247,8 @@ void putc(uint8_t c) {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
     }
+    uint16_t pos = screen_y * NUM_COLS + screen_x;
+    update_cursor(pos);
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);
