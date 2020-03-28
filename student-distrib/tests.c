@@ -278,12 +278,21 @@ int rtc_read_test()
     else 
         return FAIL;
 }
+/* rtc_oepn_test
+ *  Description: tests the rtc_open
+ */
+int rtc_open_test()
+{
+    /* should set the rate to 15, frequency to 2HZ*/
+    rtc_open(NULL);
+    return PASS;
+}
 /* rtc_write_test
  *  Description: tests rtc_write function
  */
 int rtc_write_test()
 {
-    int freq = 2;
+    int freq = 4;
     rtc_write(0,&freq,0);   
     return PASS;
 }
@@ -333,12 +342,14 @@ void launch_tests_checkpoint_1()
 void launch_tests_checkpoint_2()
 {
     // TEST_OUTPUT("test_file_read", test_file_read());
-    TEST_OUTPUT("test_dir_read", test_dir_read());
+    // TEST_OUTPUT("test_dir_read", test_dir_read());
     // TEST_OUTPUT("terminal_test", terminal_test());
     // TEST_OUTPUT("rtc_read_test", rtc_test());
     // TEST_OUTPUT("rtc_write_test", rtc_write_test());
+    TEST_OUTPUT("rtc_open_test", rtc_open_test());
 
 }
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
+
