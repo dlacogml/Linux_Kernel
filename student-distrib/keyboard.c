@@ -21,7 +21,7 @@ static uint8_t  keyboard_buffer[BUF_SIZE];    //buffer for the keyboard string
 uint8_t keyboard_map[MAP_SIZE] =
 {
   0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',  
-  0,'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,            
+  ' ','q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,            
   'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\', 
   'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ',	
 };
@@ -31,7 +31,7 @@ uint8_t keyboard_map[MAP_SIZE] =
 uint8_t shift_map[MAP_SIZE] =
 {
   0, 27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',  
-  0,'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', 0,            
+  ' ','Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', 0,            
   'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~', 0, '|', 
   'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' ',
 };
@@ -48,71 +48,75 @@ uint8_t shift_map[MAP_SIZE] =
 void handler33() 
 {
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
-    /* checking for any specific keys being released */
+    /* checking for any functionality keys being released or pressed*/
 
-    //when left shift and right shift is released
+    /*when left shift and right shift is released*/
     if((key == -86 || key == -74) && SHIFT_PRESSED == 1) //scancodes of releasing left shift and right shift are -86, -74
       SHIFT_PRESSED = 0; //set shift pressed to 0
     
-    //when alt is released
+    /*when alt is released*/
     if((key == -72) && ALT_PRESSED == 1) //scancode of releasing alt is -72
       ALT_PRESSED = 0; //set alt pressed to 0
     
-    //when control is released
+    /*when control is released*/
     if((key == -99) && CONTROL_PRESSED == 1) //scancode of releasing control is -99
       CONTROL_PRESSED = 0; //set control pressed to 0
 
+    /*check if enter is presssed, scancode for enter is 28*/
+    if(key == 28)
+    {
+      NEWLINE_FLAG = 1; //set the newline flag to be 1
+      keyboard_buffer[buf_idx] = '\n'; //append newline at the end
+      putc('\n');
+      send_eoi(KEYBOARD_IRQ);
+      return;
+    }
+
+    /*when tab is pressed*/
+    if (key == 15) 
+    {
+      TAB_PRESSED = 1;
+    }
+    else 
+    {
+      TAB_PRESSED = 0;
+    }
+
+    /*when alt is pressed*/
+    if (key == 56)
+      ALT_PRESSED = 1;
+
+    /*when control is pressed*/
+    if (key == 29)
+      CONTROL_PRESSED = 1;
+
+    /*when left shift and right is pressed*/
+    if(key == 42 || key == 54) //scancodes of pressing left shift and right shift are 42, 54
+      SHIFT_PRESSED = 1;
+      
+    /*check if backspace is pressed*/
+    if (key == 14)
+    {
+      if(buf_idx) //check if the index is 0
+      {
+        keyboard_buffer[buf_idx] = 0;
+        buf_idx--;
+      }
+      backspace();
+      send_eoi(KEYBOARD_IRQ);
+      return;
+    }
     /* printing onto screen */
     if (key > 0) 
     { 
-      //when tab is pressed
-      if (key == 15) {
-        TAB_PRESSED = 1;
-      }
-      else {
-        TAB_PRESSED = 0;
-      }
-      //check if enter is presssed, scancode for enter is 28
-      if(key == 28 || buf_idx == 127)
-      {
-        NEWLINE_FLAG = 1; //set the newline flag to be 1
-        keyboard_buffer[buf_idx] = '\n'; //append newline at the end
-        putc('\n');
-        send_eoi(KEYBOARD_IRQ);
-        return;
-      }
-      //when alt is pressed
-      if (key == 56)
-        ALT_PRESSED = 1;
-
-      //when control is pressed
-      if (key == 29)
-        CONTROL_PRESSED = 1;
-  
-      //when left shift and right is pressed 
-      if(key == 42 || key == 54) //scancodes of pressing left shift and right shift are 42, 54
-        SHIFT_PRESSED = 1;
       int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
       int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
-      
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
         buf_idx = 0;
         clear_buffer(); //clear th buffer 
         clear();        //clear the screen
-        send_eoi(KEYBOARD_IRQ);
-        return;
-      }
-      //check if backspace is pressed
-      if (key == 14)
-      {
-        if(buf_idx) //check if the index is 0
-        {
-          keyboard_buffer[buf_idx] = 0;
-          buf_idx--;
-        }
-        backspace();
         send_eoi(KEYBOARD_IRQ);
         return;
       }
@@ -123,7 +127,7 @@ void handler33()
       }
 
       //if the key thats a character
-      if(ascii_val >= 97 && ascii_val <= 122) //the range of lower case ascii letters are from 97 to 122
+      if(ascii_val >= 97 && ascii_val <= 122 && buf_idx < 127) //the range of lower case ascii letters are from 97 to 122
       {
         //if only one of those is pressed 
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
@@ -139,7 +143,7 @@ void handler33()
           buf_idx++;
         }
       }
-      else if(ascii_val != 0) //if the input is not a character 
+      else if(ascii_val != 0 && buf_idx < 127) //if the input is not a character 
       {
         if(SHIFT_PRESSED)
         {
