@@ -37,7 +37,7 @@ void backspace(void)
     else if(screen_x == 0) //when go back to the previous line
     {   
         screen_y--;
-        screen_x = NUM_COLS;
+        screen_x = NUM_COLS - 1;
         uint32_t i = NUM_COLS * screen_y + screen_x;
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
@@ -49,6 +49,8 @@ void backspace(void)
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+    uint16_t pos = screen_y * NUM_COLS + screen_x;
+    update_cursor(pos);
 }
 
 /* void scroll(void);
@@ -233,19 +235,20 @@ void putc(uint8_t c) {
         scroll();
 
     /* if screen_x is at the end of row, go to next row */
-    } else if (screen_x == NUM_COLS){
+    } else if (screen_x == NUM_COLS - 1){
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_y++;
         screen_x = 0;
         scroll();
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-        screen_x++;
 
     /* else just place character in video memory */
     } else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
+        screen_x %= NUM_COLS;
+        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
