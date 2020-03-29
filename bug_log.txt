@@ -47,3 +47,23 @@ Bug #2:
     Problem: file_inode.length was returning 0 so the file wasn't being read properly
     What was the issue: the filesys_start was an int
     What we did: changed so the filesys_start was a char (int8_t)
+
+Bug #3:
+    Problem: No characters were being printed on screen when making terminal_read
+    What was the issue: System call calls cli() automatically
+    What we did: add an sti() after our initializing in our kernel to unmask the interrupt
+
+Bug #4:
+    Problem: New line was being printed after every terminal read call instead of at the very end of buffer
+    What was the issue: NEWLINE_FLAG was set to 0 after every call on terminal_read
+    What we did: Only set NEWLINE_FLAG if we reached the end of the buffer rather than after each call
+
+Bug #5:
+    Problem: Experiencing segmentation fault from terminal_read after 1 successful iteration
+    What was the issue: We were trying to access values in keyboard_buffer not initialized 
+    What we did: Reset buf_idx to 0 after clearing the buffer to reset the index for the next terminal read
+
+Bug #6:
+    Problem: Caps lock was not turning off
+    What was the issue: We were never actually setting our caps lock flag back to 0
+    What we did: set a XOR with the flag when checking if the specific key was pressed to turn off/on
