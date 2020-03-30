@@ -37,11 +37,7 @@ void backspace(void)
         return;
     else if(screen_x == 0) //when go back to the previous line
     {   
-        screen_y--;
-        screen_x = NUM_COLS - 1;
-        uint32_t i = NUM_COLS * screen_y + screen_x;
-        *(uint8_t *)(video_mem + (i << 1)) = ' ';
-        *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+        return;
     } 
     else // regular backspace
     {   
