@@ -30,24 +30,24 @@ void rtc_init()
     sti(); 
 }
 
-/* rtc_set_rate
- * DESCRIPTION: sets the rate of the rtc
- * INPUT: rate
- * OUTPUT: nothing
- * SIDE EFFECT: 
- */
-void rtc_set_rate(unsigned char rate) 
-{
+// /* rtc_set_rate
+//  * DESCRIPTION: sets the rate of the rtc
+//  * INPUT: rate
+//  * OUTPUT: nothing
+//  * SIDE EFFECT: 
+//  */
+// void rtc_set_rate(unsigned char rate) 
+// {
 
-    rate &= 0x0F; //rate is and-ed with 0x0F (15 base 10) to make sure rate is not above 15
-    cli();
-    outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
-    char curr = inb(RTC_DATA);	// get initial value of register A
-    outb(RTC_A, RTC_PORT);		// reset index to A
-    outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-    sti();
+//     rate &= 0x0F; //rate is and-ed with 0x0F (15 base 10) to make sure rate is not above 15
+//     cli();
+//     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
+//     char curr = inb(RTC_DATA);	// get initial value of register A
+//     outb(RTC_A, RTC_PORT);		// reset index to A
+//     outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+//     sti();
 
-}
+// }
 
 /* handler40
  * DESCRIPTION: handler for RTC interrupts
@@ -58,7 +58,7 @@ void rtc_set_rate(unsigned char rate)
 void handler40(){
     cli();            
     INT_RECEIVED = 1;       //enable INT_RECEIVED when an interrput is raised
-    test_interrupts();      // checks if the rtc works
+    // test_interrupts();      // checks if the rtc works
     outb(RTC_C, RTC_PORT);	// set index to register A, disable NMI
     inb(RTC_DATA);		    // retrieve rtc_data
     send_eoi(RTC_IRQ);            // end of interrupt
@@ -121,10 +121,10 @@ uint32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
 //side effect: change the interrupt rate in rtc
 uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
 {
-    int freq = *((int*)buf);
+    uint16_t freq = *((int*)buf);
     //check if buf is NULL, frequency is NULL, frequency is power of 2, frequency is within the range
     if(!buf || freq <=0 || (freq & (freq-1)) || freq > K_MAX_INT_FREQ)
-        return -1;
+        return -1;    
     //frequency = MAX_INT_RATE >> (RATE - 1)
     //maximum kernel can hace is 6 which corresponds to frequency of 1024HZ
     //K_MAX_INT_RATE = MAX_INT_RATE >> (6-1)

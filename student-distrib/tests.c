@@ -7,8 +7,6 @@
 #define PASS 1
 #define FAIL 0
 
-#define USER_BUF_SIZE 4
-
 /* format these macros as you see fit */
 #define TEST_HEADER 	\
 	printf("[TEST %s] Running %s at %s:%d\n", __FUNCTION__, __FUNCTION__, __FILE__, __LINE__)
@@ -265,52 +263,42 @@ int test_file_read(){
     }
     return FAIL;
 }
-/* rtc_read_test
- *  Description: tests the rtc_read
- */
-int rtc_read_test()
-{
-    int freq = 2;
-    int a;
-    a = rtc_read(0,&freq,0);
-    if(a == 0)
-        return PASS;
-    else 
-        return FAIL;
-}
-/* rtc_oepn_test
- *  Description: tests the rtc_open
- */
-int rtc_open_test()
-{
-    /* should set the rate to 15, frequency to 2HZ*/
-    rtc_open(NULL);
-    return PASS;
-}
-/* rtc_write_test
+/* rtc_test
  *  Description: tests rtc_write function
  */
-int rtc_write_test()
+int rtc_test()
 {
-    int freq = 4;
-    rtc_write(0,&freq,0);   
+    // TEST_HEADER;
+	rtc_open(NULL);
+	uint16_t freq = 256; //set desired freq for testing
+	rtc_write(NULL,&freq, sizeof(uint16_t));
+	while(1)
+    {
+		rtc_read(NULL, NULL, 0);
+		printf("1");
+	}
+	rtc_close(NULL);
     return PASS;
 }
 /* terminal_test()
  * Description: tests the terminal_read and terminal_write functions
  */
-void terminal_test()
+int terminal_test()
 {
+    TEST_HEADER;
     //creates a user buffer used for the read parameter
-    uint8_t buf[USER_BUF_SIZE];
-
+    uint32_t user_size = 4; //set the desired user buffer size for testing
+    uint8_t buf[user_size];
+    terminal_open(NULL); //clear the key board buffer
     while (1)
     {
         //calls read and write functions for terminal to print onto screen
-        int read = terminal_read(0, buf, USER_BUF_SIZE);
-        printf(" Bytes read: %d ", read);
-        terminal_write(0, buf, read);
+        int read = terminal_read(0, buf, user_size);
+        int write = terminal_write(0, buf, read);
+        printf("\n------Bytes read: %d , Bytes write: %d------\n", read, write);
     }
+    terminal_close(NULL); //nothing
+    return PASS;
 }
 /*
  * launch_tests_checkpoint_1()
@@ -343,10 +331,8 @@ void launch_tests_checkpoint_2()
 {
     // TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
-    // TEST_OUTPUT("terminal_test", terminal_test());
-    // TEST_OUTPUT("rtc_read_test", rtc_test());
-    // TEST_OUTPUT("rtc_write_test", rtc_write_test());
-    TEST_OUTPUT("rtc_open_test", rtc_open_test());
+    TEST_OUTPUT("terminal_test", terminal_test());
+    // TEST_OUTPUT("rtc_test", rtc_test());
 
 }
 /* Checkpoint 3 tests */

@@ -93,7 +93,7 @@ void handler33()
     /*when left shift and right is pressed*/
     if(key == 42 || key == 54) //scancodes of pressing left shift and right shift are 42, 54
       SHIFT_PRESSED = 1;
-      
+
     /*check if backspace is pressed*/
     if (key == 14)
     {
@@ -194,7 +194,7 @@ void clear_buffer()
 }
 /*
  * void terminal_open(const uint8_t* filename)
- * interface: do nothing
+ * interface: clear the keyboad buffer
  * input: filename
  * output: one
  * return value: 0
@@ -202,7 +202,8 @@ void clear_buffer()
  */
 uint32_t terminal_open(const uint8_t* filename)
 {
-    return 0;  //do nothing
+  clear_buffer();
+  return 0;  //do nothing
 }
 /*
  * void terminal_open(int32_t fd)
@@ -244,8 +245,8 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
       /*when we reach the end*/
       if(buffer[i] == '\n')
       {
-        clear_buffer();
-        NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+        // clear_buffer();
+        // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
         sti();
         return count;
       }
@@ -273,11 +274,16 @@ uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         return -1;
     uint32_t i; //loop counter
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
-    for(i = 0; i < nbytes; i++)
+    for(i = 0; i < nbytes && i < buf_idx + 1 && keyboard_buffer[i]; i++)
     {
         /* when we have reach the end of the buf*/
-        if(a[i] == 0)
-            return i;
+        if(a[i] == '\n')
+        {
+          clear_buffer();   //clear the keyboard buffer after we call write
+          NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+          putc(a[i]); //output char on screen
+          return i+1;
+        }
         putc(a[i]); //output char on screen
     }
     return nbytes;

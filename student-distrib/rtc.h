@@ -18,7 +18,7 @@
 //initialize rtc
 void rtc_init();
 //set the rtc rate
-void rtc_set_rate(unsigned char rate);
+// void rtc_set_rate(unsigned char rate);
 
 uint32_t rtc_open(const uint8_t* filename);
 uint32_t rtc_close(int32_t fd);
