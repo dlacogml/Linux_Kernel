@@ -52,9 +52,75 @@ asmHandler40:
  * OUTPUT: none
  * side effect: returns from the interrupt properly
  */
-asmHandler128:    
+asmHandler128:  
+    
     pushl $128             # interrupt handler #128, push the interrupt number
-    call handler128        # call the handler
+    subl 1, %eax
+    cmpl $0, %eax
+    jl invalid_sys_num
+    cmpl $9, %eax
+    ja invalid_sys_num
+    /* push args */ 
+    push %edx
+    push %ecx
+    push %ebx
+     # jump jumptable
+    jmp *jump_table(, %eax, 4)
+
+invalid_sys_num:
     addl $4, %esp          # pop the interrupt number
     iret
+
+asm_halt:
+    call halt
+    addl $16, %esp
+    iret
+
+asm_execute:
+    call execute 
+    addl $16, %esp
+    iret 
+
+asm_read:
+    call read 
+    addl $16, %esp
+    iret
+
+asm_write:
+    call write 
+    addl $16, %esp
+    iret 
+
+asm_open:
+    call open 
+    addl $16, %esp
+    iret 
+
+asm_close:
+    call close 
+    addl $16, %esp
+    iret
+
+asm_getargs:
+    call getargs 
+    addl $16, %esp
+    iret
+
+asm_vidmap:
+    call vidmap 
+    addl $16, %esp
+    iret
+
+asm_set_handler:
+    call set_handler 
+    addl $16, %esp
+    iret
+
+asm_sigreturn:
+    call sigreturn 
+    addl $16, %esp
+    iret
+
+jump_table:
+.long asm_halt, asm_execute, asm_read, asm_write, asm_open, asm_close, asm_getargs, asm_vidmap, asm_set_handler, asm_sigreturn
 
