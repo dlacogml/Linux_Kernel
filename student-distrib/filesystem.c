@@ -10,9 +10,9 @@
 inode_t* inodes;
 boot_block_t* boot_block;
 data_block_t* data_blocks;
-int file_pos;
-int dir_index;
-int inode_num;
+// int file_pos;
+// int dir_index;
+// int inode_num;
 
 /* init_filesystem
  * DESCRIPTION: initializes boot block and block arrays
@@ -36,10 +36,20 @@ void init_filesystem(){
     }
     fdarray[0].f_ops_pointer = &terminal_op_table;
     fdarray[0].f_ops_pointer->read = &(terminal_read);
+    fdarray[0].f_ops_pointer->write = &stdin_write;
+    fdarray[0].f_ops_pointer->open = &terminal_open;
+    fdarray[0].f_ops_pointer->close = &terminal_close;
+    fdarray[0].file_pos = 0;
+    fdarray[0].inode = 0;
     fdarray[0].flags = 1;
 
     fdarray[1].f_ops_pointer = &terminal_op_table;
     fdarray[1].f_ops_pointer->write = &(terminal_write);
+    fdarray[1].f_ops_pointer->read = &(stdout_read);
+    fdarray[1].f_ops_pointer->open = &terminal_open;
+    fdarray[1].f_ops_pointer->close = &terminal_close;
+    fdarray[1].file_pos = 0;
+    fdarray[1].inode = 0;
     fdarray[1].flags = 1;
 }
 
@@ -50,17 +60,7 @@ void init_filesystem(){
  * SIDE EFFECT: sets file_pos and inode_num
  */
 int32_t file_open(const uint8_t* filename) {
-    dentry_t dentry;
-    /* check if file exists */
-    if (read_dentry_by_name(filename, &dentry) == 0){
-        /* check if valid file */
-        if (dentry.filetype == FILE_CODE){
-            file_pos = 0;
-            inode_num = dentry.inode_num;
-            return 0;
-        }
-    }
-    return -1;
+    return 0;
 }
 
 /* file_close
@@ -110,17 +110,7 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes) {
  * SIDE EFFECT: sets directory index
  */
 int32_t dir_open(const uint8_t* filename) {
-    dentry_t* dentry;
-    /* check if dir exists */
-    if (read_dentry_by_name(filename, dentry) == 0){
-        /* check if valid dir */
-        if (dentry->filetype == DIR_CODE){
-            /* start from first dentry */
-            dir_index = 0;
-            return 0;
-        }
-    }
-    return -1;
+    return 0;
 }
 
 /* dir_close
@@ -275,3 +265,12 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     }
     return num_copied;
 }
+
+int32_t stdin_write(int32_t fd, const void* buf, int32_t nbytes){
+    return -1;
+}
+int32_t stdout_read(int32_t fd, uint8_t* buf, int32_t nbytes){
+    return -1;
+}
+
+

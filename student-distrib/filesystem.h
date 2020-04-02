@@ -100,4 +100,6 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 
 void init_filesystem();
 
+int32_t stdin_write(int32_t fd, const void* buf, int32_t nbytes);
+int32_t stdout_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 #endif

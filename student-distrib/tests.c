@@ -312,7 +312,6 @@ int test_sys_dir_read(){
 
     /* check if valid directory */
     if ((fd = open((uint8_t*)filename)) != -1){
-        printf("opened");
         /* print each filename */
         while (0 != (cnt = read (fd, buf, FILENAME_LENGTH))) {
             int i;
@@ -418,10 +417,10 @@ void launch_tests_checkpoint_2()
 }
 /* Checkpoint 3 tests */
 void launch_tests_checkpoint_3(){
-    // TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
+    TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
     // TEST_OUTPUT("test_sys_file_read", test_sys_file_read());
     // TEST_OUTPUT("test_sys_rtc", test_sys_rtc());
-    TEST_OUTPUT("terminal_test", terminal_test());
+    // TEST_OUTPUT("terminal_test", terminal_test());
 
 }
 /* Checkpoint 4 tests */

@@ -30,7 +30,7 @@ int32_t open (const uint8_t* filename){
     if (open_flag == 0){
         return -1;
     }
-    int32_t fd = 2;
+    int32_t fd = i;
     dentry_t dentry;
     if (read_dentry_by_name(filename, &dentry) == 0){
         if (dentry.filetype == FILE_CODE){
@@ -69,9 +69,11 @@ int32_t open (const uint8_t* filename){
 }
 
 int32_t close (int32_t fd){
-    if (fdarray[fd].flags == FILE_CLOSED){
-        fdarray[fd].flags == FILE_OPEN;
+    if (fd <= 1 || fd >= 8){
+        return -1;
     }
+    fdarray[fd].flags == FILE_OPEN;
+    return 0;
 }
 
 int32_t getargs (uint8_t* buf, int32_t nbytes){
