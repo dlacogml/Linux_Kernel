@@ -29,6 +29,16 @@ void init_filesystem(){
 
     /* init data block array */
     data_blocks = (data_block_t*) (filesys_start + sizeof(boot_block_t) + sizeof(inode_t) * boot_block->inode_count);
+
+    int i;
+    for (i = 0; i < NUM_FD; i++){
+        fdarray[i].flags = 0; // make all fdarray entries open initally
+    }
+    fdarray[0].f_ops_pointer->read = &(terminal_read);
+    fdarray[0].flags = 1;
+
+    fdarray[1].f_ops_pointer->write = &(terminal_write);
+    fdarray[1].flags = 1;
 }
 
 /* file_open
@@ -71,10 +81,10 @@ int32_t file_close(int32_t fd) {
  */
 int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     /* read data from file and store in buf */
-    int num_bytes = read_data(inode_num, file_pos, buf, nbytes);
+    int num_bytes = read_data(fdarray[fd].inode, fdarray[fd].file_pos, buf, nbytes);
 
     /* update file_pos */
-    file_pos = file_pos + num_bytes;
+    fdarray[fd].file_pos = fdarray[fd].file_pos + num_bytes;
     
     return num_bytes;
 }
@@ -134,7 +144,7 @@ int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     dentry_t dentry;
 
     /* read dentry, if fail return 0 */
-    if (read_dentry_by_index(dir_index, &dentry) == -1){
+    if (read_dentry_by_index(fdarray[fd].file_pos, &dentry) == -1){
         return 0;
     }
 
@@ -153,7 +163,7 @@ int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     }
 
     /* go to next dentry */
-    dir_index++;
+    fdarray[fd].file_pos++;
 
     return num_copied;
 }

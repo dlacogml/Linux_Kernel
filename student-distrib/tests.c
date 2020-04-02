@@ -4,6 +4,7 @@
 #include "filesystem.h"
 #include "keyboard.h"
 #include "rtc.h"
+#include "../syscalls/ece391syscall.h"
 #define PASS 1
 #define FAIL 0
 
@@ -300,6 +301,31 @@ int terminal_test()
     terminal_close(NULL); //nothing
     return PASS;
 }
+
+
+int test_sys_dir_read(){
+    uint8_t buf[FILENAME_LENGTH];
+    int cnt;
+
+    /* directory name */
+    int8_t* filename = ".";
+
+    /* check if valid directory */
+    if (ece391_open((uint8_t*)filename) == 0){
+
+        /* print each filename */
+        while (0 != (cnt = ece391_read (0, buf, FILENAME_LENGTH))) {
+            int i;
+            for (i = 0; i < cnt; i++){
+                putc(buf[i]);
+            }
+            putc('\n');
+        }
+        return PASS;
+    }
+    return FAIL;
+
+}
 /*
  * launch_tests_checkpoint_1()
  * 
@@ -307,35 +333,38 @@ int terminal_test()
  */
 void launch_tests_checkpoint_1()
 {
-	TEST_OUTPUT("idt_test", idt_test());
-    TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
-    TEST_OUTPUT("breakpoint_test", breakpoint_test());
-    TEST_OUTPUT("overflow_test", overflow_test()); 
-    TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); 
-    TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
-    TEST_OUTPUT("device_not_available_test", device_not_available_test()); 
-    TEST_OUTPUT("double_fault_test", double_fault_test()); 
-    TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
-    TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
-    TEST_OUTPUT("stack_segment_test", stack_segment_test());
-    TEST_OUTPUT("general_protection_test", general_protection_test());
-    TEST_OUTPUT("page_fault_test", page_fault_test());
-    TEST_OUTPUT("math_fault_test", math_fault_test());
-    TEST_OUTPUT("alignment_check_test", alignment_check_test());
-    TEST_OUTPUT("machine_check_test", machine_check_test());
-    TEST_OUTPUT("simd_check_test", simd_check_test());
-    TEST_OUTPUT("system_call_test", system_call_test());
+	// TEST_OUTPUT("idt_test", idt_test());
+    // TEST_OUTPUT("divide_by_zero_test", divide_by_zero_test());
+    // TEST_OUTPUT("breakpoint_test", breakpoint_test());
+    // TEST_OUTPUT("overflow_test", overflow_test()); 
+    // TEST_OUTPUT("bound_exceeded_test", bound_exceeded_test()); 
+    // TEST_OUTPUT("invalid_opcode_test", invalid_opcode_test());
+    // TEST_OUTPUT("device_not_available_test", device_not_available_test()); 
+    // TEST_OUTPUT("double_fault_test", double_fault_test()); 
+    // TEST_OUTPUT("invalid_tss_test", invalid_tss_test()); 
+    // TEST_OUTPUT("segment_not_present_test", segment_not_present_test()); 
+    // TEST_OUTPUT("stack_segment_test", stack_segment_test());
+    // TEST_OUTPUT("general_protection_test", general_protection_test());
+    // TEST_OUTPUT("page_fault_test", page_fault_test());
+    // TEST_OUTPUT("math_fault_test", math_fault_test());
+    // TEST_OUTPUT("alignment_check_test", alignment_check_test());
+    // TEST_OUTPUT("machine_check_test", machine_check_test());
+    // TEST_OUTPUT("simd_check_test", simd_check_test());
+    // TEST_OUTPUT("system_call_test", system_call_test());
 }
 /* Checkpoint 2 tests */
 void launch_tests_checkpoint_2()
 {
     // TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
-    TEST_OUTPUT("terminal_test", terminal_test());
+    // TEST_OUTPUT("terminal_test", terminal_test());
     // TEST_OUTPUT("rtc_test", rtc_test());
 
 }
 /* Checkpoint 3 tests */
+void launch_tests_checkpoint_3(){
+    TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
+}
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 

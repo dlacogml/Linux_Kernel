@@ -1,7 +1,8 @@
 #if !defined(ECE391SYSCALL_H)
 #define ECE391SYSCALL_H
 
-#include <stdint.h>
+// #include <stdint.h>
+#include "../student-distrib/lib.h"
 
 /* All calls return >= 0 on success or -1 on failure. */
 

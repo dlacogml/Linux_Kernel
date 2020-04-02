@@ -1,5 +1,8 @@
-#include "lib.h"
-
+#include "../student-distrib/lib.h"
+#include "../student-distrib/filesystem.h"
+#include "../student-distrib/rtc.h"
+#include "../student-distrib/idt.h"
+#include "../student-distrib/tests.h"
 
 #ifndef IDT_ASM_H
 #define IDT_ASM_H

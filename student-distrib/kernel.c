@@ -152,6 +152,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //Init the PIC 
     clear();
     init_filesystem();
+
     i8259_init();
     //Init idt
     init_idt();
@@ -170,7 +171,8 @@ void entry(unsigned long magic, unsigned long addr) {
 #ifdef RUN_TESTS
     /* Run tests */
     // launch_tests_checkpoint_1();
-    launch_tests_checkpoint_2();
+    // launch_tests_checkpoint_2();
+    launch_tests_checkpoint_3();
 #endif
     /* Execute the first program ("shell") ... */
 

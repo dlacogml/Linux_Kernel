@@ -7,6 +7,7 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 #include "lib.h"
+#include "keyboard.h"
 
 #define FILENAME_LENGTH     32
 #define BLOCK_SIZE          4096
@@ -14,13 +15,19 @@
 #define EOS                 0
 #define FILE_CODE           2
 #define DIR_CODE            1
+#define RTC_CODE            0
 #define NUM_DATA_BLOCKS     1023
 #define NUM_DENTRIES        63
 #define NUM_DENTRY_RESERVED 24
 #define NUM_BOOT_RESERVED   52
+#define NUM_FD              8
+#define FILE_OPEN           0
+#define FILE_CLOSED         1
 
 /* starting address for filesystem */
 int8_t* filesys_start;
+
+
 
 /* struct for a directory entry */
 typedef struct dentry {
@@ -49,6 +56,27 @@ typedef struct boot_block {
 typedef struct data_block {
     int8_t byte[BLOCK_SIZE];
 } data_block_t;
+
+typedef struct f_ops_table{
+    //pointers to read
+    int32_t (*read)(int32_t fd, uint8_t* buf, int32_t nbytes);
+    //pointer to write
+    int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
+    //pointer to open
+    int32_t (*open)(const uint8_t* filename);
+    //pointer to close
+    int32_t (*close)(int32_t fd);
+
+} f_ops_table_t;
+
+typedef struct file_descriptor {
+    f_ops_table_t* f_ops_pointer;
+    int32_t inode;
+    int32_t file_pos;
+    int32_t flags;
+} file_descriptor_t;
+
+file_descriptor_t fdarray[NUM_FD];
 
 /* all functions for filesystems, function interfaces in .c file */
 int32_t file_open(const uint8_t* filename);
