@@ -287,15 +287,15 @@ int terminal_test()
 {
     TEST_HEADER;
     //creates a user buffer used for the read parameter
-    uint32_t user_size = 4; //set the desired user buffer size for testing
+    uint32_t user_size = 128; //set the desired user buffer size for testing
     uint8_t buf[user_size];
     terminal_open(NULL); //clear the key board buffer
     while (1)
     {
         //calls read and write functions for terminal to print onto screen
-        int read = terminal_read(0, buf, user_size);
-        int write = terminal_write(0, buf, read);
-        printf("\n------Bytes read: %d , Bytes write: %d------\n", read, write);
+        int r = read(0, buf, user_size);
+        int w = write(1, buf, r);
+        printf("\n------Bytes read: %d , Bytes write: %d------\n", r, w);
     }
     terminal_close(NULL); //nothing
     return PASS;
@@ -303,6 +303,7 @@ int terminal_test()
 
 
 int test_sys_dir_read(){
+    TEST_HEADER;
     uint8_t buf[FILENAME_LENGTH];
     int cnt, fd;
 
@@ -327,6 +328,8 @@ int test_sys_dir_read(){
 }
 
 int test_sys_file_read(){
+    TEST_HEADER;
+
     int32_t buf_length = 10000; // length of buffer for test
 
     uint8_t buf[buf_length];
@@ -350,6 +353,35 @@ int test_sys_file_read(){
     }
     return FAIL;
 }
+
+int test_sys_rtc()
+{
+
+    TEST_HEADER;
+     // TEST_HEADER;
+    int8_t* filename = "rtc";
+    int fd;
+    if ((fd = open((uint8_t*)filename)) != -1)
+    {
+	    uint16_t freq = 2; //set desired freq for testing
+        uint32_t i = 0;
+	    while(freq <= 1024)
+        {
+            while(i < freq)
+            {
+		        read(fd, NULL, 0);
+		        printf("1");
+                i++;
+            }
+            i = 0;
+            clear();
+	        write(fd,&freq, sizeof(uint16_t));
+            freq *= 2;
+	    }
+    }
+    return PASS;
+}
+
 /*
  * launch_tests_checkpoint_1()
  * 
@@ -381,14 +413,16 @@ void launch_tests_checkpoint_2()
 {
     // TEST_OUTPUT("test_file_read", test_file_read());
     // TEST_OUTPUT("test_dir_read", test_dir_read());
-    // TEST_OUTPUT("terminal_test", terminal_test());
     // TEST_OUTPUT("rtc_test", rtc_test());
 
 }
 /* Checkpoint 3 tests */
 void launch_tests_checkpoint_3(){
     // TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
-    TEST_OUTPUT("test_sys_file_read", test_sys_file_read());
+    // TEST_OUTPUT("test_sys_file_read", test_sys_file_read());
+    // TEST_OUTPUT("test_sys_rtc", test_sys_rtc());
+    TEST_OUTPUT("terminal_test", terminal_test());
+
 }
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

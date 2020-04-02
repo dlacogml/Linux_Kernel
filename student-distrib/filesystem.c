@@ -34,9 +34,11 @@ void init_filesystem(){
     for (i = 0; i < NUM_FD; i++){
         fdarray[i].flags = 0; // make all fdarray entries open initally
     }
+    fdarray[0].f_ops_pointer = &terminal_op_table;
     fdarray[0].f_ops_pointer->read = &(terminal_read);
     fdarray[0].flags = 1;
 
+    fdarray[1].f_ops_pointer = &terminal_op_table;
     fdarray[1].f_ops_pointer->write = &(terminal_write);
     fdarray[1].flags = 1;
 }
