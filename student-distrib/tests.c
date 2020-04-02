@@ -4,7 +4,6 @@
 #include "filesystem.h"
 #include "keyboard.h"
 #include "rtc.h"
-#include "../syscalls/ece391syscall.h"
 #define PASS 1
 #define FAIL 0
 
@@ -305,16 +304,16 @@ int terminal_test()
 
 int test_sys_dir_read(){
     uint8_t buf[FILENAME_LENGTH];
-    int cnt;
+    int cnt, fd;
 
     /* directory name */
     int8_t* filename = ".";
 
     /* check if valid directory */
-    if (ece391_open((uint8_t*)filename) == 0){
-
+    if ((fd = open((uint8_t*)filename)) != -1){
+        printf("opened");
         /* print each filename */
-        while (0 != (cnt = ece391_read (0, buf, FILENAME_LENGTH))) {
+        while (0 != (cnt = read (fd, buf, FILENAME_LENGTH))) {
             int i;
             for (i = 0; i < cnt; i++){
                 putc(buf[i]);
@@ -325,6 +324,31 @@ int test_sys_dir_read(){
     }
     return FAIL;
 
+}
+
+int test_sys_file_read(){
+    int32_t buf_length = 10000; // length of buffer for test
+
+    uint8_t buf[buf_length];
+    int fd;
+    /* file name */
+    int8_t* filename = "frame0.txt";
+
+    /* check if valid file */
+    if ((fd = open((uint8_t*)filename)) != -1){
+
+        /* read from file */
+        int num_bytes = read(fd, buf, buf_length);
+
+        int i;
+
+        /* print file to console */
+        for (i = 0; i < num_bytes; i++){
+            putc(buf[i]);
+        }
+        return PASS;
+    }
+    return FAIL;
 }
 /*
  * launch_tests_checkpoint_1()
@@ -363,7 +387,8 @@ void launch_tests_checkpoint_2()
 }
 /* Checkpoint 3 tests */
 void launch_tests_checkpoint_3(){
-    TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
+    // TEST_OUTPUT("test_sys_dir_read", test_sys_dir_read());
+    TEST_OUTPUT("test_sys_file_read", test_sys_file_read());
 }
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

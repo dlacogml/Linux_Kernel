@@ -7,7 +7,7 @@
 #include "rtc.h"
 #include "idt.h"
 #include "lib.h"
-#include "../syscalls/syscallhandlers.h"
+#include "syscallhandlers.h"
 
 #ifndef IDT_ASM_H
 #define IDT_ASM_H
