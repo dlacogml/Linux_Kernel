@@ -79,6 +79,7 @@ asmHandler128:
 
 invalid_sys_num:
     addl $4, %esp          # pop the interrupt number
+    movl $-1, %eax
     iret
 
 asm_halt:
