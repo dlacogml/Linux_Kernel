@@ -12,13 +12,15 @@
 #define DIRECTORY_SIZE 1024
 #define TABLE_SIZE     1024
 #define ALIGNED_SIZE   4096
+#define KERNEL_ADDR 0x400000
+
 
 //allocate memories for page_directory and first page_table
 uint32_t page_directory[DIRECTORY_SIZE] __attribute__((aligned(ALIGNED_SIZE)));
 uint32_t first_page_table[TABLE_SIZE] __attribute__((aligned(ALIGNED_SIZE)));
 //function that calls to initialize paging
 extern void init_paging();
-
+void setup_program_page(int pid);
 
 #endif
 #endif 

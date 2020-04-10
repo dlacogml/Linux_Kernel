@@ -13,6 +13,7 @@
 #include "idt.h"
 #include "paging.h"
 #include "filesystem.h"
+#include "syscallhandlers.h"
 
 #define RUN_TESTS
 #define RTC_PORT    0x70
@@ -172,10 +173,10 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Run tests */
     // launch_tests_checkpoint_1();
     // launch_tests_checkpoint_2();
-    launch_tests_checkpoint_3();
+    // launch_tests_checkpoint_3();
 #endif
     /* Execute the first program ("shell") ... */
-
+    execute("shell");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

@@ -7,9 +7,7 @@
 #include "filesystem.h"
 
 /* global variables/structures */
-inode_t* inodes;
-boot_block_t* boot_block;
-data_block_t* data_blocks;
+
 // int file_pos;
 // int dir_index;
 // int inode_num;
@@ -34,23 +32,9 @@ void init_filesystem(){
     for (i = 0; i < NUM_FD; i++){
         fdarray[i].flags = 0; // make all fdarray entries open initally
     }
-    fdarray[0].f_ops_pointer = &terminal_op_table;
-    fdarray[0].f_ops_pointer->read = &(terminal_read);
-    fdarray[0].f_ops_pointer->write = &stdin_write;
-    fdarray[0].f_ops_pointer->open = &terminal_open;
-    fdarray[0].f_ops_pointer->close = &terminal_close;
-    fdarray[0].file_pos = 0;
-    fdarray[0].inode = 0;
-    fdarray[0].flags = 1;
 
-    fdarray[1].f_ops_pointer = &terminal_op_table;
-    fdarray[1].f_ops_pointer->write = &(terminal_write);
-    fdarray[1].f_ops_pointer->read = &(stdout_read);
-    fdarray[1].f_ops_pointer->open = &terminal_open;
-    fdarray[1].f_ops_pointer->close = &terminal_close;
-    fdarray[1].file_pos = 0;
-    fdarray[1].inode = 0;
-    fdarray[1].flags = 1;
+
+
 }
 
 /* file_open

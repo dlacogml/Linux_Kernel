@@ -27,6 +27,9 @@
 /* starting address for filesystem */
 int8_t* filesys_start;
 
+inode_t* inodes;
+boot_block_t* boot_block;
+data_block_t* data_blocks;
 
 
 /* struct for a directory entry */
@@ -81,6 +84,15 @@ typedef struct file_descriptor {
     int32_t flags;
 } file_descriptor_t;
 
+typedef struct pcb{
+    file_descriptor_t fdarray[NUM_FD];
+    uint8_t filename[32];
+    uint32_t pid;
+    uint32_t is_haltable;
+    void* parent_pcb;
+    uint32_t esp;
+    uint32_t pstate;
+} pcb_t;
 file_descriptor_t fdarray[NUM_FD];
 
 /* all functions for filesystems, function interfaces in .c file */

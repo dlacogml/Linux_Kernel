@@ -4,7 +4,6 @@
  */
 #include "paging.h"
 #define NOT_PRESENT 0x02
-#define KERNEL_ADDR 0x400000
 
 //void init_paging
 //interface: first set every entry of page directory to be not_present then set every entry of first page  
@@ -42,5 +41,13 @@ void init_paging()
     loadPageDirectory((unsigned int*)page_directory);
     enablePaging();
 
+}
+
+void setup_program_page(int pid){
+    page_directory[31] = ((0x800000 + pid * 0x400000) | 0x193);
+    // flush tlb
+    asm volatile ("movl %cr3, %eax  \n\
+                   movl %eax, %cr3  \n\
+                   ");
 }
 

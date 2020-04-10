@@ -1,28 +1,110 @@
 #include "syscallhandlers.h"
+#include "filesystem.h"
+#include "paging.h"
 
-
+pcb_t* parent = NULL;
 
 int32_t halt (uint8_t status){
 
 }
 
 int32_t execute (const uint8_t* command){
+    dentry_t dentry;
 
+    if (read_dentry_by_name(command, &dentry) == -1){
+        return -1;
+    }
+    if (dentry.filetype != FILE_CODE){
+        return -1;
+    }
+    int filesize = inodes[dentry.inode_num].length;
+    uint8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
+    uint8_t buf[filesize];
+    if (read_data(dentry.inode_num, 0, buf, filesize) == 0){
+        return -1;
+    }
+    if (strncmp(buf, magic_number, 4) != 0){
+        return -1;
+    }
+    int i;
+    for (i = 0; i < 6; i++){
+        if (pid_array[i] == 0){
+            pid_array[i] = 1;
+            break;
+        }
+    }
+    uint8_t virtual_addr[4] = {buf[27], buf[26], buf[25], buf[24]};
+    uint32_t entry_point = (uint32_t) virtual_addr;
+    //set up paging: maps virtual addr to new 4MB physical page, set up page directory entry
+    setup_program_page(i);
+    uint32_t v_addr = 0x08000000;
+    uint32_t mem_start = 0x08048000;
+
+    
+    // v_addr -> page_directory[]
+    //copy entire executable into virtual memory starting at virtual addr 0x08048000
+    memcpy(mem_start, buf, filesize);
+    
+
+    //create pcb/open fds
+    pcb_t pcb;
+    // fill in pcb
+    pcb.pid = i;
+    if (i == 0){
+        pcb.is_haltable = 0;
+    } else {
+        pcb.is_haltable = 1;
+    }
+    pcb.parent_pcb = parent;
+    parent = &pcb;
+    strncpy(pcb.filename, command, strlen(command));
+    pcb.fdarray[0].f_ops_pointer = &terminal_op_table;
+    pcb.fdarray[0].f_ops_pointer->read = &(terminal_read);
+    pcb.fdarray[0].f_ops_pointer->write = &stdin_write;
+    pcb.fdarray[0].f_ops_pointer->open = &terminal_open;
+    pcb.fdarray[0].f_ops_pointer->close = &terminal_close;
+    pcb.fdarray[0].file_pos = 0;
+    pcb.fdarray[0].inode = 0;
+    pcb.fdarray[0].flags = 1;
+
+    pcb.fdarray[1].f_ops_pointer = &terminal_op_table;
+    pcb.fdarray[1].f_ops_pointer->write = &(terminal_write);
+    pcb.fdarray[1].f_ops_pointer->read = &(stdout_read);
+    pcb.fdarray[1].f_ops_pointer->open = &terminal_open;
+    pcb.fdarray[1].f_ops_pointer->close = &terminal_close;
+    pcb.fdarray[1].file_pos = 0;
+    pcb.fdarray[1].inode = 0;
+    pcb.fdarray[1].flags = 1;
+    memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
+    //jump to entry point (entry_point) 
+
+
+    return 0;
 }
 
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
-    return (*fdarray[fd].f_ops_pointer->read)(fd, buf, nbytes);
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
+    return (*pcb_pointer->fdarray[fd].f_ops_pointer->read)(fd, buf, nbytes);
 }
 
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-    return (*fdarray[fd].f_ops_pointer->write)(fd, buf, nbytes);
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
+    return (*pcb_pointer->fdarray[fd].f_ops_pointer->write)(fd, buf, nbytes);
 }
 
 int32_t open (const uint8_t* filename){
     int32_t i;
     int32_t open_flag = 0;
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
+
     for (i = 0; i < NUM_FD; i++){
-        if (fdarray[i].flags == FILE_OPEN){
+        if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
             open_flag = 1;
             break;
         }
@@ -34,32 +116,32 @@ int32_t open (const uint8_t* filename){
     dentry_t dentry;
     if (read_dentry_by_name(filename, &dentry) == 0){
         if (dentry.filetype == FILE_CODE){
-            fdarray[fd].f_ops_pointer = &file_op_table;
-            fdarray[fd].f_ops_pointer->read = &file_read;
-            fdarray[fd].f_ops_pointer->write = &file_write;
-            fdarray[fd].f_ops_pointer->open = &file_open;
-            fdarray[fd].f_ops_pointer->close = &file_close;
-            fdarray[fd].inode = dentry.inode_num;
-            fdarray[fd].file_pos = 0;
-            fdarray[fd].flags = FILE_CLOSED;
+            pcb_pointer->fdarray[fd].f_ops_pointer = &file_op_table;
+            pcb_pointer->fdarray[fd].f_ops_pointer->read = &file_read;
+            pcb_pointer->fdarray[fd].f_ops_pointer->write = &file_write;
+            pcb_pointer->fdarray[fd].f_ops_pointer->open = &file_open;
+            pcb_pointer->fdarray[fd].f_ops_pointer->close = &file_close;
+            pcb_pointer->fdarray[fd].inode = dentry.inode_num;
+            pcb_pointer->fdarray[fd].file_pos = 0;
+            pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
         } else if (dentry.filetype == DIR_CODE){
-            fdarray[fd].f_ops_pointer = &dir_op_table;
-            fdarray[fd].f_ops_pointer->read = &dir_read;
-            fdarray[fd].f_ops_pointer->write = &dir_write;
-            fdarray[fd].f_ops_pointer->open = &dir_open;
-            fdarray[fd].f_ops_pointer->close = &dir_close;
-            fdarray[fd].inode = 0;
-            fdarray[fd].file_pos = 0;
-            fdarray[fd].flags = FILE_CLOSED;
+            pcb_pointer->fdarray[fd].f_ops_pointer = &dir_op_table;
+            pcb_pointer->fdarray[fd].f_ops_pointer->read = &dir_read;
+            pcb_pointer->fdarray[fd].f_ops_pointer->write = &dir_write;
+            pcb_pointer->fdarray[fd].f_ops_pointer->open = &dir_open;
+            pcb_pointer->fdarray[fd].f_ops_pointer->close = &dir_close;
+            pcb_pointer->fdarray[fd].inode = 0;
+            pcb_pointer->fdarray[fd].file_pos = 0;
+            pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
         } else if (dentry.filetype == RTC_CODE){
-            fdarray[fd].f_ops_pointer = &rtc_op_table;
-            fdarray[fd].f_ops_pointer->read = &rtc_read;
-            fdarray[fd].f_ops_pointer->write = &rtc_write;
-            fdarray[fd].f_ops_pointer->open = &rtc_open;
-            fdarray[fd].f_ops_pointer->close = &rtc_close;
-            fdarray[fd].inode = 0;
-            fdarray[fd].file_pos = 0;
-            fdarray[fd].flags = FILE_CLOSED;
+            pcb_pointer->fdarray[fd].f_ops_pointer = &rtc_op_table;
+            pcb_pointer->fdarray[fd].f_ops_pointer->read = &rtc_read;
+            pcb_pointer->fdarray[fd].f_ops_pointer->write = &rtc_write;
+            pcb_pointer->fdarray[fd].f_ops_pointer->open = &rtc_open;
+            pcb_pointer->fdarray[fd].f_ops_pointer->close = &rtc_close;
+            pcb_pointer->fdarray[fd].inode = 0;
+            pcb_pointer->fdarray[fd].file_pos = 0;
+            pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
         }
 
 
@@ -69,10 +151,13 @@ int32_t open (const uint8_t* filename){
 }
 
 int32_t close (int32_t fd){
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
     if (fd <= 1 || fd >= 8){
         return -1;
     }
-    fdarray[fd].flags == FILE_OPEN;
+    pcb_pointer->fdarray[fd].flags == FILE_OPEN;
     return 0;
 }
 

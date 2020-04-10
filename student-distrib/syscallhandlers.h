@@ -7,6 +7,9 @@
 #ifndef SYSCALLHANDLERS_H
 #define SYSCALLHANDLERS_H
 
+int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
+
+
 int32_t halt (uint8_t status);
 int32_t execute (const uint8_t* command);
 int32_t read (int32_t fd, void* buf, int32_t nbytes);
