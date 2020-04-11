@@ -14,7 +14,7 @@
 /* void handler0()
     DESCRIPTION: prints the descriptions of the specific interrupt called
     and freezes the kernel for an indefinite amount of time
-    INPUT: NONE
+    INPUT: NONE 
     OUTPUT: NONE
 */
 
@@ -201,7 +201,7 @@ void handler12(){
     OUTPUT: NONE
 */
 void handler13(){
-    clear();
+    // clear();
     printf("General Protection Exception");
     while(1){
 

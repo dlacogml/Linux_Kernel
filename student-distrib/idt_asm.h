@@ -17,5 +17,6 @@ void asmHandler2();
 void asmHandler33();
 void asmHandler40();
 void asmHandler128();
+void execute_context_switch(user_ds, user_esp, flags, user_cs, entry_point);
 
 #endif 

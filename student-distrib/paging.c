@@ -44,7 +44,7 @@ void init_paging()
 }
 
 void setup_program_page(int pid){
-    page_directory[31] = ((0x800000 + pid * 0x400000) | 0x193);
+    page_directory[32] = ((0x800000 + pid * 0x400000) | 0x197);
     // flush tlb
     asm volatile ("movl %cr3, %eax  \n\
                    movl %eax, %cr3  \n\

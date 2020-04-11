@@ -9,16 +9,6 @@
 .globl asmHandler33
 .globl asmHandler40
 .globl asmHandler128
-; .globl halt
-; .globl execute
-; .globl read
-; .globl write
-; .globl open
-; .globl close
-; .globl getargs
-; .globl vidmap
-; .globl set_handler
-; .globl sigreturn
 
 /* asmHandler2
  * INTERFACE: calls handler2
