@@ -7,6 +7,35 @@ pcb_t* parent = NULL;
 int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
 
 int32_t halt (uint8_t status){
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
+    if (!pcb_pointer->is_haltable){
+        return -1;
+    }
+    pcb_t* parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
+    uint32_t parent_pid = parent_pcb->pid;
+    tss.esp0 = 0x800000 - parent_pid * 0x2000 - 4;
+    tss.ss0 = KERNEL_DS;
+    setup_program_page(parent_pid);
+    int i;
+    for (i = 2; i < NUM_FD; i++){
+        pcb_pointer->fdarray[i].f_ops_pointer->close(i);
+    }
+    pid_array[pcb_pointer->pid] = 0;
+    uint32_t parent_esp = parent_pcb->esp;
+    uint32_t parent_ebp = parent_pcb->ebp;
+    asm volatile("xorl %%eax, %%eax         \n\
+                  movb %%bl, %%al           \n\
+                  movl %0, %%esp            \n\
+                  movl %1, %%ebp            \n\
+                  jmp halt_return           \n\
+                 "
+                  :
+                  :"r"(parent_esp), "r"(parent_ebp)
+                  :"memory"
+                  );
+
     return 0;
 }
 
@@ -19,8 +48,8 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
     int filesize = inodes[dentry.inode_num].length;
-    uint8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
-    uint8_t buf[40];
+    int8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
+    int8_t buf[40];
     if (read_data(dentry.inode_num, 0, buf, 40) == 0){
         return -1;
     }
@@ -54,7 +83,7 @@ int32_t execute (const uint8_t* command){
     }
     pcb.parent_pcb = parent;
     parent = &pcb;
-    strncpy(pcb.filename, command, strlen(command));
+    strncpy((int8_t*)pcb.filename, (int8_t*)command, strlen((int8_t*)command));
     pcb.fdarray[0].f_ops_pointer = &stdin_op_table;
     pcb.fdarray[0].f_ops_pointer->read = &(terminal_read);
     pcb.fdarray[0].f_ops_pointer->write = &stdin_write;
@@ -72,16 +101,20 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[1].file_pos = 0;
     pcb.fdarray[1].inode = 0;
     pcb.fdarray[1].flags = 1;
-    memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
+    pcb.ebp = 0x800000 - i * 0x2000 - 4;
     //jump to entry point (entry_point) 
 
     // prepare for context switch
+    tss.esp0 = 0x800000 - i * 0x2000 - 4;
+    tss.ss0 = KERNEL_DS;
     uint32_t user_ds = USER_DS;
     uint32_t user_esp = v_addr + 0x3fffff - 3;
     uint32_t user_cs = USER_CS;
-    tss.esp0 = 0x800000 - i * 0x2000 - 4;
-    tss.ss0 = KERNEL_DS;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
+    register int esp asm("esp");
+    pcb.esp = esp;
+    memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
+    // get current value of esp and ebp (parent esp and ebp)
     asm volatile (" push %0             \n\
                     push %1             \n\
                     pushfl              \n\
@@ -90,11 +123,18 @@ int32_t execute (const uint8_t* command){
                     pushl %%eax         \n\
                     push %2             \n\
                     push %3             \n\
-                    iret"
+                    iret                \n\
+                    halt_return:        \n\
+                    leave               \n\
+                    ret                 \n\
+                    "
                     :
                     :"r"(user_ds), "r"(user_esp), "r"(user_cs), "r"(entry_point)
                     :"eax"
                     );
+    // restore values of esp and ebp
+
+    
     return 0;
 }
 
