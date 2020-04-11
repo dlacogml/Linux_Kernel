@@ -7,7 +7,7 @@ pcb_t* parent = NULL;
 int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
 
 int32_t halt (uint8_t status){
-
+    return 0;
 }
 
 int32_t execute (const uint8_t* command){
@@ -76,7 +76,9 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[1].file_pos = 0;
     pcb.fdarray[1].inode = 0;
     pcb.fdarray[1].flags = 1;
+    printf("before memcpy\n");
     memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
+    printf("after memcpy\n");
     //jump to entry point (entry_point) 
 
     // prepare for context switch
@@ -86,11 +88,19 @@ int32_t execute (const uint8_t* command){
     cli_and_save(flags);
     uint16_t user_cs = USER_CS;
     tss.esp0 = 0x800000 - i * 0x2000;
-    uint32_t entry_point = (uint32_t) virtual_addr;
+    uint32_t entry_point = *((uint32_t*) virtual_addr);
 
-    asm volatile("iret");
-
-
+    asm volatile (" push %0     \n\
+                    push %1     \n\
+                    push %2     \n\
+                    push %3     \n\
+                    push %4     \n\
+                    iret"
+                    :
+                    :"r"(user_ds), "r"(user_esp), "r"(flags), "r"(user_cs), "r"(entry_point)
+                    :"memory"
+                    );
+    printf("after asm volatile");
     return 0;
 }
 
@@ -174,17 +184,19 @@ int32_t close (int32_t fd){
 }
 
 int32_t getargs (uint8_t* buf, int32_t nbytes){
-
+    return 0;
 }
 
 int32_t vidmap (uint8_t** screen_start){
-
+    return 0;
 }
 
 int32_t set_handler (int32_t signum, void* handler_address){
-
+    return 0;
 }
 
 int32_t sigreturn (void){
-
+    return 0;
 }
+
+
