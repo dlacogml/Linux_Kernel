@@ -234,7 +234,6 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         return -1;
     //wait until the newline signal is triggered
     while(!NEWLINE_FLAG);
-    cli();
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
@@ -247,13 +246,11 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
       {
         // clear_buffer();
         // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
-        sti();
         return count;
       }
     }
     //increment the number of times a keyboard string has being read
     read_idx++;
-    sti();
     return count;
 }
 /*
@@ -274,7 +271,7 @@ uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         return -1;
     uint32_t i; //loop counter
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
-    for(i = 0; i < nbytes && i < buf_idx + 1 && a[i]; i++)
+    for(i = 0; (i < nbytes) && (a[i] || keyboard_buffer[i]); i++)
     {
         /* when we have reach the end of the buf*/
         if(a[i] == '\n')
