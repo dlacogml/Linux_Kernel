@@ -66,7 +66,7 @@ void handler33()
     if(key == 28)
     {
       NEWLINE_FLAG = 1; //set the newline flag to be 1
-      keyboard_buffer[buf_idx] = '\n'; //append newline at the end
+      // keyboard_buffer[buf_idx] = '\n'; //append newline at the end
       putc('\n');
       send_eoi(KEYBOARD_IRQ);
       return;
@@ -245,10 +245,12 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
       if(buffer[i] == '\n')
       {
         // clear_buffer();
-        // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+        NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+        // buffer[i] = '\0';
         return count;
       }
     }
+    NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
     read_idx++;
     return count;
@@ -277,7 +279,7 @@ uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         if(a[i] == '\n')
         {
           clear_buffer();   //clear the keyboard buffer after we call write
-          NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+          // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
           putc(a[i]); //output char on screen
           return i+1;
         }
