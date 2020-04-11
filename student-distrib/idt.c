@@ -216,7 +216,17 @@ void handler13(){
 */
 void handler14(){
     // clear();
-    printf("Page Fault Exception");
+    printf("Page Fault Exception\n");
+    uint32_t value, error_code;
+    asm volatile(
+        "movl %%cr2, %0     \n\
+         movl 8(%%esp), %1"
+        :"=r"(value), "=r"(error_code)
+        :
+        :"memory"
+    );
+    printf("linear address: %x\n", value);
+    printf("error code: %x\n", error_code);
     while(1){
 
     }
