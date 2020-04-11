@@ -6,7 +6,6 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
-#include "filesystem.h"
 static volatile uint8_t CAPS_PRESSED = 0;
 static volatile uint8_t SHIFT_PRESSED = 0;
 static volatile uint8_t CONTROL_PRESSED = 0;
@@ -67,7 +66,7 @@ void handler33()
     if(key == 28)
     {
       NEWLINE_FLAG = 1; //set the newline flag to be 1
-      // keyboard_buffer[buf_idx] = '\n'; //append newline at the end
+      keyboard_buffer[buf_idx] = '\n'; //append newline at the end
       putc('\n');
       send_eoi(KEYBOARD_IRQ);
       return;
@@ -231,13 +230,11 @@ uint32_t terminal_close(int32_t fd)
  */
 uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
-    register int esp asm("esp");
-    uint32_t mask = 0xffffe000;
-    // pcb_t* pcb_pointer = esp & mask;
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
     while(!NEWLINE_FLAG);
+    cli();
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
@@ -251,14 +248,14 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         // clear_buffer();
         NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
         // buffer[i] = '\0';
+        sti();
         return count;
       }
     }
     NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
     read_idx++;
-    // pcb_pointer->fdarray[fd].file_pos = pcb_pointer->fdarray[fd].file_pos + count;
-
+    sti();
     return count;
 }
 /*
@@ -279,13 +276,13 @@ uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         return -1;
     uint32_t i; //loop counter
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
-    for(i = 0; (i < nbytes) && (a[i] || keyboard_buffer[i]); i++)
+    for(i = 0; i < nbytes; i++)
     {
         /* when we have reach the end of the buf*/
         if(a[i] == '\n')
         {
-          clear_buffer();   //clear the keyboard buffer after we call write
-          // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+          // clear_buffer();   //clear the keyboard buffer after we call write
+          NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
           putc(a[i]); //output char on screen
           return i+1;
         }
