@@ -12,7 +12,6 @@ int32_t halt (uint8_t status){
 
 int32_t execute (const uint8_t* command){
     dentry_t dentry;
-    printf("%s\n", command);
     if (read_dentry_by_name(command, &dentry) == -1){
         return -1;
     }
@@ -25,7 +24,6 @@ int32_t execute (const uint8_t* command){
     if (read_data(dentry.inode_num, 0, buf, 40) == 0){
         return -1;
     }
-    printf("read data\n");
     if (strncmp(buf, magic_number, 4) != 0){
         return -1;
     }
@@ -40,13 +38,11 @@ int32_t execute (const uint8_t* command){
 
     //set up paging: maps virtual addr to new 4MB physical page, set up page directory entry
     setup_program_page(i);
-    printf("set program page\n");
     uint32_t v_addr = 0x08000000;
     uint32_t mem_start = 0x08048000;
 
     //copy entire executable into virtual memory starting at virtual addr 0x08048000
     read_data(dentry.inode_num, 0, mem_start, filesize);
-    printf("read data 2\n");
     //create pcb/open fds
     pcb_t pcb;
     // fill in pcb
@@ -76,9 +72,7 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[1].file_pos = 0;
     pcb.fdarray[1].inode = 0;
     pcb.fdarray[1].flags = 1;
-    printf("before memcpy\n");
     memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
-    printf("after memcpy\n");
     //jump to entry point (entry_point) 
 
     // prepare for context switch
@@ -98,7 +92,6 @@ int32_t execute (const uint8_t* command){
                     :"r"(user_ds), "r"(user_esp), "r"(user_cs), "r"(entry_point)
                     :"memory"
                     );
-    printf("after asm volatile");
     return 0;
 }
 

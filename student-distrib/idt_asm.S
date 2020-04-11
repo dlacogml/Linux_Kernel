@@ -60,6 +60,8 @@ asmHandler128:
     jl invalid_sys_num
     cmpl $9, %eax
     ja invalid_sys_num
+    push %edi
+    push %esi
     /* push args */ 
     push %edx
     push %ecx
@@ -69,6 +71,8 @@ asmHandler128:
     pop %ebx
     pop %ecx
     pop %edx
+    pop %esi
+    pop %edi 
     addl $4, %esp
     iret
 
