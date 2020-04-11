@@ -1,8 +1,10 @@
 #include "syscallhandlers.h"
 #include "filesystem.h"
 #include "paging.h"
+#include "x86_desc.h"
 
 pcb_t* parent = NULL;
+int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
 
 int32_t halt (uint8_t status){
 
@@ -10,7 +12,7 @@ int32_t halt (uint8_t status){
 
 int32_t execute (const uint8_t* command){
     dentry_t dentry;
-
+    printf("%s\n", command);
     if (read_dentry_by_name(command, &dentry) == -1){
         return -1;
     }
@@ -19,10 +21,11 @@ int32_t execute (const uint8_t* command){
     }
     int filesize = inodes[dentry.inode_num].length;
     uint8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
-    uint8_t buf[filesize];
-    if (read_data(dentry.inode_num, 0, buf, filesize) == 0){
+    uint8_t buf[40];
+    if (read_data(dentry.inode_num, 0, buf, 40) == 0){
         return -1;
     }
+    printf("read data\n");
     if (strncmp(buf, magic_number, 4) != 0){
         return -1;
     }
@@ -34,18 +37,16 @@ int32_t execute (const uint8_t* command){
         }
     }
     uint8_t virtual_addr[4] = {buf[27], buf[26], buf[25], buf[24]};
-    uint32_t entry_point = (uint32_t) virtual_addr;
+
     //set up paging: maps virtual addr to new 4MB physical page, set up page directory entry
     setup_program_page(i);
+    printf("set program page\n");
     uint32_t v_addr = 0x08000000;
     uint32_t mem_start = 0x08048000;
 
-    
-    // v_addr -> page_directory[]
     //copy entire executable into virtual memory starting at virtual addr 0x08048000
-    memcpy(mem_start, buf, filesize);
-    
-
+    read_data(dentry.inode_num, 0, mem_start, filesize);
+    printf("read data 2\n");
     //create pcb/open fds
     pcb_t pcb;
     // fill in pcb
@@ -77,6 +78,17 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[1].flags = 1;
     memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
     //jump to entry point (entry_point) 
+
+    // prepare for context switch
+    uint16_t user_ds = USER_DS;
+    uint32_t user_esp = v_addr + 0x400000;
+    uint32_t flags;
+    cli_and_save(flags);
+    uint16_t user_cs = USER_CS;
+    tss.esp0 = 0x800000 - i * 0x2000;
+    uint32_t entry_point = (uint32_t) virtual_addr;
+
+    asm volatile("iret");
 
 
     return 0;

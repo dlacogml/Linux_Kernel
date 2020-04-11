@@ -7,7 +7,6 @@
 #ifndef SYSCALLHANDLERS_H
 #define SYSCALLHANDLERS_H
 
-int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
 
 
 int32_t halt (uint8_t status);

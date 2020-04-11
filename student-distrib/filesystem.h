@@ -27,9 +27,7 @@
 /* starting address for filesystem */
 int8_t* filesys_start;
 
-inode_t* inodes;
-boot_block_t* boot_block;
-data_block_t* data_blocks;
+
 
 
 /* struct for a directory entry */
@@ -94,6 +92,10 @@ typedef struct pcb{
     uint32_t pstate;
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];
+
+inode_t* inodes;
+boot_block_t* boot_block;
+data_block_t* data_blocks;
 
 /* all functions for filesystems, function interfaces in .c file */
 int32_t file_open(const uint8_t* filename);
