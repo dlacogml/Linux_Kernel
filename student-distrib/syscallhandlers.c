@@ -81,10 +81,12 @@ int32_t execute (const uint8_t* command){
     uint32_t user_cs = USER_CS;
     tss.esp0 = 0x800000 - i * 0x2000 - 4;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
-
     asm volatile (" push %0     \n\
                     push %1     \n\
-                    pushfl     \n\
+                    pushf       \n\
+                    popl %%eax  \n\
+                    orl $0x4200, %%eax \n\
+                    pushl %%eax  \n\
                     push %2     \n\
                     push %3     \n\
                     iret"

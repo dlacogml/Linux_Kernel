@@ -60,19 +60,25 @@ asmHandler128:
     jl invalid_sys_num
     cmpl $9, %eax
     ja invalid_sys_num
+    push %ebp
     push %edi
     push %esi
+    push %edx
+    push %ecx
+    push %ebx
     /* push args */ 
     push %edx
     push %ecx
     push %ebx
      # jump jumptable
     call *jump_table(, %eax, 4)
+    addl $12, %esp 
     pop %ebx
     pop %ecx
     pop %edx
     pop %esi
     pop %edi 
+    pop %ebp
     addl $4, %esp
     iret
 
