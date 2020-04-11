@@ -83,9 +83,9 @@ int32_t execute (const uint8_t* command){
 
     // prepare for context switch
     uint32_t user_ds = USER_DS;
-    uint32_t user_esp = v_addr + 0x3fffff;
+    uint32_t user_esp = v_addr + 0x3fffff - 3;
     uint32_t user_cs = USER_CS;
-    tss.esp0 = 0x800000 - i * 0x2000;
+    tss.esp0 = 0x800000 - i * 0x2000 - 4;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
 
     asm volatile (" push %0     \n\
