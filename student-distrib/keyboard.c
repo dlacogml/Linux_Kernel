@@ -200,7 +200,7 @@ void clear_buffer()
  * return value: 0
  * side effects: nothing
  */
-uint32_t terminal_open(const uint8_t* filename)
+int32_t terminal_open(const uint8_t* filename)
 {
   clear_buffer();
   return 0;  //do nothing
@@ -213,7 +213,7 @@ uint32_t terminal_open(const uint8_t* filename)
  * return value: 0
  * side effects: nothing
  */
-uint32_t terminal_close(int32_t fd)
+int32_t terminal_close(int32_t fd)
 {
     return 0; //do nothing
 }
@@ -228,13 +228,13 @@ uint32_t terminal_close(int32_t fd)
  *               fail    - -1
  * side effects: read the the number of bytes into the buf
  */
-uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
+int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
     while(!NEWLINE_FLAG);
-    cli();
+    // cli();
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
@@ -245,17 +245,18 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
       /*when we reach the end*/
       if(buffer[i] == '\n')
       {
-        // clear_buffer();
+        clear_buffer();
         NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
-        // buffer[i] = '\0';
-        sti();
+        buffer[i] = '\0';
+        // sti();
         return count;
       }
     }
-    NEWLINE_FLAG = 0;
+    if(nbytes >= strlen(buf))
+      NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
     read_idx++;
-    sti();
+    // sti();
     return count;
 }
 /*
@@ -269,7 +270,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
  *               fail    - -1
  * side effects: write the number of bytes from the buffer on screen
  */
-uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
+int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 {
     /*check if buf is NULL*/
     if(buf == NULL)
@@ -279,10 +280,10 @@ uint32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     for(i = 0; i < nbytes; i++)
     {
         /* when we have reach the end of the buf*/
-        if(a[i] == '\n')
+        if(a[i] == '\n' && a[i] != 0)
         {
           // clear_buffer();   //clear the keyboard buffer after we call write
-          NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+          // NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
           putc(a[i]); //output char on screen
           return i+1;
         }

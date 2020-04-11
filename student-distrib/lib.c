@@ -35,7 +35,7 @@ void backspace(void)
         //when it's at the top left corner, then do nothing
     if(screen_x == 0 && screen_y == 0)
         return;
-    else if(screen_x == 0) //when go back to the previous line
+    else if(screen_x == 7) //when go back to the previous line
     {   
         return;
     } 
