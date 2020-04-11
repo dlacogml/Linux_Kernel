@@ -81,14 +81,14 @@ int32_t execute (const uint8_t* command){
     uint32_t user_cs = USER_CS;
     tss.esp0 = 0x800000 - i * 0x2000 - 4;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
-    asm volatile (" push %0     \n\
-                    push %1     \n\
-                    pushf       \n\
-                    popl %%eax  \n\
-                    orl $0x4200, %%eax \n\
-                    pushl %%eax  \n\
-                    push %2     \n\
-                    push %3     \n\
+    asm volatile (" push %0             \n\
+                    push %1             \n\
+                    pushfl              \n\
+                    popl %%eax          \n\
+                    orl $0x4200, %%eax  \n\
+                    pushl %%eax         \n\
+                    push %2             \n\
+                    push %3             \n\
                     iret"
                     :
                     :"r"(user_ds), "r"(user_esp), "r"(user_cs), "r"(entry_point)
@@ -105,6 +105,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
 }
 
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
+    printf("write\n");
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
