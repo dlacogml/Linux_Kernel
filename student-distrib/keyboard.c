@@ -6,6 +6,7 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
+#include "filesystem.h"
 static volatile uint8_t CAPS_PRESSED = 0;
 static volatile uint8_t SHIFT_PRESSED = 0;
 static volatile uint8_t CONTROL_PRESSED = 0;
@@ -230,6 +231,9 @@ uint32_t terminal_close(int32_t fd)
  */
 uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
+    register int esp asm("esp");
+    uint32_t mask = 0xffffe000;
+    pcb_t* pcb_pointer = esp & mask;
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -251,6 +255,8 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     }
     //increment the number of times a keyboard string has being read
     read_idx++;
+    pcb_pointer->fdarray[fd].file_pos = pcb_pointer->fdarray[fd].file_pos + count;
+
     return count;
 }
 /*
