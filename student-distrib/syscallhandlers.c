@@ -99,7 +99,7 @@ int32_t execute (const uint8_t* command){
 }
 
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
-    printf("read\n");
+    sti();
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
@@ -107,7 +107,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
 }
 
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-    printf("write\n");
+    sti();
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
