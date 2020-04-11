@@ -73,52 +73,72 @@ invalid_sys_num:
 
 asm_halt:
     call halt
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_execute:
     call execute 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret 
 
 asm_read:
     call read 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_write:
     call write 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret 
 
 asm_open:
     call open 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret 
 
 asm_close:
     call close 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_getargs:
     call getargs 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_vidmap:
     call vidmap 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_set_handler:
     call set_handler 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 asm_sigreturn:
     call sigreturn 
-    addl $16, %esp
+    pop %ebx
+    pop %ecx
+    pop %edx
     iret
 
 jump_table:
