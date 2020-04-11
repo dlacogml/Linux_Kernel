@@ -74,6 +74,8 @@ f_ops_table_t file_op_table;
 f_ops_table_t dir_op_table;
 f_ops_table_t rtc_op_table;
 f_ops_table_t terminal_op_table;
+f_ops_table_t stdin_op_table;
+f_ops_table_t stdout_op_table;
 
 typedef struct file_descriptor {
     f_ops_table_t* f_ops_pointer;

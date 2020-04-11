@@ -55,7 +55,7 @@ int32_t execute (const uint8_t* command){
     pcb.parent_pcb = parent;
     parent = &pcb;
     strncpy(pcb.filename, command, strlen(command));
-    pcb.fdarray[0].f_ops_pointer = &terminal_op_table;
+    pcb.fdarray[0].f_ops_pointer = &stdin_op_table;
     pcb.fdarray[0].f_ops_pointer->read = &(terminal_read);
     pcb.fdarray[0].f_ops_pointer->write = &stdin_write;
     pcb.fdarray[0].f_ops_pointer->open = &terminal_open;
@@ -64,7 +64,7 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[0].inode = 0;
     pcb.fdarray[0].flags = 1;
 
-    pcb.fdarray[1].f_ops_pointer = &terminal_op_table;
+    pcb.fdarray[1].f_ops_pointer = &stdout_op_table;
     pcb.fdarray[1].f_ops_pointer->write = &(terminal_write);
     pcb.fdarray[1].f_ops_pointer->read = &(stdout_read);
     pcb.fdarray[1].f_ops_pointer->open = &terminal_open;
@@ -80,24 +80,26 @@ int32_t execute (const uint8_t* command){
     uint32_t user_esp = v_addr + 0x3fffff - 3;
     uint32_t user_cs = USER_CS;
     tss.esp0 = 0x800000 - i * 0x2000 - 4;
+    tss.ss0 = KERNEL_DS;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
     asm volatile (" push %0             \n\
                     push %1             \n\
                     pushfl              \n\
                     popl %%eax          \n\
-                    orl $0x4200, %%eax  \n\
+                    orl $0x200, %%eax  \n\
                     pushl %%eax         \n\
                     push %2             \n\
                     push %3             \n\
                     iret"
                     :
                     :"r"(user_ds), "r"(user_esp), "r"(user_cs), "r"(entry_point)
-                    :"memory"
+                    :"eax"
                     );
     return 0;
 }
 
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
+    printf("read\n");
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
