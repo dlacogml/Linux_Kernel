@@ -36,7 +36,7 @@ int32_t execute (const uint8_t* command){
             break;
         }
     }
-    uint8_t virtual_addr[4] = {buf[27], buf[26], buf[25], buf[24]};
+    uint8_t virtual_addr[4] = {buf[24], buf[25], buf[26], buf[27]};
 
     //set up paging: maps virtual addr to new 4MB physical page, set up page directory entry
     setup_program_page(i);
@@ -82,11 +82,11 @@ int32_t execute (const uint8_t* command){
     //jump to entry point (entry_point) 
 
     // prepare for context switch
-    uint16_t user_ds = USER_DS;
+    uint32_t user_ds = USER_DS;
     uint32_t user_esp = v_addr + 0x400000;
     uint32_t flags;
     cli_and_save(flags);
-    uint16_t user_cs = USER_CS;
+    uint32_t user_cs = USER_CS;
     tss.esp0 = 0x800000 - i * 0x2000;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
 
