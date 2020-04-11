@@ -65,82 +65,17 @@ asmHandler128:
     push %ecx
     push %ebx
      # jump jumptable
-    jmp *jump_table(, %eax, 4)
+    call *jump_table(, %eax, 4)
+    pop %ebx
+    pop %ecx
+    pop %edx
+    addl $4, %esp
+    iret
 
 invalid_sys_num:
     addl $4, %esp          # pop the interrupt number
     iret
 
-asm_halt:
-    call halt
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_execute:
-    call execute 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret 
-
-asm_read:
-    call read 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_write:
-    call write 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret 
-
-asm_open:
-    call open 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret 
-
-asm_close:
-    call close 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_getargs:
-    call getargs 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_vidmap:
-    call vidmap 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_set_handler:
-    call set_handler 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
-asm_sigreturn:
-    call sigreturn 
-    pop %ebx
-    pop %ecx
-    pop %edx
-    iret
-
 jump_table:
-.long asm_halt, asm_execute, asm_read, asm_write, asm_open, asm_close, asm_getargs, asm_vidmap, asm_set_handler, asm_sigreturn
+.long halt, execute, read, write, open, close, getargs, vidmap, set_handler, sigreturn
 
