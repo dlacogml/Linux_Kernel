@@ -91,6 +91,7 @@ typedef struct pcb{
     uint32_t is_haltable;
     void* parent_pcb;
     uint32_t esp;
+    uint32_t ebp;
     uint32_t pstate;
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];

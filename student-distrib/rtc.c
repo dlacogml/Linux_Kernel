@@ -71,7 +71,7 @@ void handler40(){
 //
 //
 
-uint32_t rtc_open(const uint8_t* filename)
+int32_t rtc_open(const uint8_t* filename)
 {
     cli();      
     //lowest freqency is 2HZ which is MAX_INT_RATE >> ((rate = 15)-1)
@@ -89,7 +89,7 @@ uint32_t rtc_open(const uint8_t* filename)
 //output: none
 //return value: 0
 //side effect: none
-uint32_t rtc_close(int32_t fd)
+int32_t rtc_close(int32_t fd)
 {
     //do nothing
     return 0;
@@ -102,7 +102,7 @@ uint32_t rtc_close(int32_t fd)
 //output: none
 //return value: 0
 //side effect: block until the next interrupt is received
-uint32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
+int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
 {
     //While an interrupt is not received
     while(!INT_RECEIVED)
@@ -119,7 +119,7 @@ uint32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
 //return value: -1 : failure
 //              0  : succuss
 //side effect: change the interrupt rate in rtc
-uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
+int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
 {
     uint16_t freq = *((int*)buf);
     //check if buf is NULL, frequency is NULL, frequency is power of 2, frequency is within the range
