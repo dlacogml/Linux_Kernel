@@ -233,7 +233,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    // pcb_t* pcb_pointer = esp & mask;
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -257,7 +257,7 @@ uint32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
     read_idx++;
-    pcb_pointer->fdarray[fd].file_pos = pcb_pointer->fdarray[fd].file_pos + count;
+    // pcb_pointer->fdarray[fd].file_pos = pcb_pointer->fdarray[fd].file_pos + count;
 
     return count;
 }
