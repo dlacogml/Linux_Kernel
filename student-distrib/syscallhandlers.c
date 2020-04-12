@@ -254,7 +254,7 @@ int32_t open (const uint8_t* filename){
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
-    /*  */
+    /* check for open fds */
     for (i = 0; i < NUM_FD; i++){
         // printf("%d\n", i);
         if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
@@ -267,6 +267,8 @@ int32_t open (const uint8_t* filename){
     }
     int32_t fd = i;
     dentry_t dentry;
+
+    /* fill in fdarray based on file type */
     if (read_dentry_by_name(filename, &dentry) == 0){
         if (dentry.filetype == FILE_CODE){
             pcb_pointer->fdarray[fd].f_ops_pointer = &file_op_table;
@@ -304,15 +306,22 @@ int32_t open (const uint8_t* filename){
 }
 
 int32_t close (int32_t fd){
+    /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+
+    /* check if file open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
         return -1;
     }
+
+    /* check for valid fd */
     if (fd < FIRST_NON_STD || fd >= NUM_FD){
         return -1;
     }
+
+    /* reset fd */
     pcb_pointer->fdarray[fd].f_ops_pointer = 0;
     pcb_pointer->fdarray[fd].inode = 0;
     pcb_pointer->fdarray[fd].file_pos = 0;
