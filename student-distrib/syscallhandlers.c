@@ -73,40 +73,40 @@ int32_t execute (const uint8_t* command){
     //copy entire executable into virtual memory starting at virtual addr 0x08048000
     read_data(dentry.inode_num, 0, mem_start, filesize);
     //create pcb/open fds
-    pcb_t pcb;
+    pcb_t* pcb = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
     // fill in pcb
-    pcb.pid = i;
+    pcb->pid = i;
     if (i == 0){
-        pcb.is_haltable = 0;
+        pcb->is_haltable = 0;
     } else {
-        pcb.is_haltable = 1;
+        pcb->is_haltable = 1;
     }
-    pcb.parent_pcb = parent;
+    pcb->parent_pcb = parent;
     parent = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
-    strncpy((int8_t*)pcb.filename, (int8_t*)command, strlen((int8_t*)command));
-    pcb.fdarray[0].f_ops_pointer = &stdin_op_table;
-    pcb.fdarray[0].f_ops_pointer->read = &(terminal_read);
-    pcb.fdarray[0].f_ops_pointer->write = &stdin_write;
-    pcb.fdarray[0].f_ops_pointer->open = &terminal_open;
-    pcb.fdarray[0].f_ops_pointer->close = &terminal_close;
-    pcb.fdarray[0].file_pos = 0;
-    pcb.fdarray[0].inode = 0;
-    pcb.fdarray[0].flags = 1;
+    strncpy((int8_t*)pcb->filename, (int8_t*)command, strlen((int8_t*)command));
+    pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
+    pcb->fdarray[0].f_ops_pointer->read = &(terminal_read);
+    pcb->fdarray[0].f_ops_pointer->write = &stdin_write;
+    pcb->fdarray[0].f_ops_pointer->open = &terminal_open;
+    pcb->fdarray[0].f_ops_pointer->close = &terminal_close;
+    pcb->fdarray[0].file_pos = 0;
+    pcb->fdarray[0].inode = 0;
+    pcb->fdarray[0].flags = 1;
 
-    pcb.fdarray[1].f_ops_pointer = &stdout_op_table;
-    pcb.fdarray[1].f_ops_pointer->write = &(terminal_write);
-    pcb.fdarray[1].f_ops_pointer->read = &(stdout_read);
-    pcb.fdarray[1].f_ops_pointer->open = &terminal_open;
-    pcb.fdarray[1].f_ops_pointer->close = &terminal_close;
-    pcb.fdarray[1].file_pos = 0;
-    pcb.fdarray[1].inode = 0;
-    pcb.fdarray[1].flags = 1;
+    pcb->fdarray[1].f_ops_pointer = &stdout_op_table;
+    pcb->fdarray[1].f_ops_pointer->write = &(terminal_write);
+    pcb->fdarray[1].f_ops_pointer->read = &(stdout_read);
+    pcb->fdarray[1].f_ops_pointer->open = &terminal_open;
+    pcb->fdarray[1].f_ops_pointer->close = &terminal_close;
+    pcb->fdarray[1].file_pos = 0;
+    pcb->fdarray[1].inode = 0;
+    pcb->fdarray[1].flags = 1;
     //jump to entry point (entry_point) 
 
     asm volatile (" movl %%esp, %0      \n\
                     movl %%ebp, %1      \n\
                   "
-                  : "=r"(pcb.esp), "=r"(pcb.ebp)
+                  : "=r"(pcb->esp), "=r"(pcb->ebp)
                   :
                   : "esp", "ebp"
     );
@@ -123,7 +123,7 @@ int32_t execute (const uint8_t* command){
     // register int esp asm("esp");
     // pcb.esp = esp;
     
-    memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
+    // memcpy(2 * KERNEL_ADDR - (i + 1) * 0x2000, &pcb, sizeof(pcb));
     // get current value of esp and ebp (parent esp and ebp)
     asm volatile (" push %0             \n\
                     push %1             \n\
