@@ -29,7 +29,7 @@ int32_t halt (uint8_t status){
     pid_array[pcb_pointer->pid] = 0;
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
-    parent = parent_pcb->parent_pcb;
+    parent = pcb_pointer->parent_pcb;
     asm volatile("movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
                   jmp halt_return           \n\
