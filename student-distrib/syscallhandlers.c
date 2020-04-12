@@ -26,6 +26,7 @@ int32_t halt (uint8_t status){
             pcb_pointer->fdarray[i].f_ops_pointer->close(i);
         }
     }
+    
     pid_array[pcb_pointer->pid] = 0;
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
