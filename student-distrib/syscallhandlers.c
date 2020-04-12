@@ -25,7 +25,7 @@ int32_t halt (uint8_t status){
         }
     }
     pid_array[pcb_pointer->pid] = 0;
-    uint32_t parent_esp = parent_pcb->esp;
+    uint32_t parent_esp = parent_pcb->esp - 24;
     uint32_t parent_ebp = parent_pcb->ebp;
     asm volatile("movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
@@ -103,6 +103,14 @@ int32_t execute (const uint8_t* command){
     pcb.fdarray[1].flags = 1;
     //jump to entry point (entry_point) 
 
+    asm volatile (" movl %%esp, %0      \n\
+                    movl %%ebp, %1      \n\
+                  "
+                  : "=r"(pcb.esp), "=r"(pcb.ebp)
+                  :
+                  : "esp", "ebp"
+    );
+
     // prepare for context switch
     tss.esp0 = 0x800000 - i * 0x2000 - 4;
     tss.ss0 = KERNEL_DS;
@@ -110,14 +118,6 @@ int32_t execute (const uint8_t* command){
     uint32_t user_esp = v_addr + 0x3fffff - 3;
     uint32_t user_cs = USER_CS;
     uint32_t entry_point = *((uint32_t*) virtual_addr);
-
-    asm volatile (" movl %%esp, %0      \n\
-                    movl %%ebp, %1      \n\
-                  "
-                  : "r"(pcb.esp), "r"(pcb.esp)
-                  :
-                  : "esp", "ebp"
-    );
 
     // pcb.ebp = ebp;
     // register int esp asm("esp");
