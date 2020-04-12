@@ -82,7 +82,7 @@ int32_t execute (const uint8_t* command){
         pcb.is_haltable = 1;
     }
     pcb.parent_pcb = parent;
-    parent = &pcb;
+    parent = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
     strncpy((int8_t*)pcb.filename, (int8_t*)command, strlen((int8_t*)command));
     pcb.fdarray[0].f_ops_pointer = &stdin_op_table;
     pcb.fdarray[0].f_ops_pointer->read = &(terminal_read);
