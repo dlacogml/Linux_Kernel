@@ -101,8 +101,8 @@ void handler33()
       {
         keyboard_buffer[buf_idx] = 0;
         buf_idx--;
+        backspace();
       }
-      backspace();
       send_eoi(KEYBOARD_IRQ);
       return;
     }
