@@ -8,6 +8,7 @@
 #define FILESYSTEM_H
 #include "lib.h"
 #include "keyboard.h"
+#include "syscallhandlers.h"
 
 #define FILENAME_LENGTH     32
 #define BLOCK_SIZE          4096

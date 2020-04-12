@@ -7,6 +7,22 @@
 #ifndef SYSCALLHANDLERS_H
 #define SYSCALLHANDLERS_H
 
+#define MAX_PROCESSES       6
+#define PCB_MASK            0xffffe000
+#define FIRST_NON_STD       2
+#define _8MB                0x800000
+#define _4MB                0x400000
+#define _8KB                0x2000
+#define END_OFFSET          4
+#define NUM_METADATA_BITS   40
+#define V_ADDR_START        0x08000000
+#define PROGRAM_START       0x08048000
+#define NUM_MAGIC_BITS      4
+#define PID_TAKEN           1
+#define PID_FREE            0
+#define KERNEL_BOTTOM       2 * KERNEL_ADDR
+#define EXCEPTION_CODE      256
+#define EXCEPTION_STATUS    255
 
 
 int32_t halt (uint8_t status);

@@ -60,7 +60,7 @@ int32_t file_close(int32_t fd) {
  */
 int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     register int esp asm("esp");
-    uint32_t mask = 0xffffe000;
+    uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     /* read data from file and store in buf */
     int32_t num_bytes = read_data(pcb_pointer->fdarray[fd].inode, pcb_pointer->fdarray[fd].file_pos, buf, nbytes);
@@ -113,7 +113,7 @@ int32_t dir_close(int32_t fd) {
  */
 int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     register int esp asm("esp");
-    uint32_t mask = 0xffffe000;
+    uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     dentry_t dentry;
 

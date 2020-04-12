@@ -19,8 +19,8 @@
 */
 
 void handler0(){
-    clear();
     printf("Divide by zero");
+    halt(EXCEPTION_STATUS);
     while(1){
 
     }
@@ -33,10 +33,10 @@ void handler0(){
     OUTPUT: NONE
 */
 void handler1(){
-    clear();
     printf("Debug Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -47,10 +47,10 @@ void handler1(){
     OUTPUT: NONE
 */
 void handler2(){
-    clear();
     printf("NMI Interrupt");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -61,10 +61,10 @@ void handler2(){
     OUTPUT: NONE
 */
 void handler3(){
-    clear();
     printf("Breakpoint Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -75,10 +75,10 @@ void handler3(){
     OUTPUT: NONE
 */
 void handler4(){
-    clear();
     printf("Overflow Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -89,10 +89,10 @@ void handler4(){
     OUTPUT: NONE
 */
 void handler5(){
-    clear();
     printf("BOUND Range Exceeded Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -103,10 +103,10 @@ void handler5(){
     OUTPUT: NONE
 */
 void handler6(){
-    clear();
     printf("Invalid Opcode Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -117,10 +117,10 @@ void handler6(){
     OUTPUT: NONE
 */
 void handler7(){
-    clear();
     printf("Device Not Available Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -131,10 +131,10 @@ void handler7(){
     OUTPUT: NONE
 */
 void handler8(){
-    clear();
     printf("Double Fault Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -145,10 +145,10 @@ void handler8(){
     OUTPUT: NONE
 */
 void handler9(){
-    clear();
     printf("Debug Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -159,10 +159,10 @@ void handler9(){
     OUTPUT: NONE
 */
 void handler10(){
-    clear();
     printf("Invalid TSS Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -173,10 +173,10 @@ void handler10(){
     OUTPUT: NONE
 */
 void handler11(){
-    clear();
     printf("Segment Not Present");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -187,10 +187,10 @@ void handler11(){
     OUTPUT: NONE
 */
 void handler12(){
-    clear();
     printf("Stack Fault Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -201,10 +201,10 @@ void handler12(){
     OUTPUT: NONE
 */
 void handler13(){
-    // clear();
     printf("General Protection Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -215,7 +215,6 @@ void handler13(){
     OUTPUT: NONE
 */
 void handler14(){
-    // clear();
     printf("Page Fault Exception\n");
     uint32_t value, error_code;
     asm volatile(
@@ -227,8 +226,9 @@ void handler14(){
     );
     printf("linear address: %x\n", value);
     printf("error code: %x\n", error_code);
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -239,10 +239,10 @@ void handler14(){
     OUTPUT: NONE
 */
 void handler15(){
-    clear();
     printf("Nothing");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -253,10 +253,10 @@ void handler15(){
     OUTPUT: NONE
 */
 void handler16(){
-    clear();
     printf("x87 FPU Floating Point Error");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -267,10 +267,10 @@ void handler16(){
     OUTPUT: NONE
 */
 void handler17(){
-    clear();
     printf("Alignment Check Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -281,10 +281,10 @@ void handler17(){
     OUTPUT: NONE
 */
 void handler18(){
-    clear();
     printf("Machine Check Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -295,10 +295,10 @@ void handler18(){
     OUTPUT: NONE
 */
 void handler19(){
-    clear();
     printf("SIMD Floating Point Exception");
+    // halt(EXCEPTION_STATUS);
     while(1){
-
+        
     }
 }
 
@@ -310,6 +310,9 @@ void handler19(){
 */
 void handler128(){
     printf("System Call");
+    while(1){
+        
+    }
 
 }
 
