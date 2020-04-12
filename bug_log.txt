@@ -67,3 +67,35 @@ Bug #6:
     Problem: Caps lock was not turning off
     What was the issue: We were never actually setting our caps lock flag back to 0
     What we did: set a XOR with the flag when checking if the specific key was pressed to turn off/on
+
+Checkpoint 3:
+
+Bug 1:
+    Problem: Page fault exception #1
+    What was the issue: Closing files didn't check if the fd_array flags was open/closed
+    What we did: Made a conditional statement to check the flag before closing
+
+Bug 2:
+    Problem: Page fault exception #2
+    What was the issue: Virtual address array for the first instruction executed wasn't initialized correct
+    What we did: We started from bytes 24 for first element in increasing order per element rather than reverse
+
+Bug 3:
+    Problem: Page fault exception #3
+    What was the issue: Set a global pointer that pointed to a local object
+    What we did: Directly set the pointer to point to kernel stack
+
+Bug 4:
+    Problem: General protection exception
+    What was the issue: Didn't set page to user level
+    What we did: Set the correct bit when enabling page
+
+Bug 5:
+    Problem: Attempts to open slightly incorrect filenames
+    What was the issue: In dentry_by_name, we didn't compare the string lengths of the parameter and dentry
+    What we did: Had a conditional statement, and if not equal, return -1
+
+Bug 6:
+    Problem: Writes to files with file descriptor > 7 or = 0 not functioning as expected
+    What was the issue: In our invalid syscall label in idt_asm.S, we didn't set eax to -1
+    What we did: set eax to -1 before returning in the label

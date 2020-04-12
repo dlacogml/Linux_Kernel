@@ -87,7 +87,7 @@ asmHandler128:
 
 invalid_sys_num:
     addl $4, %esp          # pop the interrupt number
-    movl $-1, %eax
+    movl $-1, %eax         # set return value to -1
     iret
 
 jump_table:
