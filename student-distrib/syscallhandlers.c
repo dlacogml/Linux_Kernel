@@ -20,7 +20,9 @@ int32_t halt (uint8_t status){
     setup_program_page(parent_pid);
     int i;
     for (i = 2; i < NUM_FD; i++){
-        pcb_pointer->fdarray[i].f_ops_pointer->close(i);
+        if(pcb_pointer->fdarray[i].flags == FILE_CLOSED) {
+            pcb_pointer->fdarray[i].f_ops_pointer->close(i);
+        }
     }
     pid_array[pcb_pointer->pid] = 0;
     uint32_t parent_esp = parent_pcb->esp;
@@ -30,7 +32,7 @@ int32_t halt (uint8_t status){
                   movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
                   jmp halt_return           \n\
-                 "
+                  "
                   :
                   :"r"(parent_esp), "r"(parent_ebp)
                   :"memory"
