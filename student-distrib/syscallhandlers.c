@@ -164,18 +164,30 @@ int32_t execute (const uint8_t* command){
 }
 
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
+    if (fd < 0 || fd >= 8){
+        return -1;
+    }
     sti();
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
+    if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
+        return -1;
+    }
     return (*pcb_pointer->fdarray[fd].f_ops_pointer->read)(fd, buf, nbytes);
 }
 
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
+    if (fd < 0 || fd >= 8){
+        return -1;
+    }
     sti();
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
+    if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
+        return -1;
+    }
     return (*pcb_pointer->fdarray[fd].f_ops_pointer->write)(fd, buf, nbytes);
 }
 
@@ -237,9 +249,15 @@ int32_t close (int32_t fd){
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
+    if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
+        return -1;
+    }
     if (fd <= 1 || fd >= 8){
         return -1;
     }
+    pcb_pointer->fdarray[fd].f_ops_pointer = 0;
+    pcb_pointer->fdarray[fd].inode = 0;
+    pcb_pointer->fdarray[fd].file_pos = 0;
     pcb_pointer->fdarray[fd].flags = FILE_OPEN;
     return 0;
 }

@@ -57,7 +57,7 @@ asmHandler128:
     pushl $128             # interrupt handler #128, push the interrupt number
     subl $1, %eax
     cmpl $0, %eax
-    jl invalid_sys_num
+    jb invalid_sys_num
     cmpl $9, %eax
     ja invalid_sys_num
     /* save registers */
@@ -87,6 +87,7 @@ asmHandler128:
 
 invalid_sys_num:
     addl $4, %esp          # pop the interrupt number
+    movl $-1, %eax
     iret
 
 jump_table:
