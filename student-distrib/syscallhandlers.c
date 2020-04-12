@@ -10,11 +10,13 @@ int32_t halt (uint8_t status){
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
     pcb_t* pcb_pointer = esp & mask;
+    pcb_t* parent_pcb;
+    uint32_t parent_pid, parent_esp, parent_ebp;
     if (!pcb_pointer->is_haltable){
         return -1;
     }
-    pcb_t* parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
-    uint32_t parent_pid = parent_pcb->pid;
+    parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
+    parent_pid = parent_pcb->pid;
     tss.esp0 = 0x800000 - parent_pid * 0x2000 - 4;
     tss.ss0 = KERNEL_DS;
     setup_program_page(parent_pid); 
@@ -25,8 +27,8 @@ int32_t halt (uint8_t status){
         }
     }
     pid_array[pcb_pointer->pid] = 0;
-    uint32_t parent_esp = parent_pcb->esp - 24;
-    uint32_t parent_ebp = parent_pcb->ebp;
+    parent_esp = pcb_pointer->esp;
+    parent_ebp = pcb_pointer->ebp;
     asm volatile("movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
                   jmp halt_return           \n\
@@ -41,22 +43,29 @@ int32_t halt (uint8_t status){
 
 int32_t execute (const uint8_t* command){
     dentry_t dentry;
+    int32_t filesize, i;
+    int8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
+    int8_t buf[40];
+    uint32_t user_ds;
+    uint32_t user_esp;
+    uint32_t user_cs;
+    uint32_t entry_point;
+    pcb_t* pcb;
+    uint32_t v_addr = 0x08000000;
+    uint32_t mem_start = 0x08048000;
     if (read_dentry_by_name(command, &dentry) == -1){
         return -1;
     }
     if (dentry.filetype != FILE_CODE){
         return -1;
     }
-    int filesize = inodes[dentry.inode_num].length;
-    int8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46};
-    int8_t buf[40];
+    filesize = inodes[dentry.inode_num].length;
     if (read_data(dentry.inode_num, 0, buf, 40) == 0){
         return -1;
     }
     if (strncmp(buf, magic_number, 4) != 0){
         return -1;
     }
-    int i;
     for (i = 0; i < 6; i++){
         if (pid_array[i] == 0){
             pid_array[i] = 1;
@@ -67,13 +76,11 @@ int32_t execute (const uint8_t* command){
 
     //set up paging: maps virtual addr to new 4MB physical page, set up page directory entry
     setup_program_page(i);
-    uint32_t v_addr = 0x08000000;
-    uint32_t mem_start = 0x08048000;
 
     //copy entire executable into virtual memory starting at virtual addr 0x08048000
     read_data(dentry.inode_num, 0, mem_start, filesize);
     //create pcb/open fds
-    pcb_t* pcb = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
+    pcb = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
     // fill in pcb
     pcb->pid = i;
     if (i == 0){
@@ -114,10 +121,10 @@ int32_t execute (const uint8_t* command){
     // prepare for context switch
     tss.esp0 = 0x800000 - i * 0x2000 - 4;
     tss.ss0 = KERNEL_DS;
-    uint32_t user_ds = USER_DS;
-    uint32_t user_esp = v_addr + 0x3fffff - 3;
-    uint32_t user_cs = USER_CS;
-    uint32_t entry_point = *((uint32_t*) virtual_addr);
+    user_ds = USER_DS;
+    user_esp = v_addr + 0x3fffff - 3;
+    user_cs = USER_CS;
+    entry_point = *((uint32_t*) virtual_addr);
 
     // pcb.ebp = ebp;
     // register int esp asm("esp");
