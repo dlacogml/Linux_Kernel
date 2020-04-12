@@ -13,15 +13,17 @@ int32_t halt (uint8_t status){
     pcb_t* pcb_pointer = esp & mask;
     pcb_t* parent_pcb;
     uint32_t parent_pid, parent_esp, parent_ebp;
-    if (!pcb_pointer->is_haltable){
-        return -1;
-    }
+
     int i;
     for (i = 2; i < 8; i++){
         pcb_pointer->fdarray[i].f_ops_pointer = 0;
         pcb_pointer->fdarray[i].inode = 0;
         pcb_pointer->fdarray[i].file_pos = 0;
         pcb_pointer->fdarray[i].flags = FILE_OPEN;
+    }
+    if (!pcb_pointer->is_haltable){
+        pid_array[pcb_pointer->pid] = 0;
+        execute("shell");
     }
     parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
     parent_pid = parent_pcb->pid;
