@@ -16,12 +16,18 @@ int32_t halt (uint8_t status){
     if (!pcb_pointer->is_haltable){
         return -1;
     }
+    int i;
+    for (i = 2; i < 8; i++){
+        pcb_pointer->fdarray[i].f_ops_pointer = 0;
+        pcb_pointer->fdarray[i].inode = 0;
+        pcb_pointer->fdarray[i].file_pos = 0;
+        pcb_pointer->fdarray[i].flags = FILE_OPEN;
+    }
     parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
     parent_pid = parent_pcb->pid;
     tss.esp0 = 0x800000 - parent_pid * 0x2000 - 4;
     tss.ss0 = KERNEL_DS;
     setup_program_page(parent_pid); 
-    int i;
     for (i = 2; i < NUM_FD; i++){
         if(pcb_pointer->fdarray[i].flags == FILE_CLOSED) {
             pcb_pointer->fdarray[i].f_ops_pointer->close(i);
