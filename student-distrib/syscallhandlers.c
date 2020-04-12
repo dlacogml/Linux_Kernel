@@ -5,6 +5,7 @@
 
 pcb_t* parent = NULL;
 int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
+int32_t global_status;
 
 int32_t halt (uint8_t status){
     register int esp asm("esp");
@@ -26,7 +27,7 @@ int32_t halt (uint8_t status){
             pcb_pointer->fdarray[i].f_ops_pointer->close(i);
         }
     }
-    
+    global_status = (int32_t) status;
     pid_array[pcb_pointer->pid] = 0;
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
@@ -153,7 +154,7 @@ int32_t execute (const uint8_t* command){
                    "
     );
     // register int32_t return_value asm("eax");
-    return 0;
+    return global_status;
 }
 
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
@@ -233,7 +234,7 @@ int32_t close (int32_t fd){
     if (fd <= 1 || fd >= 8){
         return -1;
     }
-    pcb_pointer->fdarray[fd].flags == FILE_OPEN;
+    pcb_pointer->fdarray[fd].flags = FILE_OPEN;
     return 0;
 }
 
