@@ -8,9 +8,9 @@ int32_t pid_array[6] = {0, 0, 0, 0, 0, 0};
 int32_t global_status;
 
 int32_t halt (uint8_t status){
-    register int esp asm("esp");
+    register int32_t esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     pcb_t* parent_pcb;
     uint32_t parent_pid, parent_esp, parent_ebp;
 
@@ -23,7 +23,7 @@ int32_t halt (uint8_t status){
     }
     if (!pcb_pointer->is_haltable){
         pid_array[pcb_pointer->pid] = 0;
-        execute("shell");
+        execute((uint8_t*)"shell");
     }
     parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
     parent_pid = parent_pcb->pid;
@@ -71,7 +71,7 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
     filesize = inodes[dentry.inode_num].length;
-    if (read_data(dentry.inode_num, 0, buf, 40) == 0){
+    if (read_data(dentry.inode_num, 0, (uint8_t*)buf, 40) == 0){
         return -1;
     }
     if (strncmp(buf, magic_number, 4) != 0){
@@ -89,9 +89,9 @@ int32_t execute (const uint8_t* command){
     setup_program_page(i);
 
     //copy entire executable into virtual memory starting at virtual addr 0x08048000
-    read_data(dentry.inode_num, 0, mem_start, filesize);
+    read_data((uint32_t)dentry.inode_num, (uint32_t)0, (uint8_t*)mem_start, (uint32_t)filesize);
     //create pcb/open fds
-    pcb = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
+    pcb = (pcb_t*) (2 * KERNEL_ADDR - (i + 1) * 0x2000);
     // fill in pcb
     pcb->pid = i;
     if (i == 0){
@@ -100,10 +100,10 @@ int32_t execute (const uint8_t* command){
         pcb->is_haltable = 1;
     }
     pcb->parent_pcb = parent;
-    parent = 2 * KERNEL_ADDR - (i + 1) * 0x2000;
+    parent = (pcb_t*) (2 * KERNEL_ADDR - (i + 1) * 0x2000);
     strncpy((int8_t*)pcb->filename, (int8_t*)command, strlen((int8_t*)command));
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
-    pcb->fdarray[0].f_ops_pointer->read = &(terminal_read);
+    pcb->fdarray[0].f_ops_pointer->read = &terminal_read;
     pcb->fdarray[0].f_ops_pointer->write = &stdin_write;
     pcb->fdarray[0].f_ops_pointer->open = &terminal_open;
     pcb->fdarray[0].f_ops_pointer->close = &terminal_close;
@@ -112,8 +112,8 @@ int32_t execute (const uint8_t* command){
     pcb->fdarray[0].flags = 1;
 
     pcb->fdarray[1].f_ops_pointer = &stdout_op_table;
-    pcb->fdarray[1].f_ops_pointer->write = &(terminal_write);
-    pcb->fdarray[1].f_ops_pointer->read = &(stdout_read);
+    pcb->fdarray[1].f_ops_pointer->write = &terminal_write;
+    pcb->fdarray[1].f_ops_pointer->read = &stdout_read;
     pcb->fdarray[1].f_ops_pointer->open = &terminal_open;
     pcb->fdarray[1].f_ops_pointer->close = &terminal_close;
     pcb->fdarray[1].file_pos = 0;
@@ -170,9 +170,9 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
         return -1;
     }
     sti();
-    register int esp asm("esp");
+    register int32_t esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
         return -1;
     }
@@ -184,9 +184,9 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
         return -1;
     }
     sti();
-    register int esp asm("esp");
+    register int32_t esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
         return -1;
     }
@@ -196,9 +196,9 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
 int32_t open (const uint8_t* filename){
     int32_t i;
     int32_t open_flag = 0;
-    register int esp asm("esp");
+    register int32_t esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
     for (i = 0; i < NUM_FD; i++){
         if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
@@ -248,9 +248,9 @@ int32_t open (const uint8_t* filename){
 }
 
 int32_t close (int32_t fd){
-    register int esp asm("esp");
+    register int32_t esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
         return -1;
     }

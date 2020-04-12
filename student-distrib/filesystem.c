@@ -28,13 +28,6 @@ void init_filesystem(){
     /* init data block array */
     data_blocks = (data_block_t*) (filesys_start + sizeof(boot_block_t) + sizeof(inode_t) * boot_block->inode_count);
 
-    int i;
-    // for (i = 0; i < NUM_FD; i++){
-    //     fdarray[i].flags = 0; // make all fdarray entries open initally
-    // }
-
-
-
 }
 
 /* file_open
@@ -68,9 +61,9 @@ int32_t file_close(int32_t fd) {
 int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     /* read data from file and store in buf */
-    int num_bytes = read_data(pcb_pointer->fdarray[fd].inode, pcb_pointer->fdarray[fd].file_pos, buf, nbytes);
+    int32_t num_bytes = read_data(pcb_pointer->fdarray[fd].inode, pcb_pointer->fdarray[fd].file_pos, buf, nbytes);
 
     /* update file_pos */
     pcb_pointer->fdarray[fd].file_pos = pcb_pointer->fdarray[fd].file_pos + num_bytes;
@@ -121,7 +114,7 @@ int32_t dir_close(int32_t fd) {
 int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     register int esp asm("esp");
     uint32_t mask = 0xffffe000;
-    pcb_t* pcb_pointer = esp & mask;
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
     dentry_t dentry;
 
     /* read dentry, if fail return 0 */
@@ -130,10 +123,10 @@ int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     }
 
     /* number of bytes copied */
-    int num_copied = 0;
+    int32_t num_copied = 0;
 
     /* index into filename string */
-    int filename_index = 0;
+    int32_t filename_index = 0;
 
     /* copy filename into buffer until either limit is reached or end of filename */
     while (dentry.filename[filename_index] != EOS && num_copied < nbytes){

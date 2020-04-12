@@ -228,7 +228,7 @@ int32_t terminal_close(int32_t fd)
  *               fail    - -1
  * side effects: read the the number of bytes into the buf
  */
-int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
+int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
     if(nbytes < 1 || buf == NULL)
         return -1;
@@ -252,7 +252,7 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         return count;
       }
     }
-    if(nbytes >= strlen(buf))
+    if(nbytes >= strlen((int8_t*)buf))
       NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
     read_idx++;

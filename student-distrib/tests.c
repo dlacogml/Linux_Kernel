@@ -4,6 +4,7 @@
 #include "filesystem.h"
 #include "keyboard.h"
 #include "rtc.h"
+#include "syscallhandlers.h"
 #define PASS 1
 #define FAIL 0
 
@@ -251,7 +252,7 @@ int test_file_read(){
     if (file_open((uint8_t*)filename) == 0){
 
         /* read from file */
-        int num_bytes = file_read(0, buf, buf_length);
+        int32_t num_bytes = file_read(0, buf, buf_length);
 
         int i;
 
@@ -293,8 +294,8 @@ int terminal_test()
     while (1)
     {
         //calls read and write functions for terminal to print onto screen
-        int r = read(0, buf, user_size);
-        int w = write(1, buf, r);
+        int32_t r = read(0, buf, user_size);
+        int32_t w = write(1, buf, r);
         printf("\n------Bytes read: %d , Bytes write: %d------\n", r, w);
     }
     terminal_close(NULL); //nothing
@@ -305,7 +306,7 @@ int terminal_test()
 int test_sys_dir_read(){
     TEST_HEADER;
     uint8_t buf[FILENAME_LENGTH];
-    int cnt, fd;
+    int32_t cnt, fd;
 
     /* directory name */
     int8_t* filename = ".";
@@ -359,7 +360,7 @@ int test_sys_rtc()
     TEST_HEADER;
      // TEST_HEADER;
     int8_t* filename = "rtc";
-    int fd;
+    int32_t fd;
     if ((fd = open((uint8_t*)filename)) != -1)
     {
 	    uint16_t freq = 2; //set desired freq for testing

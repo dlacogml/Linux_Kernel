@@ -102,7 +102,7 @@ int32_t rtc_close(int32_t fd)
 //output: none
 //return value: 0
 //side effect: block until the next interrupt is received
-int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
+int32_t rtc_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
     //While an interrupt is not received
     while(!INT_RECEIVED)
