@@ -12,6 +12,15 @@ int32_t pid_array[MAX_PROCESSES] = {0, 0, 0, 0, 0, 0};
 /* holds status for execute */
 int32_t global_status;
 
+/*int32_t halt (uint8_t status)*/
+/*interface: halt the process by switching back to the previous process's stack, first we extract the */
+/*           the current pcb pointer and close all the files within the current pcb. Then we make sure */
+/*           that halting in the base shell will only restart the current process. Then we free the pid*/
+/*           for current process then link back to the parent program*/
+/*input: status of the process */
+/*output: nothing*/
+/*return value: will never reaches to the part that returns the value*/
+/*side effect: halt the current process and perform a contet switch back to the parent process*/
 int32_t halt (uint8_t status){
     /* declare local variables */
     register int32_t esp asm("esp");
@@ -30,11 +39,6 @@ int32_t halt (uint8_t status){
         pcb_pointer->fdarray[i].inode = 0;
         pcb_pointer->fdarray[i].file_pos = 0;
         pcb_pointer->fdarray[i].flags = FILE_OPEN;
-    }
-    for (i = FIRST_NON_STD; i < NUM_FD; i++){
-        if(pcb_pointer->fdarray[i].flags == FILE_CLOSED) {
-            pcb_pointer->fdarray[i].f_ops_pointer->close(i);
-        }
     }
 
     /* if exit on base shell, restart shell */
@@ -55,6 +59,7 @@ int32_t halt (uint8_t status){
     setup_program_page(parent_pid); 
 
     /* update global status */
+    /* set the correct status to return from the parent process*/
     if (status ==  EXCEPTION_STATUS){
         global_status = EXCEPTION_CODE;
     } else {
@@ -68,6 +73,8 @@ int32_t halt (uint8_t status){
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
     parent = pcb_pointer->parent_pcb;
+
+    /*reset esp and ebp to return to the parent process*/
     asm volatile("movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
                   jmp halt_return           \n\
@@ -76,10 +83,19 @@ int32_t halt (uint8_t status){
                   :"r"(parent_esp), "r"(parent_ebp)
                   : "esp", "ebp"
                   );
-
+    /* never reach here*/
     return 0;
 }
-
+/*int32_t execute (uint8_t status)*/
+/*interface: First, read the command and find if it exists a corresponding file that's executable*/
+/*           after set up the page for user, we copy the file content into the corresponding page, */
+/*           next, we make an pcb object on the correct address on the kernel page, and at the end we*/
+/*           push in the args for context switch.*/
+/*input: command to be excuted*/
+/*output: none*/
+/*return value: -1 -- invalid input, or reach maximum #'s process*/
+/*              256 -- when a program is terminated by exception*/ 
+/*side effect: excute the commant, context switch to the user stack*/
 int32_t execute (const uint8_t* command){
     /* declare local variables */
     dentry_t dentry;
@@ -95,28 +111,40 @@ int32_t execute (const uint8_t* command){
     uint32_t mem_start = PROGRAM_START;
 
     /* check for valid executable */
-    if (read_dentry_by_name(command, &dentry) == -1){
+    /* check if file existed*/
+    if (read_dentry_by_name(command, &dentry) == -1)
+    {
         return -1;
     }
-    if (dentry.filetype != FILE_CODE){
+    /* check if the file is a type of file*/
+    if (dentry.filetype != FILE_CODE)
+    {
         return -1;
     }
     filesize = inodes[dentry.inode_num].length;
-    if (read_data(dentry.inode_num, 0, (uint8_t*)buf, NUM_METADATA_BITS) == 0){
+    /* check if the file holds valid context*/
+    if (read_data(dentry.inode_num, 0, (uint8_t*)buf, NUM_METADATA_BITS) == 0)
+    {
         return -1;
     }
-    if (strncmp(buf, magic_number, NUM_MAGIC_BITS) != 0){
+    /* check if the file's magic number is excutable */
+    if (strncmp(buf, magic_number, NUM_MAGIC_BITS) != 0)
+    {
         return -1;
     }
 
     /* check for open process */
-    for (i = 0; i < MAX_PROCESSES; i++){
-        if (pid_array[i] == PID_FREE){
+    for (i = 0; i < MAX_PROCESSES; i++)
+    {
+        if (pid_array[i] == PID_FREE)
+        {
             pid_array[i] = PID_TAKEN;
             break;
         }
     }
-    if (i == MAX_PROCESSES){
+    /* check if we reach the maximum #'s of processes allows*/
+    if (i == MAX_PROCESSES)
+    {
         return -1;
     }
 
@@ -132,9 +160,11 @@ int32_t execute (const uint8_t* command){
     pcb = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
     /* fill in pcb */
     pcb->pid = i;
-    if (i == 0){
+    if (i == 0)
+    {
         pcb->is_haltable = 0;
-    } else {
+    } else 
+    {
         pcb->is_haltable = 1;
     }
     /* update parent */
@@ -202,6 +232,16 @@ int32_t execute (const uint8_t* command){
     return global_status;
 }
 
+/*int32_t read (int32_t fd, void* buf, int32_t nbytes)*/
+/*interface: First, check for validity of fd number, and sti to allow interrupt. then set the proper esp*/
+/*           and direct to the read operation corresponding to the fd number*/
+/*input: fd -- file descriptor number*/
+/*       buf -- buffer to be written*/
+/*       nbytes -- number of bytes to be written*/
+/*output: none*/
+/*return value: -1 -- failure*/
+/*              whatever the directed read function returns -- success*/
+/*side effect: direct to a read function*/
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
     /* check for valid fd */
     if (fd < 0 || fd >= NUM_FD){
@@ -223,13 +263,22 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     return (*pcb_pointer->fdarray[fd].f_ops_pointer->read)(fd, buf, nbytes);
 }
 
+/*int32_t write (int32_t fd, const void* buf, int32_t nbytes)*/
+/*interface: First, check for validity of fd number, and check if the file can be written then set the proper esp*/
+/*           and direct to the write operation corresponding to the fd number*/
+/*input: fd -- file descriptor number*/
+/*       buf -- buffer to be written*/
+/*       nbytes -- number of bytes to be written*/
+/*output: written on the screen or change value in a file*/
+/*return value: -1 -- failure*/
+/*              whatever the directed read function returns -- success*/
+/*side effect: direct to a write function*/
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
     /* check for valid fd */
     if (fd < 0 || fd >= NUM_FD){
         printf("write invalid fd: %d\n", fd);
         return -1;
     }
-    sti();
 
     /* extract pcb from esp */
     register int32_t esp asm("esp");
@@ -242,10 +291,16 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
 
         return -1;
     }
-
     return (*pcb_pointer->fdarray[fd].f_ops_pointer->write)(fd, buf, nbytes);
 }
-
+/*int32_t open (const uint8_t* filename)*/
+/*interface: First, check if a file can be opened, then find the file's matadata in the filesystem*/
+/*           then fill in the pcb with the corresponding value*/
+/*input: filename -- name of the file to be open*/
+/*output: none*/
+/*return value: -1 -- failure*/
+/*              fd -- success*/
+/*side effect: opened a file and fill in pcb with respect to their file type*/
 int32_t open (const uint8_t* filename){
     int32_t i;
     int32_t open_flag = 0;
@@ -298,12 +353,21 @@ int32_t open (const uint8_t* filename){
             pcb_pointer->fdarray[fd].file_pos = 0;
             pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
         }
-
-        printf("fd: %d", fd);
+        //debugging
+        // printf("fd: %d", fd);
         return fd;
     }
     return -1;
 }
+
+/*close (int32_t fd)*/
+/*interface: First, check if a file can be closed and its fd's validity*/
+/*           then free the entry of the file in the fdarray in the corresponding process*/
+/*input: fd -- fd number of the file*/
+/*output: none*/
+/*return value: -1 -- failure*/
+/*              0 -- success*/
+/*side effect: free a file from fd array*/
 
 int32_t close (int32_t fd){
     /* extract pcb from esp */

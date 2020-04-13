@@ -11,7 +11,7 @@
 #define KEYBOARD_DATA_REG 0x60
 #define MAP_SIZE     128     //the size of keyboard map
 #define KEYBOARD_IRQ 1       //the irq num for keybaord 
-#define BUF_SIZE     1024     //maximum number of chars 127 buffer can hold + line feed
+#define BUF_SIZE     128     //maximum number of chars 127 buffer can hold + line feed
 
 /*function essential to keyboards*/
 void clear_buffer();

@@ -3,6 +3,7 @@
  *
  */
 #include "paging.h"
+#include "syscallhandlers.h"
 #define NOT_PRESENT 0x02
 
 //void init_paging
@@ -42,10 +43,18 @@ void init_paging()
     enablePaging();
 
 }
-
-void setup_program_page(int pid){
-    page_directory[32] = ((0x800000 + pid * 0x400000) | 0x197);
-    // flush tlb
+//void setup_program_page(int pid)
+//interface: set up the user level page at index 32 and flush tlb
+//input: the index number of pcb
+//output: NONE
+//return value: NONE
+//side effect: set up the user level page at index 32 and flush tlb
+void setup_program_page(int pid)
+{
+    //OR with 0x197 to enable P, R/W, PS, PCD, U/S, G 
+    //and the index for the user page is 32 in page directory 
+    page_directory[32] = ((_8MB + pid * _4MB) | 0x197);
+    // flush tlb 
     asm volatile ("movl %cr3, %eax  \n\
                    movl %eax, %cr3  \n\
                    ");

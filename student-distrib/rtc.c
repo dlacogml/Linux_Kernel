@@ -21,13 +21,11 @@ static volatile char INT_RECEIVED = 0; //check if an rtc int is received
  */
 void rtc_init() 
 {
-    cli();	
     enable_irq(RTC_IRQ);         //enable the irq for rtc on pic 
     outb(RTC_B, RTC_PORT);		 //select reg B and disabke nmi
     char prev = inb(RTC_DATA);	 //read the current value of register B
     outb(RTC_B, RTC_PORT);		 //reset
     outb(prev | BIT6, RTC_DATA); //or with 0x40 to enbable bit 6 of Reg B PIE
-    sti(); 
 }
 
 // /* rtc_set_rate
@@ -55,14 +53,12 @@ void rtc_init()
  * OUTPUT: nothing
  * SIDE EFFECT: 
  */
-void handler40(){
-    cli();            
+void handler40(){           
     INT_RECEIVED = 1;       //enable INT_RECEIVED when an interrput is raised
     // test_interrupts();      // checks if the rtc works
     outb(RTC_C, RTC_PORT);	// set index to register A, disable NMI
     inb(RTC_DATA);		    // retrieve rtc_data
     send_eoi(RTC_IRQ);            // end of interrupt
-    sti();
 }
 
 //uint32_t rtc_open(const uint8_t* filename)
@@ -72,15 +68,13 @@ void handler40(){
 //
 
 int32_t rtc_open(const uint8_t* filename)
-{
-    cli();      
+{     
     //lowest freqency is 2HZ which is MAX_INT_RATE >> ((rate = 15)-1)
     unsigned char rate = 15;
     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
     char curr = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_A, RTC_PORT);		// reset index to A
     outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-    sti();
     return 0;
 }
 //uint32_t rtc_close(int32_t fd)
@@ -133,12 +127,10 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
     {
         rate++; //increment rate until we find the correct rate corresponding to the right frequency
     }
-    cli();
     outb(RTC_A, RTC_PORT);		          // set index to register A, disable NMI
     char curr = inb(RTC_DATA);	          // get initial value of register A
     outb(RTC_A, RTC_PORT);		          // reset index to A
     outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-    sti();
     return 0;
 }
 
