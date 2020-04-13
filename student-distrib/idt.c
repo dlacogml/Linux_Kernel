@@ -34,7 +34,7 @@ void handler0(){
 */
 void handler1(){
     printf("Debug Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -48,7 +48,7 @@ void handler1(){
 */
 void handler2(){
     printf("NMI Interrupt");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -62,7 +62,7 @@ void handler2(){
 */
 void handler3(){
     printf("Breakpoint Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -76,7 +76,7 @@ void handler3(){
 */
 void handler4(){
     printf("Overflow Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -90,7 +90,7 @@ void handler4(){
 */
 void handler5(){
     printf("BOUND Range Exceeded Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -104,7 +104,7 @@ void handler5(){
 */
 void handler6(){
     printf("Invalid Opcode Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -118,7 +118,7 @@ void handler6(){
 */
 void handler7(){
     printf("Device Not Available Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -132,7 +132,7 @@ void handler7(){
 */
 void handler8(){
     printf("Double Fault Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -146,7 +146,7 @@ void handler8(){
 */
 void handler9(){
     printf("Debug Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -160,7 +160,7 @@ void handler9(){
 */
 void handler10(){
     printf("Invalid TSS Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -174,7 +174,7 @@ void handler10(){
 */
 void handler11(){
     printf("Segment Not Present");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -188,7 +188,7 @@ void handler11(){
 */
 void handler12(){
     printf("Stack Fault Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -202,7 +202,7 @@ void handler12(){
 */
 void handler13(){
     printf("General Protection Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -226,7 +226,7 @@ void handler14(){
     );
     printf("linear address: %x\n", value);
     printf("error code: %x\n", error_code);
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -240,7 +240,7 @@ void handler14(){
 */
 void handler15(){
     printf("Nothing");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -254,7 +254,7 @@ void handler15(){
 */
 void handler16(){
     printf("x87 FPU Floating Point Error");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -268,7 +268,7 @@ void handler16(){
 */
 void handler17(){
     printf("Alignment Check Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -282,7 +282,7 @@ void handler17(){
 */
 void handler18(){
     printf("Machine Check Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }
@@ -296,7 +296,7 @@ void handler18(){
 */
 void handler19(){
     printf("SIMD Floating Point Exception");
-    // halt(EXCEPTION_STATUS);
+    halt(EXCEPTION_STATUS);
     while(1){
         
     }

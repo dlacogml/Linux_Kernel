@@ -55,11 +55,11 @@ int32_t halt (uint8_t status){
     setup_program_page(parent_pid); 
 
     /* update global status */
-    // if (status ==  EXCEPTION_STATUS){
-    //     global_status = EXCEPTION_CODE;
-    // } else {
-    global_status = (int32_t) status;
-    // }
+    if (status ==  EXCEPTION_STATUS){
+        global_status = EXCEPTION_CODE;
+    } else {
+        global_status = (int32_t) status;
+    }
 
     /* free pid */
     pid_array[pcb_pointer->pid] = PID_FREE;

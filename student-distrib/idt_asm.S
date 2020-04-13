@@ -30,7 +30,9 @@ asmHandler2:
  */
 asmHandler33:
     pushl $33           # interrupt handler #33, push the interrupt number
+    pushal
     call handler33      # call the handler
+    popal
     addl $4, %esp       # pop the interrupt number
     iret
 
@@ -42,7 +44,9 @@ asmHandler33:
  */
 asmHandler40:
     pushl $40           # interrupt handler #140, push the interrupt number
+    pushal
     call handler40      # call the handler
+    popal
     addl $4, %esp       # pop the interrupt number
     iret
 
