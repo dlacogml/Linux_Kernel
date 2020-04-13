@@ -18,7 +18,9 @@
  */
 asmHandler2:
     pushl $2            # interrupt handler #2, push the interrupt number
+    pushal
     call handler2       # call the handler
+    popal
     addl $4, %esp       # pop the interrupt number
     iret
 
@@ -51,7 +53,7 @@ asmHandler40:
     iret
 
 /* asmHandler128
- * INTERFACE: calls handler128
+ * INTERFACE: system call linkage
  * INPUT: none
  * OUTPUT: none
  * side effect: returns from the interrupt properly
@@ -59,7 +61,9 @@ asmHandler40:
 asmHandler128:  
     
     pushl $128             # interrupt handler #128, push the interrupt number
+    /* jump table is 0 indexed */
     subl $1, %eax
+    /* check for valid syscall number */
     cmpl $0, %eax
     jb invalid_sys_num
     cmpl $9, %eax
@@ -86,6 +90,7 @@ asmHandler128:
     pop %esi
     pop %edi 
     pop %ebp
+    /* pop interrupt number */
     addl $4, %esp
     iret
 

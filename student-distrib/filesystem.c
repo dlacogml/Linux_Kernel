@@ -8,9 +8,6 @@
 
 /* global variables/structures */
 
-// int file_pos;
-// int dir_index;
-// int inode_num;
 
 /* init_filesystem
  * DESCRIPTION: initializes boot block and block arrays
@@ -59,9 +56,11 @@ int32_t file_close(int32_t fd) {
  * SIDE EFFECT: 
  */
 int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
+    /* extract pcb from esp */
     register int esp asm("esp");
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+
     /* read data from file and store in buf */
     int32_t num_bytes = read_data(pcb_pointer->fdarray[fd].inode, pcb_pointer->fdarray[fd].file_pos, buf, nbytes);
 
@@ -112,6 +111,7 @@ int32_t dir_close(int32_t fd) {
  * SIDE EFFECT: 
  */
 int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
+    /* extract pcb from esp */
     register int esp asm("esp");
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
@@ -169,6 +169,7 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
             if (strlen((int8_t*)fname) != strlen((int8_t*)boot_block->dir_entries[i].filename)){
                 return -1;
             }
+            /* copy all fields */
             strcpy((int8_t*)dentry->filename, (int8_t*)boot_block->dir_entries[i].filename);
             dentry->filetype = boot_block->dir_entries[i].filetype;
             dentry->inode_num = boot_block->dir_entries[i].inode_num;
@@ -251,9 +252,26 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     return num_copied;
 }
 
+/* stdout_write
+ * DESCRIPTION: do nothing
+ * INPUT: fd: file descriptor
+ *        buf: buf to copy bytes into
+ *        nbytes: number of bytes to copy
+ * OUTPUT: -1
+ * SIDE EFFECT: 
+ */
 int32_t stdin_write(int32_t fd, const void* buf, int32_t nbytes){
     return -1;
 }
+
+/* stdout_read
+ * DESCRIPTION: do nothing
+ * INPUT: fd: file descriptor
+ *        buf: buf to copy bytes into
+ *        nbytes: number of bytes to copy
+ * OUTPUT: -1
+ * SIDE EFFECT: 
+ */
 int32_t stdout_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     return -1;
 }

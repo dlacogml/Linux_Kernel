@@ -29,8 +29,6 @@
 int8_t* filesys_start;
 
 
-
-
 /* struct for a directory entry */
 typedef struct dentry {
     uint8_t filename[FILENAME_LENGTH];
@@ -59,18 +57,15 @@ typedef struct data_block {
     int8_t byte[BLOCK_SIZE];
 } data_block_t;
 
+/* struct for fops */
 typedef struct f_ops_table{
-    //pointers to read
     int32_t (*read)(int32_t fd, uint8_t* buf, int32_t nbytes);
-    //pointer to write
     int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
-    //pointer to open
     int32_t (*open)(const uint8_t* filename);
-    //pointer to close
     int32_t (*close)(int32_t fd);
-
 } f_ops_table_t;
 
+/* fops tables for different dile types */
 f_ops_table_t file_op_table;
 f_ops_table_t dir_op_table;
 f_ops_table_t rtc_op_table;
@@ -78,6 +73,7 @@ f_ops_table_t terminal_op_table;
 f_ops_table_t stdin_op_table;
 f_ops_table_t stdout_op_table;
 
+/* struct for file descriptor */
 typedef struct file_descriptor {
     f_ops_table_t* f_ops_pointer;
     int32_t inode;
@@ -85,6 +81,7 @@ typedef struct file_descriptor {
     int32_t flags;
 } file_descriptor_t;
 
+/* struct for pcb */
 typedef struct pcb{
     file_descriptor_t fdarray[NUM_FD];
     uint8_t filename[32];
@@ -97,6 +94,7 @@ typedef struct pcb{
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];
 
+/* boot block, inode array, data_block array */
 inode_t* inodes;
 boot_block_t* boot_block;
 data_block_t* data_blocks;

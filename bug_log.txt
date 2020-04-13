@@ -99,3 +99,23 @@ Bug 6:
     Problem: Writes to files with file descriptor > 7 or = 0 not functioning as expected
     What was the issue: In our invalid syscall label in idt_asm.S, we didn't set eax to -1
     What we did: set eax to -1 before returning in the label
+
+Bug 7:
+    Problem: Halt gave us page faults when returning back to the parent program
+    What was the issue: incorrect return address when restoring ebp and esp
+    What we did: Instead of using the esp and ebp of parent process pcb, we used the esp and ebp of child process pcb. This brought us to the right place on the stack.
+
+Bug 8:
+    Problem: Couldn't type in terminal
+    What was the issue: interrupts were not enabled
+    What we did: sti() in read function 
+
+Bug 9: 
+    Problem: page fault when running ls for a second time 
+    What was the issue: we weren't updating the global parent variable in halt function 
+    What we did: updated global parent variable in halt function. 
+
+Bug 10:
+    Problem: program would still run if we typed in shorter version of program 
+    What was the issue: we weren't checking if the dentry name and command were the same length 
+    What we did: we checked if the dentry name and command were the same length 
