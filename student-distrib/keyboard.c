@@ -6,6 +6,7 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "i8259.h"
+#include "syscallhandlers.h"
 static volatile uint8_t CAPS_PRESSED = 0;
 static volatile uint8_t SHIFT_PRESSED = 0;
 static volatile uint8_t CONTROL_PRESSED = 0;
@@ -111,6 +112,16 @@ void handler33()
     { 
       int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
       int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
+      //checking if ctrl + c or ctrl + C
+      if(CONTROL_PRESSED == 1 && (ascii_val == 'c' || sh_ascii_val == 'C') && !SHIFT_PRESSED)
+      {
+        buf_idx = 0;
+        clear_buffer(); //clear th buffer 
+        // clear();        //clear the screen
+        send_eoi(KEYBOARD_IRQ);
+        halt(2);
+        return;
+      }
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
