@@ -113,18 +113,20 @@ int32_t execute (const uint8_t* command){
     /*filter the command*/
     if(!command)
         return -1;
-    while(*command == ' ')
+    i = 0;
+    while(command[i] == ' ')
     {
-        command++;
+        i++;
     }
+    uint32_t command_nbytes = 0;
     uint8_t* filtered_command;
-    while(*command != '\0' && *command != ' ')
+    while(command[i] != '\0' && command[i] != ' ')
     {
-        *filtered_command = *command;
-        command++;
-        filtered_command++;
+        command_nbytes++;
+        i++;
     }
-
+    strncpy(filtered_command, command, command_nbytes);
+    filtered_command[command_nbytes] = '\0';
     
     /* check for valid executable */
     /* check if file existed*/
