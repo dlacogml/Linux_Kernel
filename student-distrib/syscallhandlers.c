@@ -110,10 +110,25 @@ int32_t execute (const uint8_t* command){
     pcb_t* pcb;
     uint32_t v_addr = V_ADDR_START;
     uint32_t mem_start = PROGRAM_START;
+    /*filter the command*/
+    if(!command)
+        return -1;
+    while(*command == ' ')
+    {
+        command++;
+    }
+    uint8_t* filtered_command;
+    while(*command != '\0' && *command != ' ')
+    {
+        *filtered_command = *command;
+        command++;
+        filtered_command++;
+    }
 
+    
     /* check for valid executable */
     /* check if file existed*/
-    if (read_dentry_by_name(command, &dentry) == -1)
+    if (read_dentry_by_name(filtered_command, &dentry) == -1)
     {
         return -1;
     }
@@ -398,8 +413,11 @@ int32_t close (int32_t fd){
     return 0;
 }
 
-int32_t getargs (uint8_t* buf, int32_t nbytes){
+int32_t getargs (uint8_t* buf, int32_t nbytes)
+{
+    return -1;
     return 0;
+
 }
 
 int32_t vidmap (uint8_t** screen_start){
@@ -407,11 +425,11 @@ int32_t vidmap (uint8_t** screen_start){
 }
 
 int32_t set_handler (int32_t signum, void* handler_address){
-    return 0;
+    return -1;
 }
 
 int32_t sigreturn (void){
-    return 0;
+    return -1;
 }
 
 
