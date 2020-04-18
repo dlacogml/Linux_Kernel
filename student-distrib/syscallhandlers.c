@@ -12,6 +12,9 @@ int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_
 /* holds status for execute */
 int32_t global_status;
 
+/* global command*/
+uint8_t * global_command;
+
 /*int32_t halt (uint8_t status)*/
 /*interface: halt the process by switching back to the previous process's stack, first we extract the */
 /*           the current pcb pointer and close all the files within the current pcb. Then we make sure */
@@ -110,13 +113,21 @@ int32_t execute (const uint8_t* command){
     pcb_t* pcb;
     uint32_t v_addr = V_ADDR_START;
     uint32_t mem_start = PROGRAM_START;
+
     /*filter the command*/
+    // uint32_t len = strlen(command);
+    
+    // strcpy(global_command, command);
     uint8_t* filtered_command = command;
+
+
+
     if(!command)
         return -1;
     while(*filtered_command == ' ' || *filtered_command == '\0')
     {
         filtered_command++;
+        // global_command++;
     }
     i = 0;
     while(1)
@@ -127,7 +138,12 @@ int32_t execute (const uint8_t* command){
             break;
         }
         i++;
+        // global_command++;
     }
+
+
+    // global_command = temp_command;
+
     /* check for valid executable */
     /* check if file existed*/
     if (read_dentry_by_name(filtered_command, &dentry) == -1)
@@ -417,7 +433,11 @@ int32_t close (int32_t fd){
 
 int32_t getargs (uint8_t* buf, int32_t nbytes)
 {
-    return -1;
+    if(global_command == NULL || buf == NULL)
+        return -1;
+    if(strlen(global_command) > 128)
+        return -1;
+    
     return 0;
 
 }
