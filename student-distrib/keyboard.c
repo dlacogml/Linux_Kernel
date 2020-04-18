@@ -288,7 +288,7 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     for(i = 0; i < nbytes; i++)
     {
         /* when we have reach the end of the buf*/
-        if(a[i] == '\n' && a[i] != 0)
+        if(a[i] != 0)
         {
           putc(a[i]); //output char on screen
           return i+1;

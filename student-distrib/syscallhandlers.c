@@ -13,7 +13,7 @@ int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_
 int32_t global_status;
 
 /* global command*/
-uint8_t * global_command;
+uint8_t global_command[128];
 
 /*int32_t halt (uint8_t status)*/
 /*interface: halt the process by switching back to the previous process's stack, first we extract the */
@@ -117,29 +117,37 @@ int32_t execute (const uint8_t* command){
     /*filter the command*/
     // uint32_t len = strlen(command);
     
-    // strcpy(global_command, command);
+    strcpy(global_command, command);
     uint8_t* filtered_command = command;
 
-
+    uint32_t j;
+    j = 0;
 
     if(!command)
         return -1;
     while(*filtered_command == ' ' || *filtered_command == '\0')
     {
         filtered_command++;
-        // global_command++;
+        // global_command[j] = global_command[j+1];
+        j++;
     }
     i = 0;
     while(1)
     {
         if(filtered_command[i] == '\0' || filtered_command[i] == ' ')
         {
+
             filtered_command[i] = '\0';
             break;
         }
         i++;
-        // global_command++;
+        // global_command[j++] = global_command[j+1];
+        j++;
     }
+    for(i = 0; global_command[j] != '\0'; j++) {
+        global_command[i++] = global_command[j];
+    }
+    global_command[i] = '\0';
 
 
     // global_command = temp_command;
@@ -438,6 +446,14 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
     if(strlen(global_command) > 128)
         return -1;
     
+    uint8_t* filtered_command = global_command;
+
+    while(*filtered_command == ' ' || *filtered_command == '\0')
+    {
+        filtered_command++;
+    }
+    strncpy(buf, filtered_command, nbytes);
+
     return 0;
 
 }
