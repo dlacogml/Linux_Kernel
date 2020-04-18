@@ -227,9 +227,6 @@ void handler14(){
     printf("linear address: %x\n", value);
     printf("error code: %x\n", error_code);
     halt(EXCEPTION_STATUS);
-    while(1){
-        
-    }
 }
 
 /* void handler15()

@@ -460,6 +460,7 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
     {
         filtered_command++;
     }
+
     strncpy(buf, filtered_command, nbytes);
 
     int32_t i;

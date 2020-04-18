@@ -129,7 +129,7 @@ int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     int32_t filename_index = 0;
 
     /* copy filename into buffer until either limit is reached or end of filename */
-    while (dentry.filename[filename_index] != EOS && num_copied < nbytes){
+    while (dentry.filename[filename_index] != EOS && num_copied < 32){
         *buf = dentry.filename[filename_index];
         buf++;
         num_copied++;
@@ -165,10 +165,14 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
     int i;
     /* search for file name in dentry list, then copy all fields if found, else return -1 */
     for (i = 0; i < boot_block->dir_count; i++){
+
+        // if (strlen((int8_t*)fname) > strlen((int8_t*)boot_block->dir_entries[i].filename)){
+            // return -1;
+        // }
         if (strncmp((int8_t*)boot_block->dir_entries[i].filename, (int8_t*)fname, strlen((int8_t*)fname)) == 0){
-            if (strlen((int8_t*)fname) != strlen((int8_t*)boot_block->dir_entries[i].filename)){
-                return -1;
-            }
+            // if (strlen((int8_t*)fname) != strlen((int8_t*)boot_block->dir_entries[i].filename)){
+            //     return -1;
+            // }
             /* copy all fields */
             strcpy((int8_t*)dentry->filename, (int8_t*)boot_block->dir_entries[i].filename);
             dentry->filetype = boot_block->dir_entries[i].filetype;
