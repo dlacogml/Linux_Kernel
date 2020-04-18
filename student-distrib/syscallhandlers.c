@@ -111,23 +111,23 @@ int32_t execute (const uint8_t* command){
     uint32_t v_addr = V_ADDR_START;
     uint32_t mem_start = PROGRAM_START;
     /*filter the command*/
+    uint8_t* filtered_command = command;
     if(!command)
         return -1;
+    while(*filtered_command == ' ' || *filtered_command == '\0')
+    {
+        filtered_command++;
+    }
     i = 0;
-    while(command[i] == ' ')
+    while(1)
     {
+        if(filtered_command[i] == '\0' || filtered_command[i] == ' ')
+        {
+            filtered_command[i] = '\0';
+            break;
+        }
         i++;
     }
-    uint32_t command_nbytes = 0;
-    uint8_t* filtered_command;
-    while(command[i] != '\0' && command[i] != ' ')
-    {
-        command_nbytes++;
-        i++;
-    }
-    strncpy(filtered_command, command, command_nbytes);
-    filtered_command[command_nbytes] = '\0';
-    
     /* check for valid executable */
     /* check if file existed*/
     if (read_dentry_by_name(filtered_command, &dentry) == -1)
