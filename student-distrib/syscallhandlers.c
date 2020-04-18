@@ -35,13 +35,17 @@ int32_t halt (uint8_t status){
     /* extract pcb pointer from esp */
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
-
+    
     /* close all fds */
     for (i = FIRST_NON_STD; i < NUM_FD; i++){
-        pcb_pointer->fdarray[i].f_ops_pointer = 0;
-        pcb_pointer->fdarray[i].inode = 0;
-        pcb_pointer->fdarray[i].file_pos = 0;
-        pcb_pointer->fdarray[i].flags = FILE_OPEN;
+    //     if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
+    //         continue;
+    // }
+    //     pcb_pointer->fdarray[i].f_ops_pointer = 0;
+    //     pcb_pointer->fdarray[i].inode = 0;
+    //     pcb_pointer->fdarray[i].file_pos = 0;
+    //     pcb_pointer->fdarray[i].flags = FILE_OPEN;
+        close(i);
     }
 
     /* if exit on base shell, restart shell */
@@ -425,9 +429,9 @@ int32_t close (int32_t fd){
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
     // printf("close\n");
-    if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
-        return -1;
-    }
+    // if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
+    //     return -1;
+    // }
 
     /* check if file open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -435,7 +439,7 @@ int32_t close (int32_t fd){
     }
 
     /* check for valid fd */
-    if (fd < FIRST_NON_STD || fd >= NUM_FD){
+    if (fd >= NUM_FD){
         return -1;
     }
 
