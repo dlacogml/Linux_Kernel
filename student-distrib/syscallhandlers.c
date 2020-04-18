@@ -119,9 +119,7 @@ int32_t execute (const uint8_t* command){
     uint32_t v_addr = V_ADDR_START;
     uint32_t mem_start = PROGRAM_START;
 
-    /*filter the command*/
-    // uint32_t len = strlen(command);
-    
+    /*filter the command*/    
     strcpy(global_command, command);
     uint8_t* filtered_command = command;
 
@@ -133,7 +131,6 @@ int32_t execute (const uint8_t* command){
     while(*filtered_command == ' ' || *filtered_command == '\0')
     {
         filtered_command++;
-        // global_command[j] = global_command[j+1];
         j++;
     }
     i = 0;
@@ -146,16 +143,12 @@ int32_t execute (const uint8_t* command){
             break;
         }
         i++;
-        // global_command[j++] = global_command[j+1];
         j++;
     }
     for(i = 0; global_command[j] != '\0'; j++) {
         global_command[i++] = global_command[j];
     }
     global_command[i] = '\0';
-
-
-    // global_command = temp_command;
 
     /* check for valid executable */
     /* check if file existed*/
@@ -227,9 +220,6 @@ int32_t execute (const uint8_t* command){
     /* update parent */
     pcb->parent_pcb = parent;
     parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
-
-    /* fill in filename */
-    //strncpy((int8_t*)pcb->filename, (int8_t*)command, strlen((int8_t*)command));
 
     /* fill in stdin */
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
@@ -481,14 +471,15 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
 }
 
 int32_t vidmap (uint8_t** screen_start){
-    // check for valid screen_start
+    /* check for valid screen_start */
     if (screen_start == NULL || (screen_start >= KERNEL_ADDR && screen_start <= KERNEL_BOTTOM)){
         return -1;
     }
-    // set up the page
+    /* set up the vidmap page */
     setup_vidmap_page();
     
-    *screen_start = 0x04000000;
+    /* set screenstart to virtual address */
+    *screen_start = VIDMAP_V_ADDR;
     return 0;
 }
 

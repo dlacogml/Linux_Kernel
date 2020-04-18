@@ -23,6 +23,7 @@
 #define KERNEL_BOTTOM       2 * KERNEL_ADDR
 #define EXCEPTION_CODE      256
 #define EXCEPTION_STATUS    255
+#define VIDMAP_V_ADDR       0x04000000
 
 /* system call handlers, interaces are in c file */
 int32_t halt (uint8_t status);
