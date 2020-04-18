@@ -228,7 +228,7 @@ int32_t execute (const uint8_t* command){
     parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
     /* fill in filename */
-    strncpy((int8_t*)pcb->filename, (int8_t*)command, strlen((int8_t*)command));
+    //strncpy((int8_t*)pcb->filename, (int8_t*)command, strlen((int8_t*)command));
 
     /* fill in stdin */
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
