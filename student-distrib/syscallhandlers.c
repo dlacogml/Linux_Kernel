@@ -401,6 +401,9 @@ int32_t open (const uint8_t* filename){
             pcb_pointer->fdarray[fd].file_pos = 0;
             pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
         }
+        if(pcb_pointer->fdarray[fd].f_ops_pointer->open(filename) == -1) {
+            return -1; 
+        }
         return fd;
     }
     return -1;
@@ -420,6 +423,11 @@ int32_t close (int32_t fd){
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+
+    printf("close\n");
+    if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
+        return -1;
+    }
 
     /* check if file open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -453,6 +461,11 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
         filtered_command++;
     }
     strncpy(buf, filtered_command, nbytes);
+
+    int32_t i;
+    for(i = 0; i < 128; i++) {
+        global_command[i] = 0;
+    }
 
     return 0;
 
