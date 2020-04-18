@@ -363,6 +363,9 @@ int32_t open (const uint8_t* filename){
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
+    if (filename == ""){
+        return -1;
+    }
     /* check for open fds */
     for (i = 0; i < NUM_FD; i++){
         if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
@@ -479,7 +482,7 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
 
 int32_t vidmap (uint8_t** screen_start){
     // check for valid screen_start
-    if (screen_start == NULL){
+    if (screen_start == NULL || (screen_start >= KERNEL_ADDR && screen_start <= KERNEL_BOTTOM)){
         return -1;
     }
     // set up the page
