@@ -424,7 +424,7 @@ int32_t close (int32_t fd){
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
-    printf("close\n");
+    // printf("close\n");
     if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
         return -1;
     }
