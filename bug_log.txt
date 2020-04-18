@@ -119,3 +119,10 @@ Bug 10:
     Problem: program would still run if we typed in shorter version of program 
     What was the issue: we weren't checking if the dentry name and command were the same length 
     What we did: we checked if the dentry name and command were the same length 
+
+Checkpoint 4:
+
+Bug1:
+    Problem: page fault after doing cat 
+    What was the issue: we were overwriting the pcb parent pointer after doing strncpy
+    What we did: we deleted the strncpy line 
