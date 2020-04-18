@@ -18,10 +18,12 @@
 //allocate memories for page_directory and first page_table
 uint32_t page_directory[DIRECTORY_SIZE] __attribute__((aligned(ALIGNED_SIZE)));
 uint32_t first_page_table[TABLE_SIZE] __attribute__((aligned(ALIGNED_SIZE)));
+uint32_t vidmap_page[TABLE_SIZE] __attribute__((aligned(ALIGNED_SIZE)));
 //function that calls to initialize paging
 extern void init_paging();
 void setup_program_page(int pid);
-
+void setup_vidmap_page();
+void close_vidmap_page();
 #endif
 #endif 
 

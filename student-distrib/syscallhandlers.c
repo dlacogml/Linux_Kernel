@@ -64,6 +64,7 @@ int32_t halt (uint8_t status){
 
     /* load program page of parent */
     setup_program_page(parent_pid); 
+    close_vidmap_page();
 
     /* update global status */
     /* set the correct status to return from the parent process*/
@@ -428,18 +429,17 @@ int32_t close (int32_t fd){
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
-    // printf("close\n");
-    // if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
-    //     return -1;
-    // }
+    /* check for valid fd */
+    if (fd >= NUM_FD || fd < FIRST_NON_STD){
+        return -1;
+    }
 
     /* check if file open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
         return -1;
     }
 
-    /* check for valid fd */
-    if (fd >= NUM_FD){
+    if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
         return -1;
     }
 
@@ -467,6 +467,7 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
 
     strncpy(buf, filtered_command, nbytes);
 
+    /* reset global command */
     int32_t i;
     for(i = 0; i < 128; i++) {
         global_command[i] = 0;
@@ -477,6 +478,14 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
 }
 
 int32_t vidmap (uint8_t** screen_start){
+    // check for valid screen_start
+    if (screen_start == NULL){
+        return -1;
+    }
+    // set up the page
+    setup_vidmap_page();
+    
+    *screen_start = 0x04000000;
     return 0;
 }
 

@@ -60,3 +60,13 @@ void setup_program_page(int pid)
                    ");
 }
 
+void setup_vidmap_page(){
+    vidmap_page[0] = VIDEO | 0x7;
+    page_directory[16] = ((unsigned int) vidmap_page) | 0x7;
+}
+
+void close_vidmap_page(){
+    vidmap_page[0] = VIDEO & 0xFFFF8;
+    page_directory[16] &= 0xFFFFFFFE;
+}
+
