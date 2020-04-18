@@ -285,15 +285,15 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         return -1;
     uint32_t i; //loop counter
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
-    for(i = 0; i < nbytes; i++)
+    for(i = 0; i < nbytes && a[i] != '\0'; i++)
     {
         /* when we have reach the end of the buf*/
-        if(a[i] != 0)
-        {
-          putc(a[i]); //output char on screen
-          return i+1;
-        }
+        // if(a[i] == '\0')
+        // {
+        //   putc(a[i]); //output char on screen
+        //   return i+1;
+        // }
         putc(a[i]); //output char on screen
     }
-    return nbytes;
+    return i;
 }
