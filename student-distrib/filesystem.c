@@ -170,7 +170,7 @@ int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry) {
             // return -1;
         // }
         if (strncmp((int8_t*)boot_block->dir_entries[i].filename, (int8_t*)fname, strlen((int8_t*)fname)) == 0){
-            if (strlen((int8_t*)fname) != strlen((int8_t*)boot_block->dir_entries[i].filename)){
+            if (strlen((int8_t*)fname) != strlen((int8_t*)boot_block->dir_entries[i].filename) && strlen((int8_t*)fname) != FILENAME_LENGTH){
                 return -1;
             }
             /* copy all fields */
