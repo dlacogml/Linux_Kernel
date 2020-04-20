@@ -459,7 +459,7 @@ int32_t close (int32_t fd){
 int32_t getargs (uint8_t* buf, int32_t nbytes)
 {
     /* check for invalid arguments */
-    if(global_command == NULL || buf == NULL)
+    if(global_command == NULL || buf == NULL || global_command == "")
         return -1;    
     if(strlen((int8_t*) global_command) > ARG_MAX_LENGTH)
         return -1;
