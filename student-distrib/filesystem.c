@@ -228,10 +228,9 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 
     /* number of bytes copied already */
     int num_copied = 0;
-
     /* loop to copy bytes, stop when num_copied = length */
     while (num_copied < length){
-
+        
         /* if end of file, break */
         if (offset + num_copied >= file_inode.length){
             break;
