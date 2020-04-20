@@ -122,7 +122,7 @@ Bug 10:
 
 Checkpoint 4:
 
-Bug1:
+Bug 1:
     Problem: page fault after doing cat 
     What was the issue: we were overwriting the pcb parent pointer after doing strncpy
     What we did: we deleted the strncpy line 
@@ -131,3 +131,16 @@ Bug 2:
     Problem: grep wasn't opening all files correctly
     What was the issue: verylargetextwithverylongname.tx had a null byte in dentry 
     What we did: set the limit of dir_read to only read 32 bytes. 
+
+Bug 3:
+    Problem: Page fault exception
+    What was the issue: We weren't correctly filtering the command for our filtered_command variable
+    What we did: Made sure that spaces before and after were correctly filtered with the /0 at the end
+
+Bug 4:
+    Problem: Filtered_command not correct part 2
+    What was the issue: In our conditional statement, we used && instead of || and was not getting desired
+    output for our filtered_command
+    What we did: Changed to &&
+
+    
