@@ -126,3 +126,8 @@ Bug1:
     Problem: page fault after doing cat 
     What was the issue: we were overwriting the pcb parent pointer after doing strncpy
     What we did: we deleted the strncpy line 
+
+Bug 2: 
+    Problem: grep wasn't opening all files correctly
+    What was the issue: verylargetextwithverylongname.tx had a null byte in dentry 
+    What we did: set the limit of dir_read to only read 32 bytes. 

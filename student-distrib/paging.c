@@ -74,7 +74,7 @@ void setup_vidmap_page(){
     /* OR with 7 to enable P and R/W and have it at user level privilege */
     vidmap_page[0] = VIDEO | 0x7;
     /* OR with 7 to enable P and R/W and user level privilege */
-    page_directory[16] = ((unsigned int) vidmap_page) | 0x7;        //set the 16th page with video map
+    page_directory[VIDMAP_IDX] = ((unsigned int) vidmap_page) | 0x7;        //set the 16th PDE with video map
 }
 
 /*  void close_vidmap_page() */
@@ -89,6 +89,6 @@ void close_vidmap_page(){
     /* AND with 0xFFFF8 to mark the page as not present */
     vidmap_page[0] = VIDEO & 0xFFFF8;
     /* AND with 0xFFFFFFFE to mark the page to not present*/
-    page_directory[16] &= 0xFFFFFFFE;
+    page_directory[VIDMAP_IDX] &= 0xFFFFFFFE;
 }
 

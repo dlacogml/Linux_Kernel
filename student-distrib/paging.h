@@ -13,6 +13,7 @@
 #define TABLE_SIZE     1024
 #define ALIGNED_SIZE   4096
 #define KERNEL_ADDR 0x400000
+#define VIDMAP_IDX      16
 
 
 //allocate memories for page_directory and first page_table

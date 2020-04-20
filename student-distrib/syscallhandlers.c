@@ -147,7 +147,7 @@ int32_t execute (const uint8_t* command){
         global_command[i++] = global_command[j];
     }
 
-    /* add end line */
+    /* add end of string */
     global_command[i] = '\0';
 
     /* check for valid executable */
