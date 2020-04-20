@@ -13,7 +13,7 @@ int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_
 int32_t global_status;
 
 /* global command*/
-uint8_t global_command[128];
+uint8_t global_command[ARG_MAX_LENGTH];
 
 /*int32_t halt (uint8_t status)*/
 /*interface: halt the process by switching back to the previous process's stack, first we extract the */
@@ -38,13 +38,6 @@ int32_t halt (uint8_t status){
     
     /* close all fds */
     for (i = FIRST_NON_STD; i < NUM_FD; i++){
-    //     if (pcb_pointer->fdarray[i].flags == FILE_OPEN){
-    //         continue;
-    // }
-    //     pcb_pointer->fdarray[i].f_ops_pointer = 0;
-    //     pcb_pointer->fdarray[i].inode = 0;
-    //     pcb_pointer->fdarray[i].file_pos = 0;
-    //     pcb_pointer->fdarray[i].flags = FILE_OPEN;
         close(i);
     }
 
@@ -108,7 +101,7 @@ int32_t halt (uint8_t status){
 int32_t execute (const uint8_t* command){
     /* declare local variables */
     dentry_t dentry;
-    int32_t filesize, i;
+    int32_t filesize, i, j;
     int8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46}; // magic number to check for executable
     int8_t buf[NUM_METADATA_BITS];
     uint32_t user_ds;
@@ -120,34 +113,41 @@ int32_t execute (const uint8_t* command){
     uint32_t mem_start = PROGRAM_START;
 
     /*filter the command*/    
-    strcpy(global_command, command);
-    uint8_t* filtered_command = command;
+    strcpy((int8_t*) global_command, (int8_t*) command);            // copy the current command into the global variable, global_command, which will hold the arguments
+    uint8_t* filtered_command = (uint8_t*) command;        
 
-    uint32_t j;
-    j = 0;
+    j = 0;                                      // index to keep track for the global command to know where the argument starts                 
 
+    /*check for invalid argument*/
     if(!command)
         return -1;
+
+    /*remove the spaces before the command argument */
     while(*filtered_command == ' ' || *filtered_command == '\0')
     {
         filtered_command++;
         j++;
     }
-    i = 0;
+
+    /*filter so the filtered_command ends with only the command and none of the arguments*/
+    i = 0;                                    
     while(1)
     {
         if(filtered_command[i] == '\0' || filtered_command[i] == ' ')
         {
-
             filtered_command[i] = '\0';
             break;
         }
         i++;
         j++;
     }
+    
+    /* replace the global_command with the actual argument */
     for(i = 0; global_command[j] != '\0'; j++) {
         global_command[i++] = global_command[j];
     }
+
+    /* add end line */
     global_command[i] = '\0';
 
     /* check for valid executable */
@@ -353,7 +353,8 @@ int32_t open (const uint8_t* filename){
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
-    if (filename == ""){
+    /* check for invalid argument*/
+    if (filename == (uint8_t*)  ""){
         return -1;
     }
     /* check for open fds */
@@ -363,9 +364,11 @@ int32_t open (const uint8_t* filename){
             break;
         }
     }
+    /* check for if there are no open fds*/
     if (open_flag == 0 || i == 8){
         return -1;
     }
+    /* local variables to use to fill in the fdarray */
     int32_t fd = i;
     dentry_t dentry;
 
@@ -444,13 +447,24 @@ int32_t close (int32_t fd){
     return 0;
 }
 
+
+/*  int32_t getargs (uint8_t* buf, int32_t nbytes) */
+/*   interface: reads the program's command line arguments into a user-level buffer*/
+/*   input: buf -- buffer to be written */
+/*       nbytes -- number of bytes to be written */
+/*   output: none */
+/*   return value: -1 -- failure */
+/*                  0 on success */
+/*   side effect: */
 int32_t getargs (uint8_t* buf, int32_t nbytes)
 {
+    /* check for invalid arguments */
     if(global_command == NULL || buf == NULL)
-        return -1;
-    if(strlen(global_command) > 128)
+        return -1;    
+    if(strlen((int8_t*) global_command) > ARG_MAX_LENGTH)
         return -1;
     
+    /* filter any spaces at the beginning of the argument*/
     uint8_t* filtered_command = global_command;
 
     while(*filtered_command == ' ' || *filtered_command == '\0')
@@ -458,35 +472,46 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
         filtered_command++;
     }
 
-    strncpy(buf, filtered_command, nbytes);
+    /* copy the filtered argument into the buffer */
+    strncpy((int8_t *) buf, (int8_t *) filtered_command, nbytes);
 
     /* reset global command */
     int32_t i;
-    for(i = 0; i < 128; i++) {
+    for(i = 0; i < ARG_MAX_LENGTH; i++) {
         global_command[i] = 0;
     }
 
+    /*return 0 on success*/
     return 0;
 
 }
 
+/*  int32_t vidmap (uint8_t** screen_start) */
+/*   interface: maps the text-mode video memory into user space at a pre-set virtual address */
+/*   input: screen_start - double pointer to the video mem in user space */
+/*   output:  */
+/*   return value: -1 -- failure */
+/*                  0 on success */
+/*   side effect: sets up a page with the video mem with user level privilege */
 int32_t vidmap (uint8_t** screen_start){
     /* check for valid screen_start */
-    if (screen_start == NULL || (screen_start >= KERNEL_ADDR && screen_start <= KERNEL_BOTTOM)){
+    if (screen_start == NULL || (screen_start >= (uint8_t **) KERNEL_ADDR && screen_start <= (uint8_t **) (KERNEL_BOTTOM))){
         return -1;
     }
     /* set up the vidmap page */
     setup_vidmap_page();
     
     /* set screenstart to virtual address */
-    *screen_start = VIDMAP_V_ADDR;
+    *screen_start = (uint8_t * ) VIDMAP_V_ADDR;
     return 0;
 }
 
+/* not checkpoint 4 */
 int32_t set_handler (int32_t signum, void* handler_address){
     return -1;
 }
 
+/* not checkpoint 4 */
 int32_t sigreturn (void){
     return -1;
 }

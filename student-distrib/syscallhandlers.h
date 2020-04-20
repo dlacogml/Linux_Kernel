@@ -24,6 +24,7 @@
 #define EXCEPTION_CODE      256
 #define EXCEPTION_STATUS    255
 #define VIDMAP_V_ADDR       0x04000000
+#define ARG_MAX_LENGTH      128
 
 /* system call handlers, interaces are in c file */
 int32_t halt (uint8_t status);

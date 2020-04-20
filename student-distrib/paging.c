@@ -60,13 +60,35 @@ void setup_program_page(int pid)
                    ");
 }
 
+
+/*  void setup_vidmap_page()        */
+/*   interface: create a page for vid map with user level privilege*/
+/*   input: */
+/*   output: page in virtual for vid map with user level privilege*/
+/*   return value: */
+/*   side effect:  */
 void setup_vidmap_page(){
+
+    /* add the pages for video memory */
+
+    /* OR with 7 to enable P and R/W and have it at user level privilege */
     vidmap_page[0] = VIDEO | 0x7;
-    page_directory[16] = ((unsigned int) vidmap_page) | 0x7;
+    /* OR with 7 to enable P and R/W and user level privilege */
+    page_directory[16] = ((unsigned int) vidmap_page) | 0x7;        //set the 16th page with video map
 }
 
+/*  void close_vidmap_page() */
+/*   interface: close vidmap page created with user level privilege */
+/*   input: */
+/*   output: */
+/*   return value: */      
+/*   side effect:  */
 void close_vidmap_page(){
+    /* close vidmap page */
+
+    /* AND with 0xFFFF8 to mark the page as not present */
     vidmap_page[0] = VIDEO & 0xFFFF8;
+    /* AND with 0xFFFFFFFE to mark the page to not present*/
     page_directory[16] &= 0xFFFFFFFE;
 }
 

@@ -129,7 +129,7 @@ int32_t dir_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     int32_t filename_index = 0;
 
     /* copy filename into buffer until either limit is reached or end of filename */
-    while (dentry.filename[filename_index] != EOS && num_copied < 32){
+    while (dentry.filename[filename_index] != EOS && num_copied < FILENAME_LENGTH){
         *buf = dentry.filename[filename_index];
         buf++;
         num_copied++;
