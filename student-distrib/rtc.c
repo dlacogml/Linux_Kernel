@@ -98,12 +98,12 @@ int32_t rtc_close(int32_t fd)
 //side effect: block until the next interrupt is received
 int32_t rtc_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
+    INT_RECEIVED = 0; //reset INT_RECEIVED
     //While an interrupt is not received
     while(!INT_RECEIVED)
     {
         //do nothing
     }
-    INT_RECEIVED = 0; //reset INT_RECEIVED
     return 0;
 }
 //uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes);

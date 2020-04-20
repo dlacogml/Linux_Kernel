@@ -113,15 +113,15 @@ void handler33()
       int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
       int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
       //checking if ctrl + c or ctrl + C
-      if(CONTROL_PRESSED == 1 && (ascii_val == 'c' || sh_ascii_val == 'C') && !SHIFT_PRESSED)
-      {
-        buf_idx = 0;
-        clear_buffer(); //clear th buffer 
-        // clear();        //clear the screen
-        send_eoi(KEYBOARD_IRQ);
-        halt(2);
-        return;
-      }
+      // if(CONTROL_PRESSED == 1 && (ascii_val == 'c' || sh_ascii_val == 'C') && !SHIFT_PRESSED)
+      // {
+      //   buf_idx = 0;
+      //   clear_buffer(); //clear th buffer 
+      //   // clear();        //clear the screen
+      //   send_eoi(KEYBOARD_IRQ);
+      //   halt(2);
+      //   return;
+      // }
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
