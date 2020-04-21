@@ -257,7 +257,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       {
         clear_buffer();
         NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
-        buffer[i] = '\0';
+        // buffer[i] = '\0';
         return count;
       }
     }
@@ -285,7 +285,7 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         return -1;
     uint32_t i; //loop counter
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
-    for(i = 0; i < nbytes && a[i] != '\0'; i++)
+    for(i = 0; i < nbytes; i++)
     {
         /* when we have reach the end of the buf*/
         // if(a[i] == '\0')
