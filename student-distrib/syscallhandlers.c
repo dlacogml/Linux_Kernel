@@ -459,7 +459,7 @@ int32_t close (int32_t fd){
 int32_t getargs (uint8_t* buf, int32_t nbytes)
 {
     /* check for invalid arguments */
-    if(global_command == NULL || buf == NULL || global_command == "")
+    if(global_command == NULL || buf == NULL)
         return -1;    
     if(strlen((int8_t*) global_command) > ARG_MAX_LENGTH)
         return -1;
@@ -467,9 +467,13 @@ int32_t getargs (uint8_t* buf, int32_t nbytes)
     /* filter any spaces at the beginning of the argument*/
     uint8_t* filtered_command = global_command;
 
-    while(*filtered_command == ' ' || *filtered_command == '\0')
+    while(*filtered_command == ' ')
     {
         filtered_command++;
+    }
+    /*check for no argument*/
+    if(filtered_command[0] == '\0') {
+        return -1;
     }
 
     /* copy the filtered argument into the buffer */
