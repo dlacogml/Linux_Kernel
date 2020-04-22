@@ -13,6 +13,9 @@
 #define KEYBOARD_IRQ 1       //the irq num for keybaord 
 #define BUF_SIZE     128     //maximum number of chars 127 buffer can hold + line feed
 
+
+uint32_t current_terminal;
+
 /*function essential to keyboards*/
 void clear_buffer();
 void init_keyboard();
@@ -22,5 +25,7 @@ int32_t terminal_open(const uint8_t* filename);
 int32_t terminal_close(int32_t fd);
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
+
+int32_t switch_terminal(int32_t terminal_number);
 
 #endif

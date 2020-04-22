@@ -15,7 +15,10 @@ static volatile uint8_t TAB_PRESSED = 0;
 static volatile uint8_t NEWLINE_FLAG = 0;
 static uint32_t buf_idx = 0;                  //current index of the keyboard buffer
 static uint32_t read_idx = 0;                 //how many times we have read the string
-static uint8_t  keyboard_buffer[BUF_SIZE];    //buffer for the keyboard string
+static uint8_t keyboard_buffer0[BUF_SIZE];    //buffer for the keyboard string
+static uint8_t keyboard_buffer1[BUF_SIZE];    //buffer for the keyboard string
+static uint8_t keyboard_buffer2[BUF_SIZE];
+static uint8_t* keyboard_buffer[3] = {keyboard_buffer0, keyboard_buffer1, keyboard_buffer2};
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -67,7 +70,7 @@ void handler33()
     if(key == 28)
     {
       NEWLINE_FLAG = 1; //set the newline flag to be 1
-      keyboard_buffer[buf_idx] = '\n'; //append newline at the end
+      keyboard_buffer[current_terminal][buf_idx] = '\n'; //append newline at the end
       putc('\n');
       send_eoi(KEYBOARD_IRQ);
       return;
@@ -100,7 +103,7 @@ void handler33()
     {
       if(buf_idx) //check if the index is 0
       {
-        keyboard_buffer[buf_idx] = 0;
+        keyboard_buffer[current_terminal][buf_idx] = 0;
         buf_idx--;
         backspace();
       }
@@ -144,13 +147,13 @@ void handler33()
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
-          keyboard_buffer[buf_idx] = sh_ascii_val;
+          keyboard_buffer[current_terminal][buf_idx] = sh_ascii_val;
           buf_idx++;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx] = ascii_val;
+          keyboard_buffer[current_terminal][buf_idx] = ascii_val;
           buf_idx++;
         }
       }
@@ -159,13 +162,13 @@ void handler33()
         if(SHIFT_PRESSED)
         {
           putc(sh_ascii_val);
-          keyboard_buffer[buf_idx] = sh_ascii_val;
+          keyboard_buffer[current_terminal][buf_idx] = sh_ascii_val;
           buf_idx++;
         }
         else
         {
           putc(ascii_val);
-          keyboard_buffer[buf_idx] = ascii_val;
+          keyboard_buffer[current_terminal][buf_idx] = ascii_val;
           buf_idx++;
         }
       }
@@ -197,7 +200,7 @@ void clear_buffer()
   uint32_t i = 0;
   for (i = 0; i < BUF_SIZE; i++)
   {
-    keyboard_buffer[i] = 0; //clearing the buffer
+    keyboard_buffer[current_terminal][i] = 0; //clearing the buffer
   }
   /* reseting the index */
   buf_idx = 0;
@@ -248,9 +251,9 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
-    for(i = 0; i < nbytes && keyboard_buffer[i] != 0; i++)
+    for(i = 0; i < nbytes && keyboard_buffer[current_terminal][i] != 0; i++)
     {
-      buffer[i] = keyboard_buffer[read_idx * nbytes+i]; //copy key board buffer to buf
+      buffer[i] = keyboard_buffer[current_terminal][read_idx * nbytes+i]; //copy key board buffer to buf
       count++; //increment the count every time a byte is read into buf
       /*when we reach the end*/
       if(buffer[i] == '\n')
@@ -297,3 +300,9 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     }
     return i;
 }
+
+int32_t switch_terminal(int32_t terminal_number){
+    
+}
+
+

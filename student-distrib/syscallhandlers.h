@@ -3,6 +3,8 @@
 #include "rtc.h"
 #include "idt.h"
 #include "tests.h"
+#include "paging.h"
+#include "x86_desc.h"
 
 #ifndef SYSCALLHANDLERS_H
 #define SYSCALLHANDLERS_H
@@ -25,6 +27,20 @@
 #define EXCEPTION_STATUS    255
 #define VIDMAP_V_ADDR       0x04000000
 #define ARG_MAX_LENGTH      128
+
+
+/* global variable for storing parent pcb */
+pcb_t* parent;
+
+/* array for open processes, initalize all processes to free */
+int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
+
+/* holds status for execute */
+int32_t global_status;
+
+/* global command*/
+uint8_t global_command[ARG_MAX_LENGTH];
+
 
 /* system call handlers, interaces are in c file */
 int32_t halt (uint8_t status);
