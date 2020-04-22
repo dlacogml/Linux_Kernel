@@ -16,6 +16,9 @@
 
 uint32_t current_terminal;
 
+extern int screen_x_array[3];
+extern int screen_y_array[3];
+
 /*function essential to keyboards*/
 void clear_buffer();
 void init_keyboard();

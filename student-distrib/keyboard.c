@@ -19,6 +19,9 @@ static uint8_t keyboard_buffer0[BUF_SIZE];    //buffer for the keyboard string
 static uint8_t keyboard_buffer1[BUF_SIZE];    //buffer for the keyboard string
 static uint8_t keyboard_buffer2[BUF_SIZE];
 static uint8_t* keyboard_buffer[3] = {keyboard_buffer0, keyboard_buffer1, keyboard_buffer2};
+
+int screen_x_array[3] = {0, 0, 0};
+int screen_y_array[3] = {0, 0, 0};
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -311,11 +314,18 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 
 int32_t switch_terminal(int32_t terminal_number){
     // memcopy from physical video memory to previous's video page
+    memcpy(current_terminal << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    screen_x_array[current_terminal] = screen_x;
+    screen_y_array[current_terminal] = screen_y;
 
 
     current_terminal = terminal_number;
-
     //memcpy from current video page to physical video memory
+    memcpy(VIDEO/ALIGNED_SIZE << 12, current_terminal << 12, 4096);
+    screen_x = screen_x_array[current_terminal];
+    screen_y = screen_y_array[current_terminal];
+    uint16_t pos = screen_y * NUM_COLS + screen_x;
+    update_cursor(pos);
 }
 
 

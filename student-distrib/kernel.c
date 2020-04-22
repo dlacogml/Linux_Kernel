@@ -176,6 +176,7 @@ void entry(unsigned long magic, unsigned long addr) {
     // launch_tests_checkpoint_3();
 #endif
     /* Execute the first program ("shell") ... */
+    // switch_terminal(0);
     execute((uint8_t*)"shell");
     switch_terminal(1);
     execute((uint8_t*)"shell");

@@ -3,12 +3,9 @@
 
 #include "lib.h"
 
-#define NUM_COLS    80
-#define NUM_ROWS    25
-#define ATTRIB      0x7
 
-static int screen_x;
-static int screen_y;
+
+
 static char* video_mem = (char *)VIDEO;
 
 /* void clear(void);
@@ -235,6 +232,8 @@ void putc(uint8_t c) {
     } else if (screen_x == NUM_COLS - 1){
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        // *(uint8_t *)((video_mem + 4096 * (current_terminal + 1)) + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        // *(uint8_t *)((video_mem + 4096 * (current_terminal + 1)) + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_y++;
         screen_x = 0;
         scroll();
@@ -243,6 +242,8 @@ void putc(uint8_t c) {
     } else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        // *(uint8_t *)((video_mem + 4096 * (current_terminal + 1)) + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        // *(uint8_t *)((video_mem + 4096 * (current_terminal + 1)) + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
