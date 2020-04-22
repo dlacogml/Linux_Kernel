@@ -75,7 +75,7 @@ void handler33()
       send_eoi(KEYBOARD_IRQ);
       return;
     }
-
+    
     /*when tab is pressed*/
     if (key == 15) 
     {
@@ -302,7 +302,12 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 }
 
 int32_t switch_terminal(int32_t terminal_number){
-    
+    // memcopy from physical video memory to previous's video page
+
+
+    current_terminal = terminal_number;
+
+    //memcpy from current video page to physical video memory
 }
 
 

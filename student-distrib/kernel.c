@@ -177,7 +177,11 @@ void entry(unsigned long magic, unsigned long addr) {
 #endif
     /* Execute the first program ("shell") ... */
     execute((uint8_t*)"shell");
-
+    switch_terminal(1);
+    execute((uint8_t*)"shell");
+    switch_terminal(2);
+    execute((uint8_t*)"shell");
+    switch_terminal(0);
     current_terminal = 0;    
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

@@ -3,7 +3,8 @@
 #include "paging.h"
 #include "x86_desc.h"
 
-extern parent = NULL;
+void* parent = NULL;
+pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
 
 /*int32_t halt (uint8_t status)*/
 /*interface: halt the process by switching back to the previous process's stack, first we extract the */
@@ -63,7 +64,7 @@ int32_t halt (uint8_t status){
     /* link back to parent program */
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
-    parent = pcb_pointer->parent_pcb;
+    parent = (pcb_t*) pcb_pointer->parent_pcb;
 
     /*reset esp and ebp to return to the parent process*/
     asm volatile("movl %0, %%esp            \n\
@@ -200,7 +201,7 @@ int32_t execute (const uint8_t* command){
 
     /* fill in pcb */
     pcb->pid = i;
-    if (i == 0)
+    if (i <= 2)
     {
         pcb->is_haltable = 0;
     } else 

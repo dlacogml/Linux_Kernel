@@ -30,10 +30,10 @@
 
 
 /* global variable for storing parent pcb */
-pcb_t* parent;
+extern void* parent;
 
 /* array for open processes, initalize all processes to free */
-int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
+extern int32_t pid_array[MAX_PROCESSES];
 
 /* holds status for execute */
 int32_t global_status;
