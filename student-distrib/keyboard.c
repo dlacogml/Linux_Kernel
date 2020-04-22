@@ -110,21 +110,29 @@ void handler33()
       send_eoi(KEYBOARD_IRQ);
       return;
     }
+
+    /*check for terminal switch*/
+    if (ALT_PRESSED == 1)
+    {
+      switch (key)
+      {
+      case 0x3b:
+        switch_terminal(0);
+        break;
+      case 0x3c:
+        switch_terminal(1);
+        break;
+      case 0x3d:
+        switch_terminal(2);
+        break;
+      }
+    }
+
     /* printing onto screen */
     if (key > 0) 
     { 
       int ascii_val = keyboard_map[(int)key]; //ascii value of the key we just obtained
       int sh_ascii_val = shift_map[(int)key]; //shift ascii value of the key we just obtained
-      //checking if ctrl + c or ctrl + C
-      // if(CONTROL_PRESSED == 1 && (ascii_val == 'c' || sh_ascii_val == 'C') && !SHIFT_PRESSED)
-      // {
-      //   buf_idx = 0;
-      //   clear_buffer(); //clear th buffer 
-      //   // clear();        //clear the screen
-      //   send_eoi(KEYBOARD_IRQ);
-      //   halt(2);
-      //   return;
-      // }
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
