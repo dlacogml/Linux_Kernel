@@ -257,6 +257,7 @@ int32_t terminal_close(int32_t fd)
  */
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
+    sti();
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -325,14 +326,17 @@ int32_t switch_terminal(int32_t terminal_number){
     current_terminal = terminal_number;
     //memcpy from current video page to physical video memory
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + current_terminal) << 12, 4096);
-    // if (shell_started[terminal_number] == 0){
-    //     shell_started[terminal_number] = 1;
-    //     execute((uint8_t*)"shell");
-    // }
+
     screen_x = screen_x_array[current_terminal];
     screen_y = screen_y_array[current_terminal];
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
+
+    if (shell_started[terminal_number] == 0){
+        shell_started[terminal_number] = 1;
+        clear();
+        execute((uint8_t*)"shell");
+    }
 }
 
 

@@ -161,7 +161,7 @@ void entry(unsigned long magic, unsigned long addr) {
     init_paging();
     
     /* Enable interrupts */
-    printf("Enabling Interrupts\n");
+    // printf("Enabling Interrupts\n");
     //enable keyboard interrupt
     init_keyboard();
     //enable rtc interrupt
@@ -178,12 +178,12 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
     // switch_terminal(0);
     execute("shell");
-    switch_terminal(1);
-    execute("shell");
-    switch_terminal(2);
-    execute("shell");
-    switch_terminal(0);
-    
+    // switch_terminal(1);
+    // execute("shell");
+    // switch_terminal(2);
+    // execute("shell");
+    // switch_terminal(0);
+
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
