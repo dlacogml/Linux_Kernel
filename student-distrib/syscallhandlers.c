@@ -56,9 +56,9 @@ int32_t halt (uint8_t status){
     /* update global status */
     /* set the correct status to return from the parent process*/
     if (status ==  EXCEPTION_STATUS){
-        global_status = EXCEPTION_CODE;
+        t_s[cur_ter].global_status = EXCEPTION_CODE;
     } else {
-        global_status = (int32_t) status;
+        t_s[cur_ter].global_status = (int32_t) status;
     }
 
     /* free pid */
@@ -274,7 +274,7 @@ int32_t execute (const uint8_t* command){
     asm volatile( "halt_return:        \n\
                    "
     );
-    return global_status;
+    return t_s[cur_ter].global_status;
 }
 
 /*int32_t read (int32_t fd, void* buf, int32_t nbytes)*/
