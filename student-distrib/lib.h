@@ -14,8 +14,8 @@
 #define NUM_ROWS    25
 #define ATTRIB      0x7
 
-static int screen_x;
-static int screen_y;
+extern int screen_x;
+extern int screen_y;
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);

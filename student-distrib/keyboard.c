@@ -325,10 +325,10 @@ int32_t switch_terminal(int32_t terminal_number){
     current_terminal = terminal_number;
     //memcpy from current video page to physical video memory
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + current_terminal) << 12, 4096);
-    if (shell_started[terminal_number] == 0){
-        shell_started[terminal_number] = 1;
-        execute((uint8_t*)"shell");
-    }
+    // if (shell_started[terminal_number] == 0){
+    //     shell_started[terminal_number] = 1;
+    //     execute((uint8_t*)"shell");
+    // }
     screen_x = screen_x_array[current_terminal];
     screen_y = screen_y_array[current_terminal];
     uint16_t pos = screen_y * NUM_COLS + screen_x;
