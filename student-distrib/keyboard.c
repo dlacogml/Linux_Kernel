@@ -123,13 +123,13 @@ void handler33()
       switch (key)
       {
       case 0x3b:
-        switch_terminal(0);
+        different_terminal(0);
         break;
       case 0x3c:
-        switch_terminal(1);
+        different_terminal(1);
         break;
       case 0x3d:
-        switch_terminal(2);
+        different_terminal(2);
         break;
       }
     }
@@ -328,6 +328,7 @@ int32_t switch_terminal(int32_t terminal_number){
 
 
     cur_ter = terminal_number;
+    setup_program_page(t_s[cur_ter].current_running_pid);
     //memcpy from current video page to physical video memory
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, 4096);
 
@@ -336,11 +337,9 @@ int32_t switch_terminal(int32_t terminal_number){
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
 
-    if (t_s[cur_ter].shell_started == 0){
-        t_s[cur_ter].shell_started = 1;
-        clear();
-        execute((uint8_t*)"shell");
-    }
+    // if (t_s[cur_ter].shell_started == 0){
+
+    // }
     // execute((uint8_t*)"shell");
 }
 
@@ -359,18 +358,25 @@ void init_terminal(){
         t_s[i].shell_started = 0;
         t_s[i].video_mem_buf = VIDEO + 4096 * (i + 1);
     }
-
+    t_s[0].shell_started = 1;
     execute("shell");
 }
 
 
 void different_terminal(int32_t terminal_number){
     // if shell is already started, switch terminal
-    
+    enable_irq(KEYBOARD_IRQ);
+
+    if (t_s[terminal_number].shell_started == 1){
+        switch_terminal(terminal_number);
+        return;
+    }
 
     // if shell is not started, do stack switch and execute shell
     // point esp and ebp to second stack
-
+    t_s[cur_ter].shell_started = 1;
+    clear();
+    execute((uint8_t*)"shell");
     // call execute
 
 }

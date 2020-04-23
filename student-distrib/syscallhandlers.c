@@ -42,6 +42,8 @@ int32_t halt (uint8_t status){
     parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
     parent_pid = parent_pcb->pid;
 
+    t_s[cur_ter].current_running_pid = parent_pid;
+    
     /* set values in tss */
     tss.esp0 = _8MB - parent_pid * _8KB - END_OFFSET;
     tss.ss0 = KERNEL_DS;
@@ -186,6 +188,7 @@ int32_t execute (const uint8_t* command){
     }
 
     /* valid executable, begin executing */
+    t_s[cur_ter].current_running_pid = i;
 
     /* extract entry address from metadata bytes 24-27 */
     uint8_t entry_addr[4] = {buf[24], buf[25], buf[26], buf[27]};

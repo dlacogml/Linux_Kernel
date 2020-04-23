@@ -24,6 +24,7 @@ typedef struct terminal{
     int8_t* video_mem_buf;
     int32_t b_idx;
     int32_t r_idx;
+    int32_t current_running_pid;
     // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];
