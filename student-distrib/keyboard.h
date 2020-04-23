@@ -18,13 +18,14 @@ uint32_t cur_ter;
 
 typedef struct terminal{
     int8_t kb_buf[BUF_SIZE];
-    int32_t shell_started;
+    int32_t term_started;
     int32_t screen_x;
     int32_t screen_y;
     int8_t* video_mem_buf;
     int32_t b_idx;
     int32_t r_idx;
     int32_t current_running_pid;
+    int32_t is_base_shell;
     // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];

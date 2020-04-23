@@ -43,7 +43,7 @@ int32_t halt (uint8_t status){
     parent_pid = parent_pcb->pid;
 
     t_s[cur_ter].current_running_pid = parent_pid;
-    
+
     /* set values in tss */
     tss.esp0 = _8MB - parent_pid * _8KB - END_OFFSET;
     tss.ss0 = KERNEL_DS;
@@ -204,9 +204,10 @@ int32_t execute (const uint8_t* command){
 
     /* fill in pcb */
     pcb->pid = i;
-    if (i <= 2)
+    if (t_s[cur_ter].is_base_shell == 0)
     {
         pcb->is_haltable = 0;
+        t_s[cur_ter].is_base_shell = 1;
     } else 
     {
         pcb->is_haltable = 1;

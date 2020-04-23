@@ -329,6 +329,8 @@ int32_t switch_terminal(int32_t terminal_number){
 
     cur_ter = terminal_number;
     setup_program_page(t_s[cur_ter].current_running_pid);
+    // tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
+    // tss.ss0 = KERNEL_DS;
     //memcpy from current video page to physical video memory
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, 4096);
 
@@ -337,7 +339,7 @@ int32_t switch_terminal(int32_t terminal_number){
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
 
-    // if (t_s[cur_ter].shell_started == 0){
+    // if (t_s[cur_ter].term_started == 0){
 
     // }
     // execute((uint8_t*)"shell");
@@ -355,11 +357,14 @@ void init_terminal(){
         t_s[i].r_idx = 0;
         t_s[i].screen_x = 0;
         t_s[i].screen_y = 0;
-        t_s[i].shell_started = 0;
+        t_s[i].term_started = 0;
         t_s[i].video_mem_buf = VIDEO + 4096 * (i + 1);
+        t_s[i].is_base_shell = 0;
     }
-    t_s[0].shell_started = 1;
+    cur_ter = 0;
+    t_s[0].term_started = 1;
     execute("shell");
+    
 }
 
 
@@ -367,15 +372,28 @@ void different_terminal(int32_t terminal_number){
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
 
-    if (t_s[terminal_number].shell_started == 1){
+    if (t_s[terminal_number].term_started == 1){
         switch_terminal(terminal_number);
         return;
     }
 
     // if shell is not started, do stack switch and execute shell
     // point esp and ebp to second stack
-    t_s[cur_ter].shell_started = 1;
+    t_s[cur_ter].term_started = 1;
+    memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    t_s[cur_ter].screen_x = screen_x;
+    t_s[cur_ter].screen_y = screen_y;
+
+
+    cur_ter = terminal_number;
+    memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, 4096);
+
+    screen_x = t_s[cur_ter].screen_x;
+    screen_y = t_s[cur_ter].screen_y;
+    uint16_t pos = screen_y * NUM_COLS + screen_x;
+    update_cursor(pos);
     clear();
+    
     execute((uint8_t*)"shell");
     // call execute
 
