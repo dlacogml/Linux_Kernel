@@ -14,10 +14,18 @@
 #define BUF_SIZE     128     //maximum number of chars 127 buffer can hold + line feed
 
 
-uint32_t current_terminal;
+uint32_t cur_ter;
 
-extern int screen_x_array[3];
-extern int screen_y_array[3];
+typedef struct terminal{
+    int8_t kb_buf[BUF_SIZE];
+    int32_t shell_started;
+    int32_t screen_x;
+    int32_t screen_y;
+    int8_t* video_mem_buf;
+    int32_t b_idx;
+    int32_t r_idx;
+} terminal_t;
+extern terminal_t t_s[3];
 
 /*function essential to keyboards*/
 void clear_buffer();
