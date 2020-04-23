@@ -331,11 +331,40 @@ int32_t switch_terminal(int32_t terminal_number){
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
 
-    if (t_s[cur_ter].shell_started == 0){
-        t_s[cur_ter].shell_started = 1;
-        clear();
-        execute((uint8_t*)"shell");
+    // if (t_s[cur_ter].shell_started == 0){
+    //     t_s[cur_ter].shell_started = 1;
+    //     clear();
+    //     execute((uint8_t*)"shell");
+    // }
+}
+
+void init_terminal(){
+    int32_t i, j;
+    for (i = 0; i < 3; i++){
+        for (j = 0; j < BUF_SIZE; j++)
+        {
+            t_s[i].kb_buf[j] = 0; //clearing the buffer
+        }
+        /* reseting the index */
+        t_s[i].b_idx = 0;
+        t_s[i].r_idx = 0;
+        t_s[i].screen_x = 0;
+        t_s[i].screen_y = 0;
+        t_s[i].shell_started = 0;
+        t_s[i].video_mem_buf = VIDEO + 4096 * (i + 1);
     }
+
+    execute("shell");
 }
 
 
+void different_terminal(int32_t terminal_number){
+    // if shell is already started, switch terminal
+    
+
+    // if shell is not started, do stack switch and execute shell
+    // point esp and ebp to second stack
+
+    // call execute
+
+}

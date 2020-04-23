@@ -24,6 +24,7 @@ typedef struct terminal{
     int8_t* video_mem_buf;
     int32_t b_idx;
     int32_t r_idx;
+    // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];
 
@@ -38,5 +39,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 
 int32_t switch_terminal(int32_t terminal_number);
-
+void init_terminal();
+void different_terminal(int32_t terminal_number);
 #endif
