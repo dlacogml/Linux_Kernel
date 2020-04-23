@@ -26,6 +26,7 @@ typedef struct terminal{
     int32_t r_idx;
     int32_t current_running_pid;
     int32_t is_base_shell;
+    void* parent;
     // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];

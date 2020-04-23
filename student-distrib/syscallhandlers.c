@@ -3,7 +3,7 @@
 #include "paging.h"
 #include "x86_desc.h"
 
-void* parent = NULL;
+// void* parent = NULL;
 pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
 
 /*int32_t halt (uint8_t status)*/
@@ -35,6 +35,7 @@ int32_t halt (uint8_t status){
     /* if exit on base shell, restart shell */
     if (!pcb_pointer->is_haltable){
         pid_array[pcb_pointer->pid] = PID_FREE;
+        t_s[cur_ter].is_base_shell = 0;
         execute((uint8_t*)"shell");
     }
 
@@ -66,7 +67,7 @@ int32_t halt (uint8_t status){
     /* link back to parent program */
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
-    parent = (pcb_t*) pcb_pointer->parent_pcb;
+    t_s[cur_ter].parent = (pcb_t*) pcb_pointer->parent_pcb;
 
     /*reset esp and ebp to return to the parent process*/
     asm volatile("movl %0, %%esp            \n\
@@ -213,8 +214,8 @@ int32_t execute (const uint8_t* command){
         pcb->is_haltable = 1;
     }
     /* update parent */
-    pcb->parent_pcb = parent;
-    parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
+    pcb->parent_pcb = t_s[cur_ter].parent;
+    t_s[cur_ter].parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
     /* fill in stdin */
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;

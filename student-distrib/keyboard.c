@@ -360,6 +360,7 @@ void init_terminal(){
         t_s[i].term_started = 0;
         t_s[i].video_mem_buf = VIDEO + 4096 * (i + 1);
         t_s[i].is_base_shell = 0;
+        t_s[i].parent = NULL;
     }
     cur_ter = 0;
     t_s[0].term_started = 1;
@@ -379,7 +380,7 @@ void different_terminal(int32_t terminal_number){
 
     // if shell is not started, do stack switch and execute shell
     // point esp and ebp to second stack
-    t_s[cur_ter].term_started = 1;
+    t_s[terminal_number].term_started = 1;
     memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
     t_s[cur_ter].screen_x = screen_x;
     t_s[cur_ter].screen_y = screen_y;
