@@ -21,11 +21,13 @@ static volatile char INT_RECEIVED = 0; //check if an rtc int is received
  */
 void rtc_init() 
 {
-    enable_irq(RTC_IRQ);         //enable the irq for rtc on pic 
+    disable_irq(RTC_IRQ);
+    send_eoi(RTC_IRQ);
     outb(RTC_B, RTC_PORT);		 //select reg B and disabke nmi
     char prev = inb(RTC_DATA);	 //read the current value of register B
     outb(RTC_B, RTC_PORT);		 //reset
     outb(prev | BIT6, RTC_DATA); //or with 0x40 to enbable bit 6 of Reg B PIE
+    enable_irq(RTC_IRQ);         //enable the irq for rtc on pic 
 }
 
 // /* rtc_set_rate
@@ -53,12 +55,14 @@ void rtc_init()
  * OUTPUT: nothing
  * SIDE EFFECT: 
  */
-void handler40(){           
+void handler40(){     
+    disable_irq(RTC_IRQ);
+    send_eoi(RTC_IRQ);    
     INT_RECEIVED = 1;       //enable INT_RECEIVED when an interrput is raised
     // test_interrupts();      // checks if the rtc works
     outb(RTC_C, RTC_PORT);	// set index to register A, disable NMI
     inb(RTC_DATA);		    // retrieve rtc_data
-    send_eoi(RTC_IRQ);            // end of interrupt
+    enable_irq(RTC_IRQ);    
 }
 
 //uint32_t rtc_open(const uint8_t* filename)

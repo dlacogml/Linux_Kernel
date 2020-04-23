@@ -55,6 +55,8 @@ uint8_t shift_map[MAP_SIZE] =
  */
 void handler33() 
 {
+    disable_irq(KEYBOARD_IRQ);
+    send_eoi(KEYBOARD_IRQ);
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
     /* checking for any functionality keys being released or pressed*/
 
@@ -76,7 +78,7 @@ void handler33()
       NEWLINE_FLAG = 1; //set the newline flag to be 1
       t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = '\n'; //append newline at the end
       putc('\n');
-      send_eoi(KEYBOARD_IRQ);
+      enable_irq(KEYBOARD_IRQ);
       return;
     }
     
@@ -111,7 +113,7 @@ void handler33()
         t_s[cur_ter].b_idx--;
         backspace();
       }
-      send_eoi(KEYBOARD_IRQ);
+      enable_irq(KEYBOARD_IRQ);
       return;
     }
 
@@ -143,7 +145,7 @@ void handler33()
         t_s[cur_ter].b_idx = 0;
         clear_buffer(); //clear th buffer 
         clear();        //clear the screen
-        send_eoi(KEYBOARD_IRQ);
+        enable_irq(KEYBOARD_IRQ);
         return;
       }
       /* when capslock is pressed */
@@ -185,7 +187,7 @@ void handler33()
         }
       }
     }
-    send_eoi(KEYBOARD_IRQ); //end of interrupt
+    enable_irq(KEYBOARD_IRQ); //end of interrupt
 }
 
 /*
@@ -197,6 +199,8 @@ void handler33()
  */
 void init_keyboard()
 {
+    disable_irq(KEYBOARD_IRQ);
+    send_eoi(KEYBOARD_IRQ);
     enable_irq(KEYBOARD_IRQ);
 }
 /*
@@ -315,7 +319,8 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 }
 
 int32_t switch_terminal(int32_t terminal_number){
-    sti();
+    // sti();
+    enable_irq(KEYBOARD_IRQ);
     // memcopy from physical video memory to previous's video page
     memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
     t_s[cur_ter].screen_x = screen_x;
@@ -331,11 +336,12 @@ int32_t switch_terminal(int32_t terminal_number){
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
 
-    // if (t_s[cur_ter].shell_started == 0){
-    //     t_s[cur_ter].shell_started = 1;
-    //     clear();
-    //     execute((uint8_t*)"shell");
-    // }
+    if (t_s[cur_ter].shell_started == 0){
+        t_s[cur_ter].shell_started = 1;
+        clear();
+        execute((uint8_t*)"shell");
+    }
+    // execute((uint8_t*)"shell");
 }
 
 void init_terminal(){
