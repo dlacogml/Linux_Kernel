@@ -13,8 +13,8 @@ static volatile uint8_t CONTROL_PRESSED = 0;
 static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
 static volatile uint8_t NEWLINE_FLAG = 0;
-static uint32_t buf_idx = 0;                  //current index of the keyboard buffer
-static uint32_t read_idx = 0;                 //how many times we have read the string
+static uint32_t buf_idx[3] = {0, 0, 0};                  //current index of the keyboard buffer
+static uint32_t read_idx[3] = {0, 0, 0};                 //how many times we have read the string
 static uint8_t keyboard_buffer0[BUF_SIZE];    //buffer for the keyboard string
 static uint8_t keyboard_buffer1[BUF_SIZE];    //buffer for the keyboard string
 static uint8_t keyboard_buffer2[BUF_SIZE];
@@ -22,6 +22,8 @@ static uint8_t* keyboard_buffer[3] = {keyboard_buffer0, keyboard_buffer1, keyboa
 
 int screen_x_array[3] = {0, 0, 0};
 int screen_y_array[3] = {0, 0, 0};
+
+int shell_started[3] = {1, 0, 0};
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -73,7 +75,7 @@ void handler33()
     if(key == 28)
     {
       NEWLINE_FLAG = 1; //set the newline flag to be 1
-      keyboard_buffer[current_terminal][buf_idx] = '\n'; //append newline at the end
+      keyboard_buffer[current_terminal][buf_idx[current_terminal]] = '\n'; //append newline at the end
       putc('\n');
       send_eoi(KEYBOARD_IRQ);
       return;
@@ -104,10 +106,10 @@ void handler33()
     /*check if backspace is pressed*/
     if (key == 14)
     {
-      if(buf_idx) //check if the index is 0
+      if(buf_idx[current_terminal]) //check if the index is 0
       {
-        keyboard_buffer[current_terminal][buf_idx] = 0;
-        buf_idx--;
+        keyboard_buffer[current_terminal][buf_idx[current_terminal]] = 0;
+        buf_idx[current_terminal]--;
         backspace();
       }
       send_eoi(KEYBOARD_IRQ);
@@ -139,7 +141,7 @@ void handler33()
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
-        buf_idx = 0;
+        buf_idx[current_terminal] = 0;
         clear_buffer(); //clear th buffer 
         clear();        //clear the screen
         send_eoi(KEYBOARD_IRQ);
@@ -152,35 +154,35 @@ void handler33()
       }
 
       //if the key thats a character
-      if(ascii_val >= 97 && ascii_val <= 122 && buf_idx < 127) //the range of lower case ascii letters are from 97 to 122
+      if(ascii_val >= 97 && ascii_val <= 122 && buf_idx[current_terminal] < 127) //the range of lower case ascii letters are from 97 to 122
       {
         //if only one of those is pressed 
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
-          keyboard_buffer[current_terminal][buf_idx] = sh_ascii_val;
-          buf_idx++;
+          keyboard_buffer[current_terminal][buf_idx[current_terminal]] = sh_ascii_val;
+          buf_idx[current_terminal]++;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
-          keyboard_buffer[current_terminal][buf_idx] = ascii_val;
-          buf_idx++;
+          keyboard_buffer[current_terminal][buf_idx[current_terminal]] = ascii_val;
+          buf_idx[current_terminal]++;
         }
       }
-      else if(ascii_val != 0 && buf_idx < 127) //if the input is not a character 
+      else if(ascii_val != 0 && buf_idx[current_terminal] < 127) //if the input is not a character 
       {
         if(SHIFT_PRESSED)
         {
           putc(sh_ascii_val);
-          keyboard_buffer[current_terminal][buf_idx] = sh_ascii_val;
-          buf_idx++;
+          keyboard_buffer[current_terminal][buf_idx[current_terminal]] = sh_ascii_val;
+          buf_idx[current_terminal]++;
         }
         else
         {
           putc(ascii_val);
-          keyboard_buffer[current_terminal][buf_idx] = ascii_val;
-          buf_idx++;
+          keyboard_buffer[current_terminal][buf_idx[current_terminal]] = ascii_val;
+          buf_idx[current_terminal]++;
         }
       }
     }
@@ -214,8 +216,8 @@ void clear_buffer()
     keyboard_buffer[current_terminal][i] = 0; //clearing the buffer
   }
   /* reseting the index */
-  buf_idx = 0;
-  read_idx = 0;
+  buf_idx[current_terminal] = 0;
+  read_idx[current_terminal] = 0;
 }
 /*
  * void terminal_open(const uint8_t* filename)
@@ -264,7 +266,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
     for(i = 0; i < nbytes && keyboard_buffer[current_terminal][i] != 0; i++)
     {
-      buffer[i] = keyboard_buffer[current_terminal][read_idx * nbytes+i]; //copy key board buffer to buf
+      buffer[i] = keyboard_buffer[current_terminal][read_idx[current_terminal] * nbytes+i]; //copy key board buffer to buf
       count++; //increment the count every time a byte is read into buf
       /*when we reach the end*/
       if(buffer[i] == '\n')
@@ -278,7 +280,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     if(nbytes >= strlen((int8_t*)buf))
       NEWLINE_FLAG = 0;
     //increment the number of times a keyboard string has being read
-    read_idx++;
+    read_idx[current_terminal]++;
     return count;
 }
 /*
@@ -313,15 +315,20 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 }
 
 int32_t switch_terminal(int32_t terminal_number){
+    sti();
     // memcopy from physical video memory to previous's video page
-    memcpy(current_terminal << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((VIDEO/ALIGNED_SIZE + 1 + current_terminal) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
     screen_x_array[current_terminal] = screen_x;
     screen_y_array[current_terminal] = screen_y;
 
 
     current_terminal = terminal_number;
     //memcpy from current video page to physical video memory
-    memcpy(VIDEO/ALIGNED_SIZE << 12, current_terminal << 12, 4096);
+    memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + current_terminal) << 12, 4096);
+    if (shell_started[terminal_number] == 0){
+        shell_started[terminal_number] = 1;
+        execute((uint8_t*)"shell");
+    }
     screen_x = screen_x_array[current_terminal];
     screen_y = screen_y_array[current_terminal];
     uint16_t pos = screen_y * NUM_COLS + screen_x;

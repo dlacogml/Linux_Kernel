@@ -31,9 +31,9 @@ void init_paging()
     //shift 12 to shift VIDEO 3 left of the hex so it's aligned in the base address section
     //OR with 3 to enable P and R/W
     first_page_table[VIDEO/ALIGNED_SIZE] =  VIDEO | 3;
-    first_page_table[0] = (VIDEO + 4096) | 3;
-    first_page_table[1] = (VIDEO + 4096 * 2) | 3;
-    first_page_table[2] = (VIDEO + 4096 * 3) | 3;
+    first_page_table[VIDEO/ALIGNED_SIZE + 1] = (VIDEO + 4096) | 3;
+    first_page_table[VIDEO/ALIGNED_SIZE + 2] = (VIDEO + 4096 * 2) | 3;
+    first_page_table[VIDEO/ALIGNED_SIZE + 3] = (VIDEO + 4096 * 3) | 3;
 
     
 
@@ -47,9 +47,9 @@ void init_paging()
     loadPageDirectory((unsigned int*)page_directory);
     enablePaging();
 
-    memcpy(0, VIDEO/ALIGNED_SIZE << 12, 4096);
-    memcpy(1 << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-    memcpy(2 << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((VIDEO/ALIGNED_SIZE + 1) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((VIDEO/ALIGNED_SIZE + 2) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((VIDEO/ALIGNED_SIZE + 3) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
 
 }
 //void setup_program_page(int pid)
