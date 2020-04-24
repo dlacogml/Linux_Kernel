@@ -28,6 +28,7 @@ typedef struct terminal{
     int32_t is_base_shell;
     void* parent;
     int32_t global_status;
+    int32_t newline_flag;
     // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];

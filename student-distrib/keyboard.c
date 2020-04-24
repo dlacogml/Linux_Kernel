@@ -12,7 +12,6 @@ static volatile uint8_t SHIFT_PRESSED = 0;
 static volatile uint8_t CONTROL_PRESSED = 0;
 static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
-static volatile uint8_t NEWLINE_FLAG = 0;
 // static uint32_t buf_idx[3] = {0, 0, 0};                  //current index of the keyboard buffer
 // static uint32_t read_idx[3] = {0, 0, 0};                 //how many times we have read the string
 // static uint8_t keyboard_buffer0[BUF_SIZE];    //buffer for the keyboard string
@@ -75,7 +74,7 @@ void handler33()
     /*check if enter is presssed, scancode for enter is 28*/
     if(key == 28)
     {
-      NEWLINE_FLAG = 1; //set the newline flag to be 1
+      t_s[cur_ter].newline_flag = 1; //set the newline flag to be 1
       t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = '\n'; //append newline at the end
       putc('\n');
       enable_irq(KEYBOARD_IRQ);
@@ -267,7 +266,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
-    while(!NEWLINE_FLAG);
+    while(!t_s[cur_ter].newline_flag);
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
@@ -279,13 +278,13 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       if(buffer[i] == '\n')
       {
         clear_buffer();
-        NEWLINE_FLAG = 0; //reset the NEW_LINE FLAG
+        t_s[cur_ter].newline_flag = 0; //reset the NEW_LINE FLAG
         // buffer[i] = '\0';
         return count;
       }
     }
     if(nbytes >= strlen((int8_t*)buf))
-      NEWLINE_FLAG = 0;
+      t_s[cur_ter].newline_flag = 0;
     //increment the number of times a keyboard string has being read
     t_s[cur_ter].r_idx++;
     return count;
