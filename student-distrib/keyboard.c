@@ -124,13 +124,16 @@ void handler33()
       {
       case 0x3b:
         different_terminal(0);
-        break;
+        enable_irq(KEYBOARD_IRQ);
+        return;
       case 0x3c:
         different_terminal(1);
-        break;
+        enable_irq(KEYBOARD_IRQ);
+        return;
       case 0x3d:
         different_terminal(2);
-        break;
+        enable_irq(KEYBOARD_IRQ);
+        return;
       }
     }
 
