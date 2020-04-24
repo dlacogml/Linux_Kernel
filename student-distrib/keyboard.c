@@ -324,6 +324,8 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 int32_t switch_terminal(int32_t terminal_number){
     // sti();
     enable_irq(KEYBOARD_IRQ);
+    uint32_t mask = PCB_MASK;
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
     // memcopy from physical video memory to previous's video page
     memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
     t_s[cur_ter].screen_x = screen_x;
@@ -332,8 +334,8 @@ int32_t switch_terminal(int32_t terminal_number){
 
     cur_ter = terminal_number;
     setup_program_page(t_s[cur_ter].current_running_pid);
-    // tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
-    // tss.ss0 = KERNEL_DS;
+    tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
+    tss.ss0 = KERNEL_DS;
     //memcpy from current video page to physical video memory
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, 4096);
 
@@ -341,6 +343,13 @@ int32_t switch_terminal(int32_t terminal_number){
     screen_y = t_s[cur_ter].screen_y;
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
+    // asm volatile("movl %0, %%esp           \n\
+    //               movl %1, %%ebp            \n\
+    //               "
+    //               :
+    //               :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
+    //               : "esp", "ebp"
+    //               );
 
     // if (t_s[cur_ter].term_started == 0){
 
