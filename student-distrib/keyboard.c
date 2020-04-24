@@ -373,6 +373,9 @@ void init_terminal(){
 
 
 void different_terminal(int32_t terminal_number){
+    uint32_t mask = PCB_MASK;
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
 
@@ -397,7 +400,16 @@ void different_terminal(int32_t terminal_number){
     uint16_t pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
     clear();
-    
+    // store esp and ebp in current pcb
+    asm volatile("movl %%esp, %0            \n\
+                  movl %%ebp, %1            \n\
+                  "
+                  :
+                  :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
+                  : "esp", "ebp"
+                  );
+
+
     execute((uint8_t*)"shell");
     // call execute
 
