@@ -226,6 +226,8 @@ void handler14(){
     );
     printf("linear address: %x\n", value);
     printf("error code: %x\n", error_code);
+    register int32_t esp asm ("esp");
+    printf("process number: %x\n", esp & 0xFFFFE000);
     halt(EXCEPTION_STATUS);
 }
 

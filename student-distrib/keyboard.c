@@ -400,8 +400,8 @@ void different_terminal(int32_t terminal_number){
     asm volatile("movl %%esp, %0            \n\
                   movl %%ebp, %1            \n\
                   "
+                  :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
                   :
-                  :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
                   : "esp", "ebp"
                   );
 
@@ -421,7 +421,7 @@ void different_terminal(int32_t terminal_number){
                   movl %1, %%ebp            \n\
                   "
                   :
-                  :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
+                  :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
                   : "esp", "ebp"
                   );
     }
