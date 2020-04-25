@@ -14,6 +14,7 @@
 
 /*asmHandler functions for interrupts*/
 void asmHandler2();
+void asmHandler32();
 void asmHandler33();
 void asmHandler40();
 void asmHandler128();

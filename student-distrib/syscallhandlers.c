@@ -35,7 +35,7 @@ int32_t halt (uint8_t status){
     /* if exit on base shell, restart shell */
     if (!pcb_pointer->is_haltable){
         pid_array[pcb_pointer->pid] = PID_FREE;
-        t_s[cur_ter].is_base_shell = 0;
+        t_s[cur_ter].base_shell_pid = -1;
         execute((uint8_t*)"shell");
     }
 
@@ -205,10 +205,10 @@ int32_t execute (const uint8_t* command){
 
     /* fill in pcb */
     pcb->pid = i;
-    if (t_s[cur_ter].is_base_shell == 0)
+    if (t_s[cur_ter].base_shell_pid == -1)
     {
         pcb->is_haltable = 0;
-        t_s[cur_ter].is_base_shell = 1;
+        t_s[cur_ter].base_shell_pid = i;
     } else 
     {
         pcb->is_haltable = 1;

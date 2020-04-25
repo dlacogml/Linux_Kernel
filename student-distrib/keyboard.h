@@ -15,6 +15,7 @@
 
 
 uint32_t cur_ter;
+uint32_t disp_ter;
 
 typedef struct terminal{
     int8_t kb_buf[BUF_SIZE];
@@ -25,7 +26,7 @@ typedef struct terminal{
     int32_t b_idx;
     int32_t r_idx;
     int32_t current_running_pid;
-    int32_t is_base_shell;
+    int32_t base_shell_pid;
     void* parent;
     int32_t global_status;
     int32_t newline_flag;

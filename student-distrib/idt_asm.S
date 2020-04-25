@@ -6,6 +6,7 @@
 .text
 /* making the asmHandler for handler 2, handler 33, handler 40 and handler 128*/
 .globl asmHandler2
+.globl asmHandler32
 .globl asmHandler33
 .globl asmHandler40
 .globl asmHandler128
@@ -20,6 +21,20 @@ asmHandler2:
     pushl $2            # interrupt handler #2, push the interrupt number
     pushal
     call handler2       # call the handler
+    popal
+    addl $4, %esp       # pop the interrupt number
+    iret
+
+/* asmHandler32
+ * INTERFACE: calls handler32
+ * INPUT: none
+ * OUTPUT: none
+ * side effect: returns from the interrupt properly
+ */
+asmHandler32:
+    pushl $32           # interrupt handler #33, push the interrupt number
+    pushal
+    call handler32      # call the handler
     popal
     addl $4, %esp       # pop the interrupt number
     iret

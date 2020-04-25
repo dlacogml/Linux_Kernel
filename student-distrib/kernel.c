@@ -14,6 +14,7 @@
 #include "paging.h"
 #include "filesystem.h"
 #include "syscallhandlers.h"
+#include "pit.h"
 
 #define RUN_TESTS
 #define RTC_PORT    0x70
@@ -166,6 +167,7 @@ void entry(unsigned long magic, unsigned long addr) {
     init_keyboard();
     //enable rtc interrupt
     rtc_init();
+    // init_pit(100);
     sti();
 
 

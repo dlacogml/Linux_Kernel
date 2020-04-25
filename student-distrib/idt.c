@@ -395,6 +395,9 @@ void init_idt() {
     SET_IDT_ENTRY(desc, asmHandler2);
     idt[2] = desc;                      // set desc equal to this index (2) of IDT
 
+    SET_IDT_ENTRY(desc, asmHandler32);
+    idt[32] = desc;
+
     SET_IDT_ENTRY(desc, asmHandler33);
     idt[33] = desc;                     //set desc equal to this index (33) of IDT
 
