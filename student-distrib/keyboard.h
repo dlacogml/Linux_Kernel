@@ -16,6 +16,8 @@
 
 uint32_t cur_ter;
 uint32_t disp_ter;
+int32_t keyboard_flag;
+int32_t currently_typed_term;
 
 typedef struct terminal{
     int8_t kb_buf[BUF_SIZE];

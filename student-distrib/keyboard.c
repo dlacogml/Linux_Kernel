@@ -79,6 +79,7 @@ void handler33()
     {
       t_s[disp_ter].newline_flag = 1; //set the newline flag to be 1
       t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = '\n'; //append newline at the end
+      keyboard_flag = 1;
       putc('\n');
       enable_irq(KEYBOARD_IRQ);
       return;
@@ -113,6 +114,7 @@ void handler33()
       {
         t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = 0;
         t_s[disp_ter].b_idx--;
+        keyboard_flag = 1;
         backspace();
       }
       enable_irq(KEYBOARD_IRQ);
@@ -165,12 +167,14 @@ void handler33()
         //if only one of those is pressed 
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
+          keyboard_flag = 1;
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
           t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = sh_ascii_val;
           t_s[disp_ter].b_idx++;
         }
         else //when both are pressed or neither is pressed
         {
+            keyboard_flag = 1;
           putc(ascii_val);
           t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = ascii_val;
           t_s[disp_ter].b_idx++;
@@ -180,12 +184,14 @@ void handler33()
       {
         if(SHIFT_PRESSED)
         {
+            keyboard_flag = 1;
           putc(sh_ascii_val);
           t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = sh_ascii_val;
           t_s[disp_ter].b_idx++;
         }
         else
         {
+            keyboard_flag = 1;
           putc(ascii_val);
           t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = ascii_val;
           t_s[disp_ter].b_idx++;
@@ -318,6 +324,7 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         //   putc(a[i]); //output char on screen
         //   return i+1;
         // }
+        
         putc(a[i]); //output char on screen
     }
     return i;

@@ -16,7 +16,7 @@ static char* video_mem = (char *)VIDEO;
 void clear(void) {
         int32_t i;
 
-    if (cur_ter == disp_ter){
+    if (cur_ter == disp_ter || keyboard_flag == 1){
         for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
             *(uint8_t *)(video_mem + (i << 1)) = ' ';
             *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
@@ -24,6 +24,7 @@ void clear(void) {
         screen_x = 0;
         screen_y = 0;
         update_cursor(0);
+        keyboard_flag = 0;
     } else {
         for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
             *(uint8_t *)(t_s[cur_ter].video_mem_buf + (i << 1)) = ' ';
@@ -39,7 +40,7 @@ void clear(void) {
  * Function: delete character */
 void backspace(void)
 {
-    if (cur_ter == disp_ter){
+    if (cur_ter == disp_ter || keyboard_flag == 1){
             //when it's at the top left corner, then do nothing
         if(screen_x == 0 && screen_y == 0)
             return;
@@ -52,6 +53,7 @@ void backspace(void)
         }
         uint16_t pos = screen_y * NUM_COLS + screen_x;
         update_cursor(pos);
+        keyboard_flag = 0;
     }
     // } else {
     //                 //when it's at the top left corner, then do nothing
@@ -76,7 +78,7 @@ void backspace(void)
  * Function: scrolls screen up */
 void scroll(void){
 
-    if (cur_ter == disp_ter){
+    if (cur_ter == disp_ter || keyboard_flag == 1){
         /* check if at bottom of screen */
         if (screen_y == NUM_ROWS){
             /* move all previous lines up one */
@@ -99,6 +101,7 @@ void scroll(void){
             screen_x = 0;
             screen_y = NUM_ROWS - 1;
         }
+        keyboard_flag = 0;
     } else {
                 /* check if at bottom of screen */
         if (t_s[cur_ter].screen_y == NUM_ROWS){
@@ -275,10 +278,11 @@ void putc(uint8_t c) {
     uint16_t pos;
     /* new line character case */
     if(c == '\n' || c == '\r') {
-        if (cur_ter == disp_ter){
+        if (cur_ter == disp_ter || keyboard_flag == 1){
             screen_y++;
             screen_x = 0;
             scroll();
+            keyboard_flag = 0;
         } else {
             t_s[cur_ter].screen_y++;
             t_s[cur_ter].screen_x = 0;
@@ -288,7 +292,7 @@ void putc(uint8_t c) {
 
     /* if screen_x is at the end of row, go to next row */
     } else if (screen_x == NUM_COLS - 1){
-        if (cur_ter == disp_ter){
+        if (cur_ter == disp_ter || keyboard_flag == 1){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
             screen_y++;
@@ -296,6 +300,7 @@ void putc(uint8_t c) {
             scroll();
             pos = screen_y * NUM_COLS + screen_x;
             update_cursor(pos);
+            keyboard_flag = 0;
         } else{
             *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1)) = c;
             *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1) + 1) = ATTRIB;
@@ -305,7 +310,7 @@ void putc(uint8_t c) {
         }
     /* else just place character in video memory */
     } else {
-        if (cur_ter == disp_ter){
+        if (cur_ter == disp_ter || keyboard_flag == 1){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
             screen_x++;
@@ -313,6 +318,7 @@ void putc(uint8_t c) {
             screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
             pos = screen_y * NUM_COLS + screen_x;
             update_cursor(pos);
+            keyboard_flag = 0;
         } else{
             *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1)) = c;
             *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1) + 1) = ATTRIB;
