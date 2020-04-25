@@ -77,8 +77,8 @@ void handler33()
     /*check if enter is presssed, scancode for enter is 28*/
     if(key == 28)
     {
-      t_s[cur_ter].newline_flag = 1; //set the newline flag to be 1
-      t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = '\n'; //append newline at the end
+      t_s[disp_ter].newline_flag = 1; //set the newline flag to be 1
+      t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = '\n'; //append newline at the end
       putc('\n');
       enable_irq(KEYBOARD_IRQ);
       return;
@@ -109,10 +109,10 @@ void handler33()
     /*check if backspace is pressed*/
     if (key == 14)
     {
-      if(t_s[cur_ter].b_idx) //check if the index is 0
+      if(t_s[disp_ter].b_idx) //check if the index is 0
       {
-        t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = 0;
-        t_s[cur_ter].b_idx--;
+        t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = 0;
+        t_s[disp_ter].b_idx--;
         backspace();
       }
       enable_irq(KEYBOARD_IRQ);
@@ -147,7 +147,7 @@ void handler33()
       //checking if ctrl + l or ctrl + L
       if (CONTROL_PRESSED == 1 && (ascii_val == 'l' || sh_ascii_val == 'L')) 
       {
-        t_s[cur_ter].b_idx = 0;
+        t_s[disp_ter].b_idx = 0;
         clear_buffer(); //clear th buffer 
         clear();        //clear the screen
         enable_irq(KEYBOARD_IRQ);
@@ -160,35 +160,35 @@ void handler33()
       }
 
       //if the key thats a character
-      if(ascii_val >= 97 && ascii_val <= 122 && t_s[cur_ter].b_idx < 127) //the range of lower case ascii letters are from 97 to 122
+      if(ascii_val >= 97 && ascii_val <= 122 && t_s[disp_ter].b_idx < 127) //the range of lower case ascii letters are from 97 to 122
       {
         //if only one of those is pressed 
         if(CAPS_PRESSED ^ SHIFT_PRESSED) 
         {
           putc(sh_ascii_val); //print the caps char of the key, and when a shift is not pressed 
-          t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = sh_ascii_val;
-          t_s[cur_ter].b_idx++;
+          t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = sh_ascii_val;
+          t_s[disp_ter].b_idx++;
         }
         else //when both are pressed or neither is pressed
         {
           putc(ascii_val);
-          t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = ascii_val;
-          t_s[cur_ter].b_idx++;
+          t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = ascii_val;
+          t_s[disp_ter].b_idx++;
         }
       }
-      else if(ascii_val != 0 && t_s[cur_ter].b_idx < 127) //if the input is not a character 
+      else if(ascii_val != 0 && t_s[disp_ter].b_idx < 127) //if the input is not a character 
       {
         if(SHIFT_PRESSED)
         {
           putc(sh_ascii_val);
-          t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = sh_ascii_val;
-          t_s[cur_ter].b_idx++;
+          t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = sh_ascii_val;
+          t_s[disp_ter].b_idx++;
         }
         else
         {
           putc(ascii_val);
-          t_s[cur_ter].kb_buf[t_s[cur_ter].b_idx] = ascii_val;
-          t_s[cur_ter].b_idx++;
+          t_s[disp_ter].kb_buf[t_s[disp_ter].b_idx] = ascii_val;
+          t_s[disp_ter].b_idx++;
         }
       }
     }
@@ -221,11 +221,11 @@ void clear_buffer()
   uint32_t i = 0;
   for (i = 0; i < BUF_SIZE; i++)
   {
-    t_s[cur_ter].kb_buf[i] = 0; //clearing the buffer
+    t_s[disp_ter].kb_buf[i] = 0; //clearing the buffer
   }
   /* reseting the index */
-  t_s[cur_ter].b_idx = 0;
-  t_s[cur_ter].r_idx = 0;
+  t_s[disp_ter].b_idx = 0;
+  t_s[disp_ter].r_idx = 0;
 }
 /*
  * void terminal_open(const uint8_t* filename)
@@ -269,27 +269,27 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
-    while(!t_s[cur_ter].newline_flag);
+    while(!t_s[disp_ter].newline_flag);
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
-    for(i = 0; i < nbytes && t_s[cur_ter].kb_buf[i] != 0; i++)
+    for(i = 0; i < nbytes && t_s[disp_ter].kb_buf[i] != 0; i++)
     {
-      buffer[i] = t_s[cur_ter].kb_buf[t_s[cur_ter].r_idx * nbytes+i]; //copy key board buffer to buf
+      buffer[i] = t_s[disp_ter].kb_buf[t_s[disp_ter].r_idx * nbytes+i]; //copy key board buffer to buf
       count++; //increment the count every time a byte is read into buf
       /*when we reach the end*/
       if(buffer[i] == '\n')
       {
         clear_buffer();
-        t_s[cur_ter].newline_flag = 0; //reset the NEW_LINE FLAG
+        t_s[disp_ter].newline_flag = 0; //reset the NEW_LINE FLAG
         // buffer[i] = '\0';
         return count;
       }
     }
     if(nbytes >= strlen((int8_t*)buf))
-      t_s[cur_ter].newline_flag = 0;
+      t_s[disp_ter].newline_flag = 0;
     //increment the number of times a keyboard string has being read
-    t_s[cur_ter].r_idx++;
+    t_s[disp_ter].r_idx++;
     return count;
 }
 /*
