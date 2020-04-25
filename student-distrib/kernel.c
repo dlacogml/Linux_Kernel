@@ -166,8 +166,11 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable keyboard interrupt
     init_keyboard();
     //enable rtc interrupt
+    
     rtc_init();
     init_pit(100);
+    init_terminal();
+    
     sti();
 
 
@@ -185,7 +188,7 @@ void entry(unsigned long magic, unsigned long addr) {
     // switch_terminal(2);
     // execute("shell");
     // switch_terminal(0);
-    init_terminal();
+    
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
