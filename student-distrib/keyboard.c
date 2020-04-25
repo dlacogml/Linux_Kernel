@@ -391,6 +391,7 @@ void init_terminal(){
 
 
 void different_terminal(int32_t terminal_number){
+  uint16_t pos;
     uint32_t mask = PCB_MASK;
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
@@ -398,7 +399,22 @@ void different_terminal(int32_t terminal_number){
     enable_irq(KEYBOARD_IRQ);
 
     if (t_s[terminal_number].term_started == 1){
+        asm volatile("movl %%esp, %0            \n\
+                  movl %%ebp, %1            \n\
+                  "
+                  :
+                  :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
+                  : "esp", "ebp"
+                  );
         switch_terminal(terminal_number);
+        pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+        asm volatile("movl %0, %%esp           \n\
+                  movl %1, %%ebp            \n\
+                  "
+                  :
+                  :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
+                  : "esp", "ebp"
+                  );
         return;
     }
 
@@ -423,7 +439,7 @@ void different_terminal(int32_t terminal_number){
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
-    uint16_t pos = screen_y * NUM_COLS + screen_x;
+    pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
     clear();
     // store esp and ebp in current pcb
