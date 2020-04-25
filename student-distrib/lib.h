@@ -8,6 +8,7 @@
 #include "types.h"
 #include "cursor.h"
 #include "keyboard.h"
+#include "filesystem.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80

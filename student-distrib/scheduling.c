@@ -28,6 +28,7 @@ void schedule(){
     }
 
     if (t_s[cur_ter].term_started == 0){
+        disp_ter = cur_ter;
         t_s[cur_ter].term_started = 1;
         execute((uint8_t*)"shell");
     }

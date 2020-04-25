@@ -205,6 +205,7 @@ int32_t execute (const uint8_t* command){
 
     /* fill in pcb */
     pcb->pid = i;
+    pcb->term_number = disp_ter;
     if (t_s[cur_ter].base_shell_pid == -1)
     {
         pcb->is_haltable = 0;

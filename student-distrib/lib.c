@@ -40,7 +40,9 @@ void clear(void) {
  * Function: delete character */
 void backspace(void)
 {
-    if (cur_ter == disp_ter || keyboard_flag == 1){
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+
+    if (cur_ter == disp_ter || keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             //when it's at the top left corner, then do nothing
         if(screen_x == 0 && screen_y == 0)
             return;
@@ -77,8 +79,9 @@ void backspace(void)
  * Return Value: none
  * Function: scrolls screen up */
 void scroll(void){
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
 
-    if (cur_ter == disp_ter || keyboard_flag == 1){
+    if (cur_ter == disp_ter || keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
         /* check if at bottom of screen */
         if (screen_y == NUM_ROWS){
             /* move all previous lines up one */
@@ -276,9 +279,11 @@ int32_t puts(int8_t* s) {
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
     uint16_t pos;
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    // pcb_pointer->term_number == disp_ter
     /* new line character case */
     if(c == '\n' || c == '\r') {
-        if (cur_ter == disp_ter || keyboard_flag == 1){
+        if (cur_ter == disp_ter || keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             screen_y++;
             screen_x = 0;
             scroll();
@@ -292,7 +297,7 @@ void putc(uint8_t c) {
 
     /* if screen_x is at the end of row, go to next row */
     } else if (screen_x == NUM_COLS - 1){
-        if (cur_ter == disp_ter || keyboard_flag == 1){
+        if (cur_ter == disp_ter || keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
             screen_y++;
@@ -310,7 +315,7 @@ void putc(uint8_t c) {
         }
     /* else just place character in video memory */
     } else {
-        if (cur_ter == disp_ter || keyboard_flag == 1){
+        if (cur_ter == disp_ter || keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
             screen_x++;

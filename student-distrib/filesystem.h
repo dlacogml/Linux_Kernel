@@ -92,6 +92,7 @@ typedef struct pcb{
     uint32_t esp;
     uint32_t ebp;
     uint32_t pstate;
+    int32_t term_number;
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];
 
