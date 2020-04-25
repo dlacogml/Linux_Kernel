@@ -167,7 +167,7 @@ void entry(unsigned long magic, unsigned long addr) {
     init_keyboard();
     //enable rtc interrupt
     rtc_init();
-    // init_pit(100);
+    init_pit(100);
     sti();
 
 
