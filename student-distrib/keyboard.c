@@ -404,13 +404,13 @@ void different_terminal(int32_t terminal_number){
 
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
-    // asm volatile("movl %%esp, %0            \n\
-    //               movl %%ebp, %1            \n\
-    //               "
-    //               :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
-    //               :
-    //               : "esp", "ebp"
-    //               );
+    asm volatile("movl %%esp, %0            \n\
+                  movl %%ebp, %1            \n\
+                  "
+                  :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
+                  :
+                  : "esp", "ebp"
+                  );
 
 
     memcpy((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
@@ -419,19 +419,19 @@ void different_terminal(int32_t terminal_number){
 
     // cur_ter = terminal_number;
     disp_ter = terminal_number;
-    // if (t_s[terminal_number].term_started == 1){
-    //     setup_program_page(t_s[cur_ter].current_running_pid);
-    //     tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
-    //     tss.ss0 = KERNEL_DS;
-    //     pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-    //     asm volatile("movl %0, %%esp           \n\
-    //               movl %1, %%ebp            \n\
-    //               "
-    //               :
-    //               :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
-    //               : "esp", "ebp"
-    //               );
-    // }
+    if (t_s[terminal_number].term_started == 1){
+        setup_program_page(t_s[cur_ter].current_running_pid);
+        tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
+        tss.ss0 = KERNEL_DS;
+        pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+        asm volatile("movl %0, %%esp           \n\
+                  movl %1, %%ebp            \n\
+                  "
+                  :
+                  :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
+                  : "esp", "ebp"
+                  );
+    }
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
@@ -451,15 +451,11 @@ void different_terminal(int32_t terminal_number){
         asm volatile("movl %%esp, %0            \n\
                     movl %%ebp, %1            \n\
                     "
-                    :"=r"(pcb_pointer->esp), "=r"(pcb_pointer->ebp)
+                    :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
                     :
                     : "esp", "ebp"
                     );
         execute((uint8_t*)"shell");
     }
-
-
-
     // call execute
-
 }
