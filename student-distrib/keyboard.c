@@ -391,8 +391,8 @@ void init_terminal(){
     }
     cur_ter = 0;
     disp_ter = 0;
-    t_s[0].term_started = 1;
-    execute("shell");
+    // t_s[0].term_started = 1;
+    // execute("shell");
     
 }
 
