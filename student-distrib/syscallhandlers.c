@@ -44,7 +44,7 @@ int32_t halt (uint8_t status){
     parent_pid = parent_pcb->pid;
 
     t_s[cur_ter].current_running_pid = parent_pid;
-
+    // printf("parent_pid: %d, cur_ter: %d, term_number: %d", parent_pid, cur_ter, pcb_pointer->ter);
     /* set values in tss */
     tss.esp0 = _8MB - parent_pid * _8KB - END_OFFSET;
     tss.ss0 = KERNEL_DS;
@@ -206,7 +206,7 @@ int32_t execute (const uint8_t* command){
     /* fill in pcb */
     pcb->pid = i;
     pcb->term_number = disp_ter;
-    printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
+    // printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
     if (t_s[cur_ter].base_shell_pid == -1)
     {
         pcb->is_haltable = 0;

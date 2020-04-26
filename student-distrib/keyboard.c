@@ -391,8 +391,8 @@ void init_terminal(){
     }
     cur_ter = 0;
     disp_ter = 0;
-    // t_s[0].term_started = 1;
-    // execute("shell");
+    t_s[0].term_started = 1;
+    execute("shell");
     
 }
 
@@ -444,6 +444,20 @@ void different_terminal(int32_t terminal_number){
     //     clear();
     //     execute((uint8_t*)"shell");
     // }
+    if (t_s[terminal_number].term_started == 0){
+        t_s[terminal_number].term_started = 1;
+
+        asm volatile("movl %%esp, %0            \n\
+                    movl %%ebp, %1            \n\
+                    "
+                    :"=r"(pcb_pointer->esp), "=r"(pcb_pointer->ebp)
+                    :
+                    : "esp", "ebp"
+                    );
+        execute((uint8_t*)"shell");
+    }
+
+
 
     // call execute
 

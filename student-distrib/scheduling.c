@@ -3,11 +3,12 @@
 
 void schedule(){
     // save esp and ebp of previous process
-    if (t_s[cur_ter].term_started == 0){
-        disp_ter = cur_ter;
-        t_s[cur_ter].term_started = 1;
-        execute((uint8_t*)"shell");
-    }
+    // if (t_s[cur_ter].term_started == 0){
+    //     disp_ter = cur_ter;
+    //     t_s[cur_ter].term_started = 1;
+    //     execute((uint8_t*)"shell");
+    // }
+    int i;
     asm volatile("movl %%esp, %0            \n\
                 movl %%ebp, %1            \n\
                 "
@@ -15,8 +16,13 @@ void schedule(){
                 :
                 : "esp", "ebp"
                 );
-
-    cur_ter = (cur_ter + 1) % 3;
+    for (i = 0; i < 3; i++){
+        cur_ter = (cur_ter + 1) % 3;
+        if (t_s[cur_ter].term_started == 1){
+            break;
+        }
+    }
+    // cur_ter = (cur_ter + 1) % 3;
     // set up program page
     // set tss values
     if (t_s[cur_ter].term_started == 1){
