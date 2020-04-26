@@ -446,7 +446,7 @@ void different_terminal(int32_t terminal_number){
     // }
     if (t_s[terminal_number].term_started == 0){
         t_s[terminal_number].term_started = 1;
-
+        cur_ter = terminal_number;
         asm volatile("movl %%esp, %0            \n\
                     movl %%ebp, %1            \n\
                     "
