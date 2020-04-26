@@ -168,7 +168,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable rtc interrupt
     
     rtc_init();
-    init_pit(10);
+    init_pit(100);
     init_terminal();
     
     sti();

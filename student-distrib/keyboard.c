@@ -400,7 +400,7 @@ void init_terminal(){
 void different_terminal(int32_t terminal_number){
   uint16_t pos;
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+    pcb_t* pcb_pointer;
 
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
@@ -447,6 +447,7 @@ void different_terminal(int32_t terminal_number){
     if (t_s[terminal_number].term_started == 0){
         t_s[terminal_number].term_started = 1;
         cur_ter = terminal_number;
+        pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
         asm volatile("movl %%esp, %0            \n\
                     movl %%ebp, %1            \n\
                     "
