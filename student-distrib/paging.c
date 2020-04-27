@@ -62,7 +62,7 @@ void setup_program_page(int pid)
 {
     //OR with 0x197 to enable P, R/W, PS, PCD, U/S, G 
     //and the index for the user page is 32 in page directory 
-    page_directory[32] = ((_8MB + pid * _4MB) | 0x197);
+    page_directory[32] = ((_8MB + pid * _4MB) | 0x97);
     // flush tlb 
     asm volatile ("movl %cr3, %eax  \n\
                    movl %eax, %cr3  \n\
