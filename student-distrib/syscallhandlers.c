@@ -17,6 +17,7 @@ pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PI
 /*side effect: halt the current process and perform a contet switch back to the parent process*/
 int32_t halt (uint8_t status){
     /* declare local variables */
+    cli();
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
     pcb_t* parent_pcb;
@@ -26,7 +27,7 @@ int32_t halt (uint8_t status){
     /* extract pcb pointer from esp */
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
-    
+    // cur_ter = pcb_pointer->term_number;
     /* close all fds */
     for (i = FIRST_NON_STD; i < NUM_FD; i++){
         close(i);
@@ -93,6 +94,7 @@ int32_t halt (uint8_t status){
 /*              anything in between -- defined by user program */
 /*side effect: excute the command, context switch to the user stack*/
 int32_t execute (const uint8_t* command){
+    cli();
     /* declare local variables */
     dentry_t dentry;
     int32_t filesize, i, j;
@@ -187,7 +189,7 @@ int32_t execute (const uint8_t* command){
     {
         return -1;
     }
-
+    cur_ter = disp_ter;
     /* valid executable, begin executing */
     t_s[cur_ter].current_running_pid = i;
 
