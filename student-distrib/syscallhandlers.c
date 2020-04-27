@@ -23,7 +23,6 @@ int32_t halt (uint8_t status){
     pcb_t* parent_pcb;
     uint32_t parent_pid, parent_esp, parent_ebp;
     int i;
-
     /* extract pcb pointer from esp */
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
