@@ -2,6 +2,7 @@
 // #include "filesystem.h"
 #include "paging.h"
 #include "x86_desc.h"
+#include "scheduling.h"
 
 // void* parent = NULL;
 pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
@@ -188,7 +189,9 @@ int32_t execute (const uint8_t* command){
     {
         return -1;
     }
-    cur_ter = disp_ter;
+    while(cur_ter != disp_ter){
+        schedule();
+    }
     /* valid executable, begin executing */
     t_s[cur_ter].current_running_pid = i;
 
