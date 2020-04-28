@@ -15,7 +15,6 @@ void schedule(){
                 "
                 :"=r"(pcb_pointer->esp), "=r"(pcb_pointer->ebp)
                 :
-                : "esp", "ebp"
                 );
     for (i = 0; i < 3; i++){
         cur_ter = (cur_ter + 1) % 3;
@@ -27,7 +26,7 @@ void schedule(){
     // cur_ter = (cur_ter + 1) % 3;
     // set up program page
     // set tss values
-    // if (t_s[cur_ter].term_started == 1){
+    if (t_s[cur_ter].term_started == 1){
         setup_program_page(t_s[cur_ter].current_running_pid);
         tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
         tss.ss0 = KERNEL_DS;
@@ -36,9 +35,8 @@ void schedule(){
                   "
                   :
                   :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
-                  : "esp", "ebp"
                   );
-    // }
+    }
 
 
 
