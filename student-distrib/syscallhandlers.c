@@ -69,7 +69,7 @@ int32_t halt (uint8_t status){
     parent_esp = pcb_pointer->esp;
     parent_ebp = pcb_pointer->ebp;
     t_s[cur_ter].parent = (pcb_t*) pcb_pointer->parent_pcb;
-
+    sti();
     /*reset esp and ebp to return to the parent process*/
     asm volatile("movl %0, %%esp            \n\
                   movl %1, %%ebp            \n\
@@ -95,6 +95,7 @@ int32_t halt (uint8_t status){
 /*side effect: excute the command, context switch to the user stack*/
 int32_t execute (const uint8_t* command){
     cli();
+
     /* declare local variables */
     dentry_t dentry;
     int32_t filesize, i, j;
@@ -192,7 +193,7 @@ int32_t execute (const uint8_t* command){
     // while(cur_ter != disp_ter){
     //     schedule();
     // }
-    cur_ter = disp_ter;
+    // cur_ter = disp_ter;
     /* valid executable, begin executing */
     t_s[disp_ter].current_running_pid = i;
 
@@ -214,8 +215,16 @@ int32_t execute (const uint8_t* command){
     // printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
     if (t_s[disp_ter].base_shell_pid == -1)
     {
+
         pcb->is_haltable = 0;
         t_s[disp_ter].base_shell_pid = i;
+        // asm volatile (" movl %%esp, %0      \n\
+        //                 movl %%ebp, %1      \n\
+        //             "
+        //             : "=r"(t_s[disp_ter].esp), "=r"(t_s[disp_ter].ebp)
+        //             :
+        //             : "esp", "ebp"
+        // );
     } else 
     {
         pcb->is_haltable = 1;
@@ -261,7 +270,6 @@ int32_t execute (const uint8_t* command){
     user_esp = v_addr + _4MB - END_OFFSET;
     user_cs = USER_CS;
     entry_point = *((uint32_t*) entry_addr);
-
     /* jump to entry point (entry_point) */
     asm volatile (" push %0             \n\
                     push %1             \n\
@@ -281,7 +289,7 @@ int32_t execute (const uint8_t* command){
     asm volatile( "halt_return:        \n\
                    "
     );
-    return t_s[cur_ter].global_status;
+    return t_s[disp_ter].global_status;
 }
 
 /*int32_t read (int32_t fd, void* buf, int32_t nbytes)*/
