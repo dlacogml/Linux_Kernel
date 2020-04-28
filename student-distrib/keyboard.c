@@ -445,7 +445,7 @@ void different_terminal(int32_t terminal_number){
             // printf("hello\n");
 
         t_s[terminal_number].term_started = 1;
-        // cur_ter = terminal_number;
+        cur_ter = terminal_number;
         pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
         // for (i = 0; i < MAX_PROCESSES; i++)
         // {
