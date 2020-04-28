@@ -466,5 +466,6 @@ void different_terminal(int32_t terminal_number){
         sti();
         execute((uint8_t*)"shell");
     }
+    // sti();
     // call execute
 }
