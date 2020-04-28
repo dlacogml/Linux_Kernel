@@ -3,27 +3,30 @@
 
 void schedule(){
     // save esp and ebp of previous process
-    // if (t_s[cur_ter].term_started == 0){
-    //     disp_ter = cur_ter;
-    //     t_s[cur_ter].term_started = 1;
-    //     execute((uint8_t*)"shell");
-    // }
-    int i;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    cli();
+        // cur_ter = (cur_ter + 1) % 3;
+
+    if (t_s[cur_ter].term_started == 0){
+        int pos;
+        // disp_ter = cur_ter;
+        t_s[cur_ter].term_started = 1;
+        memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+        t_s[cur_ter].screen_x = screen_x;
+        t_s[cur_ter].screen_y = screen_y;
+        pos = t_s[cur_ter].screen_y * NUM_COLS + t_s[cur_ter].screen_x;
+        update_cursor(pos);
+        sti();
+        execute((uint8_t*)"shell");
+    }
     asm volatile("movl %%esp, %0            \n\
                 movl %%ebp, %1            \n\
                 "
                 :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
                 :
+                : "esp", "ebp"
                 );
-    for (i = 0; i < 3; i++){
-        cur_ter = (cur_ter + 1) % 3;
-        if (t_s[cur_ter].term_started == 1){
-            break;
-        }
-    }
-    pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
-    // cur_ter = (cur_ter + 1) % 3;
+
+    cur_ter = (cur_ter + 1) % 3;
     // set up program page
     // set tss values
     if (t_s[cur_ter].term_started == 1){
@@ -35,8 +38,10 @@ void schedule(){
                   "
                   :
                   :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
+                  : "esp", "ebp"
                   );
     }
+        sti();
 
 
 

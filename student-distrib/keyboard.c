@@ -391,18 +391,16 @@ void init_terminal(){
     }
     cur_ter = 0;
     disp_ter = 0;
-    t_s[0].term_started = 1;
-    execute("shell");
+    // t_s[0].term_started = 1;
+    // execute("shell");
     
 }
 
 
 void different_terminal(int32_t terminal_number){
-    cli();
   uint16_t pos;
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer;
-    int i;
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
@@ -421,51 +419,32 @@ void different_terminal(int32_t terminal_number){
 
     // cur_ter = terminal_number;
     disp_ter = terminal_number;
-
-    if (t_s[terminal_number].term_started == 1){
-        // setup_program_page(t_s[cur_ter].current_running_pid);
-        // tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
-        // tss.ss0 = KERNEL_DS;
-        pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-        // asm volatile("movl %0, %%esp           \n\
-        //           movl %1, %%ebp            \n\
-        //           "
-        //           :
-        //           :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
-        //           : "esp", "ebp"
-        //           );
-    }
+    // if (t_s[terminal_number].term_started == 1){
+    //     setup_program_page(t_s[cur_ter].current_running_pid);
+    //     tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
+    //     tss.ss0 = KERNEL_DS;
+    //     pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+    //     asm volatile("movl %0, %%esp           \n\
+    //               movl %1, %%ebp            \n\
+    //               "
+    //               :
+    //               :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
+    //               : "esp", "ebp"
+    //               );
+    // }
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
     pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
+    // if shell is not started, do stack switch and execute shell
+    // point esp and ebp to second stack
+    // if (t_s[terminal_number].term_started == 0){
+    //     t_s[terminal_number].term_started = 1;
+    //     clear();
+    //     execute((uint8_t*)"shell");
+    // }
 
-    if (t_s[terminal_number].term_started == 0){
-            // printf("hello\n");
-
-        t_s[terminal_number].term_started = 1;
-        asm volatile (" movl %%esp, %0      \n\
-                    movl %%ebp, %1      \n\
-                  "
-                  : "=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
-                  : 
-                  : "esp", "ebp"
-        );
-        cur_ter = terminal_number;
-        pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-        // for (i = 0; i < MAX_PROCESSES; i++)
-        // {
-        //     if (pid_array[i] == PID_FREE)
-        //     {
-        //         break;
-        //     }
-        // }
-        // int32_t new_stack = _8MB - i * _8KB - END_OFFSET;
-
-        sti();
-        execute((uint8_t*)"shell");
-    }
-    // sti();
     // call execute
+
 }

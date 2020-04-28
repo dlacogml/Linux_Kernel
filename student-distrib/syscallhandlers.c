@@ -2,7 +2,6 @@
 // #include "filesystem.h"
 #include "paging.h"
 #include "x86_desc.h"
-#include "scheduling.h"
 
 // void* parent = NULL;
 pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
@@ -24,10 +23,11 @@ int32_t halt (uint8_t status){
     pcb_t* parent_pcb;
     uint32_t parent_pid, parent_esp, parent_ebp;
     int i;
+
     /* extract pcb pointer from esp */
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
-    // cur_ter = pcb_pointer->term_number;
+    
     /* close all fds */
     for (i = FIRST_NON_STD; i < NUM_FD; i++){
         close(i);
@@ -45,7 +45,7 @@ int32_t halt (uint8_t status){
     parent_pid = parent_pcb->pid;
 
     t_s[cur_ter].current_running_pid = parent_pid;
-    // printf("parent_pid: %d, cur_ter: %d, term_number: %d", parent_pid, cur_ter, pcb_pointer->ter);
+
     /* set values in tss */
     tss.esp0 = _8MB - parent_pid * _8KB - END_OFFSET;
     tss.ss0 = KERNEL_DS;
@@ -94,9 +94,8 @@ int32_t halt (uint8_t status){
 /*              anything in between -- defined by user program */
 /*side effect: excute the command, context switch to the user stack*/
 int32_t execute (const uint8_t* command){
-    cli();
-
     /* declare local variables */
+    cli();
     dentry_t dentry;
     int32_t filesize, i, j;
     int8_t magic_number[4] = {0x7f, 0x45, 0x4c, 0x46}; // magic number to check for executable
@@ -117,7 +116,10 @@ int32_t execute (const uint8_t* command){
 
     /*check for invalid argument*/
     if(!command)
+    {
+        sti();
         return -1;
+    }
 
     /*remove the spaces before the command argument */
     while(*filtered_command == ' ' || *filtered_command == '\0')
@@ -151,12 +153,14 @@ int32_t execute (const uint8_t* command){
     /* check if file existed*/
     if (read_dentry_by_name(filtered_command, &dentry) == -1)
     {
+        sti();
         return -1;
     }
 
     /* check if the file is of type file*/
     if (dentry.filetype != FILE_CODE)
     {
+        sti();
         return -1;
     }
 
@@ -166,12 +170,14 @@ int32_t execute (const uint8_t* command){
     /* check if the file holds valid context*/
     if (read_data(dentry.inode_num, 0, (uint8_t*)buf, NUM_METADATA_BITS) == 0)
     {
+        sti();
         return -1;
     }
 
     /* check if the file's magic number is excutable */
     if (strncmp(buf, magic_number, NUM_MAGIC_BITS) != 0)
     {
+        sti();
         return -1;
     }
 
@@ -188,14 +194,12 @@ int32_t execute (const uint8_t* command){
     /* check if we reach the maximum #'s of processes allows*/
     if (i == MAX_PROCESSES)
     {
+        sti();
         return -1;
     }
-    // while(cur_ter != disp_ter){
-    //     schedule();
-    // }
-    // cur_ter = disp_ter;
+
     /* valid executable, begin executing */
-    t_s[disp_ter].current_running_pid = i;
+    t_s[cur_ter].current_running_pid = i;
 
     /* extract entry address from metadata bytes 24-27 */
     uint8_t entry_addr[4] = {buf[24], buf[25], buf[26], buf[27]};
@@ -213,25 +217,17 @@ int32_t execute (const uint8_t* command){
     pcb->pid = i;
     pcb->term_number = disp_ter;
     // printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
-    if (t_s[disp_ter].base_shell_pid == -1)
+    if (t_s[cur_ter].base_shell_pid == -1)
     {
-
         pcb->is_haltable = 0;
-        t_s[disp_ter].base_shell_pid = i;
-        // asm volatile (" movl %%esp, %0      \n\
-        //                 movl %%ebp, %1      \n\
-        //             "
-        //             : "=r"(t_s[disp_ter].esp), "=r"(t_s[disp_ter].ebp)
-        //             :
-        //             : "esp", "ebp"
-        // );
+        t_s[cur_ter].base_shell_pid = i;
     } else 
     {
         pcb->is_haltable = 1;
     }
     /* update parent */
-    pcb->parent_pcb = t_s[disp_ter].parent;
-    t_s[disp_ter].parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
+    pcb->parent_pcb = t_s[cur_ter].parent;
+    t_s[cur_ter].parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
     /* fill in stdin */
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
@@ -270,6 +266,7 @@ int32_t execute (const uint8_t* command){
     user_esp = v_addr + _4MB - END_OFFSET;
     user_cs = USER_CS;
     entry_point = *((uint32_t*) entry_addr);
+
     /* jump to entry point (entry_point) */
     asm volatile (" push %0             \n\
                     push %1             \n\
@@ -289,7 +286,7 @@ int32_t execute (const uint8_t* command){
     asm volatile( "halt_return:        \n\
                    "
     );
-    return t_s[disp_ter].global_status;
+    return t_s[cur_ter].global_status;
 }
 
 /*int32_t read (int32_t fd, void* buf, int32_t nbytes)*/
@@ -312,7 +309,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
     /* check if file is open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -362,7 +359,7 @@ int32_t open (const uint8_t* filename){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
     /* check for invalid argument*/
     if (filename == (uint8_t*)  ""){
@@ -434,7 +431,7 @@ int32_t close (int32_t fd){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
 
     /* check for valid fd */
     if (fd >= NUM_FD || fd < FIRST_NON_STD){

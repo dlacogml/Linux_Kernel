@@ -40,8 +40,6 @@ void clear(void) {
  * Function: delete character */
 void backspace(void)
 {
-    register int32_t esp asm("esp");
-
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
 
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
@@ -81,8 +79,6 @@ void backspace(void)
  * Return Value: none
  * Function: scrolls screen up */
 void scroll(void){
-    register int32_t esp asm("esp");
-
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
 
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
@@ -283,8 +279,6 @@ int32_t puts(int8_t* s) {
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
     uint16_t pos;
-    register int32_t esp asm("esp");
-
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
     // if(c == '\n' || c == '\r') {
     //     if (cur_ter == disp_ter || keyboard_flag == 1){
@@ -343,8 +337,6 @@ void putc(uint8_t c) {
             screen_y++;
             screen_x = 0;
             scroll();
-            pos = screen_y * NUM_COLS + screen_x;
-            update_cursor(pos);
             keyboard_flag = 0;
         } else {
             t_s[pcb_pointer->term_number].screen_y++;
