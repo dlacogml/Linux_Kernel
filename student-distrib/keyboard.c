@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "i8259.h"
 #include "syscallhandlers.h"
+#include "scheduling.h"
 static volatile uint8_t CAPS_PRESSED = 0;
 static volatile uint8_t SHIFT_PRESSED = 0;
 static volatile uint8_t CONTROL_PRESSED = 0;
@@ -57,6 +58,10 @@ uint8_t shift_map[MAP_SIZE] =
  */
 void handler33() 
 {
+    cli();
+    // while(cur_ter != disp_ter){
+    //     schedule();
+    // }
     disable_irq(KEYBOARD_IRQ);
     send_eoi(KEYBOARD_IRQ);
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
@@ -199,6 +204,7 @@ void handler33()
       }
     }
     enable_irq(KEYBOARD_IRQ); //end of interrupt
+    sti();
 }
 
 /*
