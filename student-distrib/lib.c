@@ -278,6 +278,7 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
+    // cli();
     uint16_t pos;
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
     // if(c == '\n' || c == '\r') {
@@ -382,7 +383,7 @@ void putc(uint8_t c) {
             t_s[pcb_pointer->term_number].screen_y = (t_s[pcb_pointer->term_number].screen_y + (t_s[pcb_pointer->term_number].screen_x / NUM_COLS)) % NUM_ROWS;
         }
     }
-
+    // sti();
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

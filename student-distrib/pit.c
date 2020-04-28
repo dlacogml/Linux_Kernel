@@ -2,8 +2,10 @@
 
 
 void handler32(){
+    // disable_irq(0);
     send_eoi(0);
     schedule();
+    // enable_irq(0);
 }
 
 

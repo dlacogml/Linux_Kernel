@@ -199,13 +199,26 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
+    /* create pcb */
+    pcb = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
+
     // while(cur_ter != disp_ter){
     //     schedule();
     // }
     // cur_ter = disp_ter;
-
+    int exec_ter = disp_ter;
     /* valid executable, begin executing */
-    t_s[cur_ter].current_running_pid = i;
+    if (t_s[cur_ter].base_shell_pid == -1)
+    {
+        exec_ter = cur_ter;
+        pcb->is_haltable = 0;
+        t_s[exec_ter].base_shell_pid = i;
+    } else 
+    {
+        pcb->is_haltable = 1;
+        // cur_ter = disp_ter;
+    }
+    t_s[exec_ter].current_running_pid = i;
 
     /* extract entry address from metadata bytes 24-27 */
     uint8_t entry_addr[4] = {buf[24], buf[25], buf[26], buf[27]};
@@ -216,24 +229,16 @@ int32_t execute (const uint8_t* command){
     /* copy entire executable into virtual memory starting at virtual addr 0x08048000 */
     read_data((uint32_t)dentry.inode_num, (uint32_t)0, (uint8_t*)mem_start, (uint32_t)filesize);
 
-    /* create pcb */
-    pcb = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
+
 
     /* fill in pcb */
     pcb->pid = i;
-    pcb->term_number = disp_ter;
+    pcb->term_number = exec_ter;
     // printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
-    if (t_s[cur_ter].base_shell_pid == -1)
-    {
-        pcb->is_haltable = 0;
-        t_s[cur_ter].base_shell_pid = i;
-    } else 
-    {
-        pcb->is_haltable = 1;
-    }
+
     /* update parent */
-    pcb->parent_pcb = t_s[cur_ter].parent;
-    t_s[cur_ter].parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
+    pcb->parent_pcb = t_s[exec_ter].parent;
+    t_s[exec_ter].parent = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
     /* fill in stdin */
     pcb->fdarray[0].f_ops_pointer = &stdin_op_table;
@@ -292,7 +297,7 @@ int32_t execute (const uint8_t* command){
     asm volatile( "halt_return:        \n\
                    "
     );
-    return t_s[cur_ter].global_status;
+    return t_s[exec_ter].global_status;
 }
 
 /*int32_t read (int32_t fd, void* buf, int32_t nbytes)*/
