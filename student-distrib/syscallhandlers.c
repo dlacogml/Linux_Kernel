@@ -312,7 +312,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[disp_ter].current_running_pid * _8KB - END_OFFSET & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
     /* check if file is open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -362,7 +362,7 @@ int32_t open (const uint8_t* filename){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
     /* check for invalid argument*/
     if (filename == (uint8_t*)  ""){
@@ -434,7 +434,7 @@ int32_t close (int32_t fd){
     /* extract pcb from esp */
     register int32_t esp asm("esp");
     uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
+    pcb_t* pcb_pointer = (pcb_t*)(esp & mask);
 
     /* check for valid fd */
     if (fd >= NUM_FD || fd < FIRST_NON_STD){
