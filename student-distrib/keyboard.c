@@ -272,6 +272,7 @@ int32_t terminal_close(int32_t fd)
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
     sti();
+    // cli();
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -296,6 +297,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       t_s[disp_ter].newline_flag = 0;
     //increment the number of times a keyboard string has being read
     t_s[disp_ter].r_idx++;
+    // sti();
     return count;
 }
 /*
@@ -311,6 +313,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
  */
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 {
+    cli();
     /*check if buf is NULL*/
     if(buf == NULL)
         return -1;
@@ -327,6 +330,7 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
         
         putc(a[i]); //output char on screen
     }
+    sti();
     return i;
 }
 
