@@ -445,6 +445,13 @@ void different_terminal(int32_t terminal_number){
             // printf("hello\n");
 
         t_s[terminal_number].term_started = 1;
+        asm volatile (" movl %%esp, %0      \n\
+                    movl %%ebp, %1      \n\
+                  "
+                  : "=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
+                  : 
+                  : "esp", "ebp"
+        );
         cur_ter = terminal_number;
         pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
         // for (i = 0; i < MAX_PROCESSES; i++)
@@ -455,13 +462,7 @@ void different_terminal(int32_t terminal_number){
         //     }
         // }
         // int32_t new_stack = _8MB - i * _8KB - END_OFFSET;
-        asm volatile (" movl %%esp, %0      \n\
-                    movl %%ebp, %1      \n\
-                  "
-                  : "=r"(pcb_pointer->esp), "=r"(pcb_pointer->ebp)
-                  : 
-                  : "esp", "ebp"
-        );
+
         sti();
         execute((uint8_t*)"shell");
     }
