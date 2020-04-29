@@ -34,7 +34,7 @@ void entry(unsigned long magic, unsigned long addr) {
     multiboot_info_t *mbi;
 
     /* Clear the screen. */
-    clear();
+    // clear();
 
     /* Am I booted by a Multiboot-compliant boot loader? */
     if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
@@ -151,10 +151,16 @@ void entry(unsigned long magic, unsigned long addr) {
     
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
-    //Init the PIC 
-    clear();
+    //clear the screen
+    int i;
+    for (i = 0; i < NUM_ROWS * NUM_COLS; i++)
+    {
+        *(uint8_t *)(VIDEO + (i << 1)) = ' ';
+        *(uint8_t *)(VIDEO + (i << 1) + 1) = color[disp_ter];
+    }
+    
     init_filesystem();
-
+    //Init the PIC 
     i8259_init();
     //Init idt
     init_idt();

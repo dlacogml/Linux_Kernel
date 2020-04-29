@@ -340,10 +340,17 @@ void init_terminal(){
         t_s[i].base_shell_pid = -1;
         t_s[i].parent = NULL;
     }
+    for (i = 0; i < NUM_ROWS * NUM_COLS; i++)
+    {
+        *(uint8_t *)(VIDEO + (i << 1)) = ' ';
+        *(uint8_t *)(VIDEO + (i << 1) + 1) = color[disp_ter];
+    }
     /* initialize cur_ter and disp_ter */
     cur_ter = 0;
     disp_ter = 0;
-
+    screen_x = 0;
+    screen_y = 0;
+    update_cursor(0);
     /* start the first shell */
     t_s[0].term_started = 1;
     execute((uint8_t*)"shell");
