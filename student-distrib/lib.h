@@ -13,9 +13,9 @@
 #define VIDEO       0xB8000
 #define NUM_COLS    80
 #define NUM_ROWS    25
-#define WHITE      0x7
-#define LIGHT_CYAN 0xB
-#define YELLOW     0xE
+#define LIGHT_GRAY       0x7
+#define CYAN        0x3
+#define GREEN       0x2
 extern int screen_x;
 extern int screen_y;
 extern uint8_t color[3];
