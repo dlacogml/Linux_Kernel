@@ -18,6 +18,7 @@
 #define YELLOW     0xE
 extern int screen_x;
 extern int screen_y;
+extern uint8_t color[3];
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);

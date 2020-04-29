@@ -9,23 +9,31 @@ int screen_y;
 
 static char* video_mem = (char *)VIDEO;
 uint8_t color[3] = {WHITE, LIGHT_CYAN, YELLOW};
-
 /* void clear(void);
  * Inputs: void
  * Return Value: none
- * Function: Clears video memory */
-void clear(void) {
+ * Function: Clears video memory while having the shell script printed*/
+void clear(void) 
+{
     int32_t i;
-    if (cur_ter == disp_ter || keyboard_flag == 1){
-        for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-            *(uint8_t *)(video_mem + (i << 1)) = ' ';
-            *(uint8_t *)(video_mem + (i << 1) + 1) = color[disp_ter];
-        }
-        screen_x = 0;
+    int32_t script_len = 7; //length of the shell script
+    uint8_t* script_arr = {(uint8_t*)"391OS> "}; //shell scripot
+    //clear the memory
+    for (i = 0; i < NUM_ROWS * NUM_COLS; i++)
+    {
+        *(uint8_t *)(video_mem + (i << 1)) = ' ';
+        *(uint8_t *)(video_mem + (i << 1) + 1) = color[disp_ter];
+    }
+    //print the shell script
+    for(i = 0; i < script_len; i++)
+    {
+        *(uint8_t *)(video_mem + (i << 1)) = script_arr[i];
+        *(uint8_t *)(video_mem + (i << 1) + 1) = color[disp_ter];  
+    }
+    //reset screen_x and screen_y
+        screen_x = script_len;
         screen_y = 0;
-        update_cursor(0);
-        keyboard_flag = 0;
-    } 
+        update_cursor(script_len);
 }
 
 /* void backspace(void);
