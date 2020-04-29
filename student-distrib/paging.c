@@ -85,6 +85,9 @@ void setup_vidmap_page(){
     vidmap_page[0] = VIDEO | 0x7;
     /* OR with 7 to enable P and R/W and user level privilege */
     page_directory[VIDMAP_IDX] = ((unsigned int) vidmap_page) | 0x7;        //set the 16th PDE with video map
+    asm volatile ("movl %cr3, %eax  \n\
+                movl %eax, %cr3  \n\
+                ");
 }
 
 /*  void close_vidmap_page() */
@@ -100,10 +103,17 @@ void close_vidmap_page(){
     vidmap_page[0] = VIDEO & 0xFFFF8;
     /* AND with 0xFFFFFFFE to mark the page to not present*/
     page_directory[VIDMAP_IDX] &= 0xFFFFFFFE;
+    asm volatile ("movl %cr3, %eax  \n\
+                movl %eax, %cr3  \n\
+                ");
 }
 
-void remap_vidmap_page(int32_t current_ter, int8_t* src)
+void remap_vidmap_page(int32_t current_ter)
 {
-    vidmap_page[current_ter + 1] =  first_page_table[VIDEO/ALIGNED_SIZE + current_ter + 1] | 0x7;
+    vidmap_page[0] =  (VIDEO + PAGE_SIZE * (1 + current_ter)) | 0x7;
+    page_directory[VIDMAP_IDX] = ((unsigned int) vidmap_page) | 0x7;        //set the 16th PDE with video map
+    asm volatile ("movl %cr3, %eax  \n\
+                   movl %eax, %cr3  \n\
+                   ");
 }
 
