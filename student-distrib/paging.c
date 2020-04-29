@@ -6,7 +6,7 @@
 #include "syscallhandlers.h"
 #define NOT_PRESENT 0x02
 
-uint8_t attribute
+uint8_t attribute;
 //void init_paging
 //interface: first set every entry of page directory to be not_present then set every entry of first page  
 //           table to be not_present, then we manually set up the kernal page and the video memory page 

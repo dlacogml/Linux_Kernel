@@ -21,6 +21,7 @@ uint32_t disp_ter;
 int32_t keyboard_flag;
 int32_t currently_typed_term;
 
+/* terminal struct */
 typedef struct terminal{
     int8_t kb_buf[BUF_SIZE];
     int32_t term_started;
@@ -37,7 +38,8 @@ typedef struct terminal{
     int32_t esp;
     int32_t ebp;
 } terminal_t;
-extern terminal_t t_s[3];
+
+extern terminal_t t_s[NUM_TERMS];
 
 /*function essential to keyboards*/
 void clear_buffer();
