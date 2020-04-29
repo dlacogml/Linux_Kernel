@@ -8,6 +8,7 @@ int screen_x;
 int screen_y;
 
 static char* video_mem = (char *)VIDEO;
+uint8_t color[3] = {WHITE, LIGHT_CYAN, YELLOW};
 
 /* void clear(void);
  * Inputs: void
@@ -18,7 +19,7 @@ void clear(void) {
     if (cur_ter == disp_ter || keyboard_flag == 1){
         for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
             *(uint8_t *)(video_mem + (i << 1)) = ' ';
-            *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+            *(uint8_t *)(video_mem + (i << 1) + 1) = color[disp_ter];
         }
         screen_x = 0;
         screen_y = 0;
@@ -44,7 +45,7 @@ void backspace(void)
             screen_x--;
             uint32_t i = NUM_COLS * screen_y + screen_x;
             *(uint8_t *)(video_mem + (i << 1)) = ' ';
-            *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+            *(uint8_t *)(video_mem + (i << 1) + 1) = color[disp_ter];
         }
         uint16_t pos = screen_y * NUM_COLS + screen_x;
         update_cursor(pos);
@@ -69,14 +70,14 @@ void scroll(void){
             for (j = 1; j < NUM_ROWS; j++){
                 for (i = 0; i < NUM_COLS; i++){
                     *(uint8_t *)(video_mem + ((NUM_COLS * (j - 1) + i) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * j + i) << 1));
-                    *(uint8_t *)(video_mem + ((NUM_COLS * (j - 1) + i) << 1) + 1) = ATTRIB;
+                    *(uint8_t *)(video_mem + ((NUM_COLS * (j - 1) + i) << 1) + 1) = color[disp_ter];
                 }
             }
 
             /* create new line */
             for (i = 0; i < NUM_COLS; i++){
                 *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1)) = ' ';
-                *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = ATTRIB;
+                *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = color[disp_ter];
             }
 
             /* place cursor at beginning of new line */
@@ -93,14 +94,14 @@ void scroll(void){
             for (j = 1; j < NUM_ROWS; j++){
                 for (i = 0; i < NUM_COLS; i++){
                     *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (j - 1) + i) << 1)) = *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * j + i) << 1));
-                    *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (j - 1) + i) << 1) + 1) = ATTRIB;
+                    *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (j - 1) + i) << 1) + 1) = color[cur_ter];
                 }
             }
 
             /* create new line */
             for (i = 0; i < NUM_COLS; i++){
                 *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1)) = ' ';
-                *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = ATTRIB;
+                *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * (NUM_ROWS - 1) + i) << 1) + 1) = color[cur_ter];
             }
 
             /* place cursor at beginning of new line */
@@ -281,7 +282,7 @@ void putc(uint8_t c) {
     } else if (screen_x == NUM_COLS - 1){
         if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = color[disp_ter];
             screen_y++;
             screen_x = 0;
             scroll();
@@ -290,7 +291,7 @@ void putc(uint8_t c) {
             keyboard_flag = 0;
         } else{
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1)) = c;
-            *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = ATTRIB;
+            *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = color[cur_ter];
             t_s[pcb_pointer->term_number].screen_y++;
             t_s[pcb_pointer->term_number].screen_x = 0;
             scroll();
@@ -299,7 +300,7 @@ void putc(uint8_t c) {
     } else {
         if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = color[disp_ter];
             screen_x++;
             screen_x %= NUM_COLS;
             screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
@@ -308,7 +309,7 @@ void putc(uint8_t c) {
             keyboard_flag = 0;
         } else{
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1)) = c;
-            *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = ATTRIB;
+            *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = color[cur_ter];
             t_s[pcb_pointer->term_number].screen_x++;
             t_s[pcb_pointer->term_number].screen_x %= NUM_COLS;
             t_s[pcb_pointer->term_number].screen_y = (t_s[pcb_pointer->term_number].screen_y + (t_s[pcb_pointer->term_number].screen_x / NUM_COLS)) % NUM_ROWS;
