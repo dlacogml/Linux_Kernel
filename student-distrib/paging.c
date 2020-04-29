@@ -47,9 +47,9 @@ void init_paging()
     loadPageDirectory((unsigned int*)page_directory);
     enablePaging();
 
-    memcpy((VIDEO/ALIGNED_SIZE + 1) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-    memcpy((VIDEO/ALIGNED_SIZE + 2) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-    memcpy((VIDEO/ALIGNED_SIZE + 3) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 1) << 12), (uint8_t*)(VIDEO/ALIGNED_SIZE << 12), 4096);
+    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 2) << 12), (uint8_t*)(VIDEO/ALIGNED_SIZE << 12), 4096);
+    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 3) << 12), (uint8_t*)(VIDEO/ALIGNED_SIZE << 12), 4096);
 
 }
 //void setup_program_page(int pid)

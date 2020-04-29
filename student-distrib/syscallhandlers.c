@@ -5,7 +5,7 @@
 #include "scheduling.h"
 
 // void* parent = NULL;
-pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
+int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
 
 /*int32_t halt (uint8_t status)*/
 /*interface: halt the process by switching back to the previous process's stack, first we extract the */
@@ -24,7 +24,7 @@ int32_t halt (uint8_t status){
     int i;
 
     /* extract pcb pointer from esp */
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     
     /* close all fds */
@@ -307,7 +307,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     sti();
 
     /* extract pcb from esp */
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check if file is open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -333,7 +333,7 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
     }
 
     /* extract pcb from esp */
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
     
     /* check if file is open or not */
     if (pcb_pointer->fdarray[fd].flags == FILE_OPEN){
@@ -353,7 +353,7 @@ int32_t open (const uint8_t* filename){
     int32_t i;
     int32_t open_flag = 0;
     /* extract pcb from esp */
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check for invalid argument*/
     if (filename == (uint8_t*)  ""){
@@ -423,7 +423,7 @@ int32_t open (const uint8_t* filename){
 
 int32_t close (int32_t fd){
     /* extract pcb from esp */
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check for valid fd */
     if (fd >= NUM_FD || fd < FIRST_NON_STD){

@@ -14,8 +14,7 @@ static char* video_mem = (char *)VIDEO;
  * Return Value: none
  * Function: Clears video memory */
 void clear(void) {
-        int32_t i;
-
+    int32_t i;
     if (cur_ter == disp_ter || keyboard_flag == 1){
         for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
             *(uint8_t *)(video_mem + (i << 1)) = ' ';
@@ -25,13 +24,7 @@ void clear(void) {
         screen_y = 0;
         update_cursor(0);
         keyboard_flag = 0;
-    } else {
-        for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-            *(uint8_t *)(t_s[cur_ter].video_mem_buf + (i << 1)) = ' ';
-            *(uint8_t *)(t_s[cur_ter].video_mem_buf + (i << 1) + 1) = ATTRIB;
-        }
-    }
-
+    } 
 }
 
 /* void backspace(void);
@@ -40,7 +33,7 @@ void clear(void) {
  * Function: delete character */
 void backspace(void)
 {
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
             //when it's at the top left corner, then do nothing
@@ -65,7 +58,7 @@ void backspace(void)
  * Return Value: none
  * Function: scrolls screen up */
 void scroll(void){
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
         /* check if at bottom of screen */
@@ -266,7 +259,7 @@ int32_t puts(int8_t* s) {
 void putc(uint8_t c) {
     // cli();
     uint16_t pos;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
+    pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* new line character case */
     if(c == '\n' || c == '\r') {

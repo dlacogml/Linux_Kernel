@@ -30,11 +30,8 @@ void schedule(){
     }
 
     if (t_s[cur_ter].term_started == 0){
-        int pos;
         t_s[cur_ter].term_started = 1;
-
         sti();
-        
         execute((uint8_t*)"shell");
     }
     sti();

@@ -331,33 +331,30 @@ void init_terminal(){
         t_s[i].screen_x = 0;
         t_s[i].screen_y = 0;
         t_s[i].term_started = 0;
-        t_s[i].video_mem_buf = VIDEO + 4096 * (i + 1);
+        t_s[i].video_mem_buf = (int8_t*)(VIDEO + 4096 * (i + 1));
         t_s[i].base_shell_pid = -1;
         t_s[i].parent = NULL;
     }
     cur_ter = 0;
     disp_ter = 0;
     t_s[0].term_started = 1;
-    execute("shell");
+    execute((uint8_t*)"shell");
     
 }
 
 
 void different_terminal(int32_t terminal_number){
-  uint16_t pos;
-    uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-
+    uint16_t pos;
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
 
-    memcpy((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
+    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12), (uint8_t*)(VIDEO/ALIGNED_SIZE << 12), 4096);
     t_s[disp_ter].screen_x = screen_x;
     t_s[disp_ter].screen_y = screen_y;
 
     disp_ter = terminal_number;
 
-    memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
+    memcpy((uint8_t*)(VIDEO/ALIGNED_SIZE << 12), (uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12), 4096);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
     pos = screen_y * NUM_COLS + screen_x;
