@@ -377,11 +377,11 @@ void different_terminal(int32_t terminal_number){
     /* change display terminal */
     disp_ter = terminal_number;
 
-    uint8_t* screen_start;
-    vidmap(&screen_start);
-    if (cur_ter != disp_ter){
-        remap_vidmap_page(cur_ter);
-    }
+    // uint8_t* screen_start;
+    // // vidmap(&screen_start);
+    // if (cur_ter != disp_ter){
+    //     remap_vidmap_page(cur_ter);
+    // }
 
 
     /* copy video memory of new terminal buffer into actual video memory, restore screen positions and update the cursor */

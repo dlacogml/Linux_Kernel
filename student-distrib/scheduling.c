@@ -1,6 +1,7 @@
 #include "scheduling.h"
 #include "keyboard.h"
 
+// int count = 10000;
 
 /* schedule
  * DESCRIPTION: called by PIT handler, switch the terminal that is currently processing
@@ -9,6 +10,14 @@
  * SIDE EFFECT: if terminal is not already started, just start a new shell
  */
 void schedule(){
+    
+    // int count = 10000;
+    // if(count > 0) {
+    //     count--;
+    //     return;
+    // } else {
+    //     count = 10000;
+    // }
     cli();
 
     /* save esp and ebp of previous process */
@@ -30,10 +39,13 @@ void schedule(){
         /* remap virtual program page to physical program page */
         setup_program_page(t_s[cur_ter].current_running_pid);
         uint8_t* screen_start;
-        vidmap(&screen_start);
+        // vidmap(&screen_start);
+
         if(cur_ter != disp_ter)
         {
             remap_vidmap_page(cur_ter);
+        } else {
+            setup_vidmap_page();
         }
         /* set tss values */
         tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
