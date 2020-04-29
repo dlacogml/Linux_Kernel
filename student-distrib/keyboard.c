@@ -340,47 +340,6 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     return i;
 }
 
-int32_t switch_terminal(int32_t terminal_number){
-    // sti();
-    enable_irq(KEYBOARD_IRQ);
-    uint32_t mask = PCB_MASK;
-    pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-    // memcopy from physical video memory to previous's video page
-    // memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-    // t_s[cur_ter].screen_x = screen_x;
-    // t_s[cur_ter].screen_y = screen_y;
-    memcpy((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-    t_s[disp_ter].screen_x = screen_x;
-    t_s[disp_ter].screen_y = screen_y;
-
-    cur_ter = terminal_number;
-    disp_ter = terminal_number;
-
-    setup_program_page(t_s[cur_ter].current_running_pid);
-    tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
-    tss.ss0 = KERNEL_DS;
-    //memcpy from current video page to physical video memory
-    // memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, 4096);
-    // screen_x = t_s[cur_ter].screen_x;
-    // screen_y = t_s[cur_ter].screen_y;
-    memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
-    screen_x = t_s[disp_ter].screen_x;
-    screen_y = t_s[disp_ter].screen_y;
-    uint16_t pos = screen_y * NUM_COLS + screen_x;
-    update_cursor(pos);
-    // asm volatile("movl %0, %%esp           \n\
-    //               movl %1, %%ebp            \n\
-    //               "
-    //               :
-    //               :"r"(pcb_pointer->esp), "r"(pcb_pointer->ebp)
-    //               : "esp", "ebp"
-    //               );
-
-    // if (t_s[cur_ter].term_started == 0){
-
-    // }
-    // execute((uint8_t*)"shell");
-}
 
 void init_terminal(){
     int32_t i, j;
@@ -414,47 +373,17 @@ void different_terminal(int32_t terminal_number){
 
     // if shell is already started, switch terminal
     enable_irq(KEYBOARD_IRQ);
-    // asm volatile("movl %%esp, %0            \n\
-    //               movl %%ebp, %1            \n\
-    //               "
-    //               :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
-    //               :
-    //               : "esp", "ebp"
-    //               );
-
 
     memcpy((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
     t_s[disp_ter].screen_x = screen_x;
     t_s[disp_ter].screen_y = screen_y;
 
-    // cur_ter = terminal_number;
     disp_ter = terminal_number;
-    // if (t_s[terminal_number].term_started == 1){
-    //     setup_program_page(t_s[cur_ter].current_running_pid);
-    //     tss.esp0 = _8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET;
-    //     tss.ss0 = KERNEL_DS;
-    //     pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & mask);
-    //     asm volatile("movl %0, %%esp           \n\
-    //               movl %1, %%ebp            \n\
-    //               "
-    //               :
-    //               :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
-    //               : "esp", "ebp"
-    //               );
-    // }
+
     memcpy(VIDEO/ALIGNED_SIZE << 12, (VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12, 4096);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
     pos = screen_y * NUM_COLS + screen_x;
     update_cursor(pos);
-    // if shell is not started, do stack switch and execute shell
-    // point esp and ebp to second stack
-    // if (t_s[terminal_number].term_started == 0){
-    //     t_s[terminal_number].term_started = 1;
-    //     clear();
-    //     execute((uint8_t*)"shell");
-    // }
-
-    // call execute
 
 }
