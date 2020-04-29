@@ -14,17 +14,6 @@ static volatile uint8_t CONTROL_PRESSED = 0;
 static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
 
-// uint32_t cur_ter;
-// uint32_t disp_ter;
-// static uint32_t buf_idx[3] = {0, 0, 0};                  //current index of the keyboard buffer
-// static uint32_t read_idx[3] = {0, 0, 0};                 //how many times we have read the string
-// static uint8_t keyboard_buffer0[BUF_SIZE];    //buffer for the keyboard string
-// static uint8_t keyboard_buffer1[BUF_SIZE];    //buffer for the keyboard string
-// static uint8_t keyboard_buffer2[BUF_SIZE];
-// static uint8_t* keyboard_buffer[3] = {keyboard_buffer0, keyboard_buffer1, keyboard_buffer2};
-
-// int screen_x_array[3] = {0, 0, 0};
-// int screen_y_array[3] = {0, 0, 0};
 terminal_t t_s[3];
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
