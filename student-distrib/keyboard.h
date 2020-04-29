@@ -12,7 +12,9 @@
 #define MAP_SIZE     128     //the size of keyboard map
 #define KEYBOARD_IRQ 1       //the irq num for keybaord 
 #define BUF_SIZE     128     //maximum number of chars 127 buffer can hold + line feed
-
+#define NUM_TERMS    3
+#define PAGE_SIZE    4096
+#define ADDR_ALIGN      12
 
 uint32_t cur_ter;
 uint32_t disp_ter;

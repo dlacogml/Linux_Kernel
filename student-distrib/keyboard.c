@@ -14,7 +14,7 @@ static volatile uint8_t CONTROL_PRESSED = 0;
 static volatile uint8_t ALT_PRESSED = 0;
 static volatile uint8_t TAB_PRESSED = 0;
 
-terminal_t t_s[3];
+terminal_t t_s[NUM_TERMS];
 /*
  * keyboard_map is a scancode table used to layout a standard US keyboard
  */
@@ -118,15 +118,15 @@ void handler33()
     {
       switch (key)
       {
-      case 0x3b:
+      case 0x3b: // terminal 1
         different_terminal(0);
         enable_irq(KEYBOARD_IRQ);
         return;
-      case 0x3c:
+      case 0x3c: // terminal 2
         different_terminal(1);
         enable_irq(KEYBOARD_IRQ);
         return;
-      case 0x3d:
+      case 0x3d: // terminal 3
         different_terminal(2);
         enable_irq(KEYBOARD_IRQ);
         return;
@@ -317,38 +317,52 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     return i;
 }
 
-
+/* init_terminal
+ * DESCRIPTION: initialize all terminal struct members and start up first shell
+ * INPUT: none
+ * OUTPUT: none
+ * SIDE EFFECT: 
+ */
 void init_terminal(){
     int32_t i, j;
-    for (i = 0; i < 3; i++){
+    for (i = 0; i < NUM_TERMS; i++){
         for (j = 0; j < BUF_SIZE; j++)
         {
             t_s[i].kb_buf[j] = 0; //clearing the buffer
         }
-        /* reseting the index */
+        /* initialize all members in struct */
         t_s[i].b_idx = 0;
         t_s[i].r_idx = 0;
         t_s[i].screen_x = 0;
         t_s[i].screen_y = 0;
         t_s[i].term_started = 0;
-        t_s[i].video_mem_buf = (int8_t*)(VIDEO + 4096 * (i + 1));
+        t_s[i].video_mem_buf = (int8_t*)(VIDEO + PAGE_SIZE * (i + 1));
         t_s[i].base_shell_pid = -1;
         t_s[i].parent = NULL;
     }
+    /* initialize cur_ter and disp_ter */
     cur_ter = 0;
     disp_ter = 0;
+
+    /* start the first shell */
     t_s[0].term_started = 1;
     execute((uint8_t*)"shell");
     
 }
 
-
+/* different_terminal
+ * DESCRIPTION: switch the terminal that the user is currently viewing
+ * INPUT: terminal_number - terminal that the user is switching to
+ * OUTPUT: none
+ * SIDE EFFECT: 
+ */
 void different_terminal(int32_t terminal_number){
     uint16_t pos;
-    // if shell is already started, switch terminal
+    
     enable_irq(KEYBOARD_IRQ);
 
-    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12), (uint8_t*)(VIDEO/ALIGNED_SIZE << 12), 4096);
+    /* copy physical memory to background buffer of old terminal and store the current screen_x and screen_y */
+    memcpy((uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << ADDR_ALIGN), (uint8_t*)(VIDEO/ALIGNED_SIZE << ADDR_ALIGN), PAGE_SIZE);
     t_s[disp_ter].screen_x = screen_x;
     t_s[disp_ter].screen_y = screen_y;
 
@@ -358,9 +372,12 @@ void different_terminal(int32_t terminal_number){
       vidmap(&screen_start);
 
     }
+
+    /* change display terminal */
     disp_ter = terminal_number;
 
-    memcpy((uint8_t*)(VIDEO/ALIGNED_SIZE << 12), (uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12), 4096);
+    /* copy video memory of new terminal buffer into actual video memory, restore screen positions and update the cursor */
+    memcpy((uint8_t*)(VIDEO/ALIGNED_SIZE << ADDR_ALIGN), (uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << ADDR_ALIGN), PAGE_SIZE);
     screen_x = t_s[disp_ter].screen_x;
     screen_y = t_s[disp_ter].screen_y;
     pos = screen_y * NUM_COLS + screen_x;

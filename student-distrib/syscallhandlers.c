@@ -1,10 +1,8 @@
 #include "syscallhandlers.h"
-// #include "filesystem.h"
 #include "paging.h"
 #include "x86_desc.h"
 #include "scheduling.h"
 
-// void* parent = NULL;
 int32_t pid_array[MAX_PROCESSES] = {PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE, PID_FREE};
 
 /*int32_t halt (uint8_t status)*/
@@ -23,7 +21,7 @@ int32_t halt (uint8_t status){
     uint32_t parent_pid, parent_esp, parent_ebp;
     int i;
 
-    /* extract pcb pointer from esp */
+    /* extract pcb pointer from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     
@@ -43,6 +41,7 @@ int32_t halt (uint8_t status){
     parent_pcb = (pcb_t*)pcb_pointer->parent_pcb;
     parent_pid = parent_pcb->pid;
 
+    /* reset current running pid to parent pid */
     t_s[cur_ter].current_running_pid = parent_pid;
 
     /* set values in tss */
@@ -197,11 +196,12 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
+    /* valid executable, begin executing */
+
     /* create pcb */
     pcb = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
-
-    /* valid executable, begin executing */
+    /* check if current execution is base shell */
     if (t_s[cur_ter].base_shell_pid == -1)
     {
         pcb->is_haltable = 0;
@@ -209,6 +209,8 @@ int32_t execute (const uint8_t* command){
     } else {
         pcb->is_haltable = 1;
     }
+
+    /* set current running pid */
     t_s[cur_ter].current_running_pid = i;
 
     /* extract entry address from metadata bytes 24-27 */
@@ -266,7 +268,7 @@ int32_t execute (const uint8_t* command){
     user_esp = v_addr + _4MB - END_OFFSET;
     user_cs = USER_CS;
     entry_point = *((uint32_t*) entry_addr);
-    // sti();
+
     /* jump to entry point (entry_point) */
     asm volatile (" push %0             \n\
                     push %1             \n\
@@ -306,7 +308,7 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     }
     sti();
 
-    /* extract pcb from esp */
+    /* extract pcb from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check if file is open or not */
@@ -332,7 +334,7 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
         return -1;
     }
 
-    /* extract pcb from esp */
+    /* extract pcb from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
     
     /* check if file is open or not */
@@ -352,7 +354,7 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
 int32_t open (const uint8_t* filename){
     int32_t i;
     int32_t open_flag = 0;
-    /* extract pcb from esp */
+    /* extract pcb from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check for invalid argument*/
@@ -376,6 +378,7 @@ int32_t open (const uint8_t* filename){
 
     /* fill in fdarray based on file type */
     if (read_dentry_by_name(filename, &dentry) == 0){
+        /* file */
         if (dentry.filetype == FILE_CODE){
             pcb_pointer->fdarray[fd].f_ops_pointer = &file_op_table;
             pcb_pointer->fdarray[fd].f_ops_pointer->read = &file_read;
@@ -385,6 +388,7 @@ int32_t open (const uint8_t* filename){
             pcb_pointer->fdarray[fd].inode = dentry.inode_num;
             pcb_pointer->fdarray[fd].file_pos = 0;
             pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
+        /* directory */
         } else if (dentry.filetype == DIR_CODE){
             pcb_pointer->fdarray[fd].f_ops_pointer = &dir_op_table;
             pcb_pointer->fdarray[fd].f_ops_pointer->read = &dir_read;
@@ -394,6 +398,7 @@ int32_t open (const uint8_t* filename){
             pcb_pointer->fdarray[fd].inode = 0;
             pcb_pointer->fdarray[fd].file_pos = 0;
             pcb_pointer->fdarray[fd].flags = FILE_CLOSED;
+        /* rtc */
         } else if (dentry.filetype == RTC_CODE){
             pcb_pointer->fdarray[fd].f_ops_pointer = &rtc_op_table;
             pcb_pointer->fdarray[fd].f_ops_pointer->read = &rtc_read;
@@ -422,7 +427,7 @@ int32_t open (const uint8_t* filename){
 /*side effect: free a file from fd array*/
 
 int32_t close (int32_t fd){
-    /* extract pcb from esp */
+    /* extract pcb from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* check for valid fd */
@@ -435,6 +440,7 @@ int32_t close (int32_t fd){
         return -1;
     }
 
+    /* call specific close function */
     if(pcb_pointer->fdarray[fd].f_ops_pointer->close(fd) == -1) {
         return -1;
     }
@@ -510,12 +516,12 @@ int32_t vidmap (uint8_t** screen_start){
     return 0;
 }
 
-/* not checkpoint 4 */
+/* extra credit */
 int32_t set_handler (int32_t signum, void* handler_address){
     return -1;
 }
 
-/* not checkpoint 4 */
+/* extra credit */
 int32_t sigreturn (void){
     return -1;
 }
