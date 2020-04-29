@@ -4,8 +4,6 @@
 void schedule(){
     // save esp and ebp of previous process
     cli();
-        // cur_ter = (cur_ter + 1) % 3;
-
 
     asm volatile("movl %%esp, %0            \n\
                 movl %%ebp, %1            \n\
@@ -33,19 +31,13 @@ void schedule(){
 
     if (t_s[cur_ter].term_started == 0){
         int pos;
-        // disp_ter = cur_ter;
         t_s[cur_ter].term_started = 1;
-        // memcpy((VIDEO/ALIGNED_SIZE + 1 + cur_ter) << 12, VIDEO/ALIGNED_SIZE << 12, 4096);
-        // t_s[cur_ter].screen_x = screen_x;
-        // t_s[cur_ter].screen_y = screen_y;
-        // pos = t_s[cur_ter].screen_y * NUM_COLS + t_s[cur_ter].screen_x;
-        // update_cursor(pos);
 
         sti();
         
         execute((uint8_t*)"shell");
     }
-        sti();
+    sti();
 
 
 

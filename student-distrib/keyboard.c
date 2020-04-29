@@ -59,9 +59,7 @@ uint8_t shift_map[MAP_SIZE] =
 void handler33() 
 {
     cli();
-    // while(cur_ter != disp_ter){
-    //     schedule();
-    // }
+
     disable_irq(KEYBOARD_IRQ);
     send_eoi(KEYBOARD_IRQ);
     int8_t key = inb(KEYBOARD_DATA_REG); //retrieves keycode
@@ -278,7 +276,6 @@ int32_t terminal_close(int32_t fd)
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
     sti();
-    // cli();
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -295,7 +292,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       {
         clear_buffer();
         t_s[disp_ter].newline_flag = 0; //reset the NEW_LINE FLAG
-        // buffer[i] = '\0';
         return count;
       }
     }
@@ -303,7 +299,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       t_s[disp_ter].newline_flag = 0;
     //increment the number of times a keyboard string has being read
     t_s[disp_ter].r_idx++;
-    // sti();
     return count;
 }
 /*
@@ -327,13 +322,6 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     uint8_t * a = (uint8_t*) buf; //cast the void ptr
     for(i = 0; i < nbytes; i++)
     {
-        /* when we have reach the end of the buf*/
-        // if(a[i] == '\0')
-        // {
-        //   putc(a[i]); //output char on screen
-        //   return i+1;
-        // }
-        
         putc(a[i]); //output char on screen
     }
     sti();

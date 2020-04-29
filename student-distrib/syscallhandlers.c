@@ -202,24 +202,14 @@ int32_t execute (const uint8_t* command){
     /* create pcb */
     pcb = (pcb_t*) (KERNEL_BOTTOM - (i + 1) * _8KB);
 
-    // while(cur_ter != disp_ter){
-    //     schedule();
-    // }
-    // cur_ter = disp_ter;
-    int exec_ter = disp_ter;
+
     /* valid executable, begin executing */
     if (t_s[cur_ter].base_shell_pid == -1)
     {
-        exec_ter = cur_ter;
         pcb->is_haltable = 0;
         t_s[cur_ter].base_shell_pid = i;
-    } else 
-    {
+    } else {
         pcb->is_haltable = 1;
-        // while (cur_ter != disp_ter){
-        //     schedule();
-        // }
-        // cur_ter = disp_ter;
     }
     t_s[cur_ter].current_running_pid = i;
 
@@ -233,11 +223,9 @@ int32_t execute (const uint8_t* command){
     read_data((uint32_t)dentry.inode_num, (uint32_t)0, (uint8_t*)mem_start, (uint32_t)filesize);
 
 
-
     /* fill in pcb */
     pcb->pid = i;
     pcb->term_number = cur_ter;
-    // printf("pid: %d, term_number: %d", pcb->pid, pcb->term_number);
 
     /* update parent */
     pcb->parent_pcb = t_s[cur_ter].parent;

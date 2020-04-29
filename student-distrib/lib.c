@@ -57,20 +57,6 @@ void backspace(void)
         update_cursor(pos);
         keyboard_flag = 0;
     }
-    // } else {
-    //                 //when it's at the top left corner, then do nothing
-    //     if(t_s[cur_ter].screen_x == 0 && t_s[cur_ter].screen_y == 0)
-    //         return;
-    //     else // regular backspace
-    //     {   
-    //         t_s[cur_ter].screen_x--;
-    //         uint32_t i = NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x;
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + (i << 1)) = ' ';
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + (i << 1) + 1) = ATTRIB;
-    //     }
-    //     uint16_t pos = t_s[cur_ter].screen_y * NUM_COLS + t_s[cur_ter].screen_x;
-    //     update_cursor(pos);
-    // }
 
 }
 
@@ -281,57 +267,7 @@ void putc(uint8_t c) {
     // cli();
     uint16_t pos;
     pcb_t* pcb_pointer = (pcb_t*)(_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET & PCB_MASK);
-    // if(c == '\n' || c == '\r') {
-    //     if (cur_ter == disp_ter || keyboard_flag == 1){
-    //         screen_y++;
-    //         screen_x = 0;
-    //         scroll();
-    //         keyboard_flag = 0;
-    //     } else {
-    //         t_s[cur_ter].screen_y++;
-    //         t_s[cur_ter].screen_x = 0;
-    //         scroll();
-    //     }
 
-
-    // /* if screen_x is at the end of row, go to next row */
-    // } else if (screen_x == NUM_COLS - 1){
-    //     if (cur_ter == disp_ter || keyboard_flag == 1){
-    //         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-    //         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-    //         screen_y++;
-    //         screen_x = 0;
-    //         scroll();
-    //         pos = screen_y * NUM_COLS + screen_x;
-    //         update_cursor(pos);
-    //         keyboard_flag = 0;
-    //     } else{
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1)) = c;
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1) + 1) = ATTRIB;
-    //         t_s[cur_ter].screen_y++;
-    //         t_s[cur_ter].screen_x = 0;
-    //         scroll();
-    //     }
-    // /* else just place character in video memory */
-    // } else {
-    //     if (cur_ter == disp_ter || keyboard_flag == 1){
-    //         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-    //         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-    //         screen_x++;
-    //         screen_x %= NUM_COLS;
-    //         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
-    //         pos = screen_y * NUM_COLS + screen_x;
-    //         update_cursor(pos);
-    //         keyboard_flag = 0;
-    //     } else{
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1)) = c;
-    //         *(uint8_t *)(t_s[cur_ter].video_mem_buf + ((NUM_COLS * t_s[cur_ter].screen_y + t_s[cur_ter].screen_x) << 1) + 1) = ATTRIB;
-    //         t_s[cur_ter].screen_x++;
-    //         t_s[cur_ter].screen_x %= NUM_COLS;
-    //         t_s[cur_ter].screen_y = (t_s[cur_ter].screen_y + (t_s[cur_ter].screen_x / NUM_COLS)) % NUM_ROWS;
-    //     }
-    // }
-    // pcb_pointer->term_number == disp_ter
     /* new line character case */
     if(c == '\n' || c == '\r') {
         if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){

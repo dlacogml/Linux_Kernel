@@ -34,7 +34,6 @@ typedef struct terminal{
     int32_t newline_flag;
     int32_t esp;
     int32_t ebp;
-    // pcb_t* shell_pcb;
 } terminal_t;
 extern terminal_t t_s[3];
 
