@@ -216,7 +216,10 @@ int32_t execute (const uint8_t* command){
     } else 
     {
         pcb->is_haltable = 1;
-        cur_ter = disp_ter;
+        // while (cur_ter != disp_ter){
+        //     schedule();
+        // }
+        // cur_ter = disp_ter;
     }
     t_s[exec_ter].current_running_pid = i;
 

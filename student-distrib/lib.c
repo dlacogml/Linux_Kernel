@@ -338,6 +338,8 @@ void putc(uint8_t c) {
             screen_y++;
             screen_x = 0;
             scroll();
+            pos = screen_y * NUM_COLS + screen_x;
+            update_cursor(pos);
             keyboard_flag = 0;
         } else {
             t_s[pcb_pointer->term_number].screen_y++;
