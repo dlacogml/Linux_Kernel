@@ -38,8 +38,7 @@ void schedule(){
         setup_program_page(t_s[cur_ter].current_running_pid);
 
         /* remap vidmap */
-        if(cur_ter != disp_ter)
-        {
+        if(cur_ter != disp_ter) {
             remap_vidmap_page(cur_ter);
         } else {
             setup_vidmap_page();
