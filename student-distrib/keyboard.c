@@ -352,6 +352,12 @@ void different_terminal(int32_t terminal_number){
     t_s[disp_ter].screen_x = screen_x;
     t_s[disp_ter].screen_y = screen_y;
 
+    uint8_t* screen_start;
+    if(cur_ter == disp_ter)
+    {
+      vidmap(&screen_start);
+
+    }
     disp_ter = terminal_number;
 
     memcpy((uint8_t*)(VIDEO/ALIGNED_SIZE << 12), (uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << 12), 4096);

@@ -6,6 +6,7 @@
 #include "syscallhandlers.h"
 #define NOT_PRESENT 0x02
 
+uint8_t attribute
 //void init_paging
 //interface: first set every entry of page directory to be not_present then set every entry of first page  
 //           table to be not_present, then we manually set up the kernal page and the video memory page 
@@ -99,5 +100,10 @@ void close_vidmap_page(){
     vidmap_page[0] = VIDEO & 0xFFFF8;
     /* AND with 0xFFFFFFFE to mark the page to not present*/
     page_directory[VIDMAP_IDX] &= 0xFFFFFFFE;
+}
+
+void remap_vidmap_page(int32_t current_ter, int8_t* src)
+{
+    vidmap_page[current_ter + 1] =  first_page_table[VIDEO/ALIGNED_SIZE + current_ter + 1] | 0x7;
 }
 

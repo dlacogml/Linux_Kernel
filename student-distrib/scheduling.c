@@ -12,8 +12,14 @@ void schedule(){
                 :
                 :"memory"
                 );
-
+    uint8_t* screen_start;
+    vidmap(&screen_start);
+    if(cur_ter != disp_ter)
+    {
+        remap_vidmap_page(cur_ter, screen_start);
+    }
     cur_ter = (cur_ter + 1) % 3;
+
     // set up program page
     // set tss values
     if (t_s[cur_ter].term_started == 1){
@@ -35,10 +41,6 @@ void schedule(){
         execute((uint8_t*)"shell");
     }
     sti();
-
-
-
-    // restore esp and ebp of next process
 }
 
 
