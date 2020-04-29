@@ -12,7 +12,7 @@ void schedule(){
                 "
                 :"=r"(t_s[cur_ter].esp), "=r"(t_s[cur_ter].ebp)
                 :
-                : "esp", "ebp"
+                :"memory"
                 );
 
     cur_ter = (cur_ter + 1) % 3;
@@ -27,7 +27,7 @@ void schedule(){
                   "
                   :
                   :"r"(t_s[cur_ter].esp), "r"(t_s[cur_ter].ebp)
-                  : "esp", "ebp"
+                  :"memory"
                   );
     }
 
