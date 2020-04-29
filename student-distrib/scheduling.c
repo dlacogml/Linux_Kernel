@@ -20,15 +20,15 @@ void schedule(){
                 :"memory"
                 );
 
+    /* change the currently executing terminal */
+    cur_ter = (cur_ter + 1) % NUM_TERMS;
+
     uint8_t* screen_start;
     vidmap(&screen_start);
     if(cur_ter != disp_ter)
     {
-        remap_vidmap_page(cur_ter, screen_start);
+        remap_vidmap_page(cur_ter);
     }
-
-    /* change the currently executing terminal */
-    cur_ter = (cur_ter + 1) % NUM_TERMS;
 
     /* terminal is already started */
     if (t_s[cur_ter].term_started == 1){

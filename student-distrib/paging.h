@@ -25,7 +25,7 @@ extern void init_paging();
 void setup_program_page(int pid);
 void setup_vidmap_page();
 void close_vidmap_page();
-void remap_vidmap_page(int32_t current_ter, int8_t* src);
+void remap_vidmap_page(int32_t current_ter);
 #endif
 #endif 
 
