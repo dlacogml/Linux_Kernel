@@ -282,7 +282,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
-    while(!t_s[disp_ter].newline_flag);
+    while(!t_s[disp_ter].newline_flag || cur_ter != disp_ter);
     uint32_t i; //loop counter
     uint32_t count = 0; //number of bytes read
     uint8_t *buffer = (uint8_t *)buf; //cast the buffer
