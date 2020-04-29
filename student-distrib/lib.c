@@ -8,7 +8,7 @@ int screen_x;
 int screen_y;
 
 static char* video_mem = (char *)VIDEO;
-uint8_t color[3] = {WHITE, LIGHT_CYAN, YELLOW};
+uint8_t color[3] = {LIGHT_GRAY, CYAN, GREEN};
 /* void clear(void);
  * Inputs: void
  * Return Value: none
