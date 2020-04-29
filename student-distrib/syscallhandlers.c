@@ -219,7 +219,7 @@ int32_t execute (const uint8_t* command){
         // while (cur_ter != disp_ter){
         //     schedule();
         // }
-        // cur_ter = disp_ter;
+        cur_ter = disp_ter;
     }
     t_s[exec_ter].current_running_pid = i;
 
@@ -280,7 +280,7 @@ int32_t execute (const uint8_t* command){
     user_esp = v_addr + _4MB - END_OFFSET;
     user_cs = USER_CS;
     entry_point = *((uint32_t*) entry_addr);
-
+    // sti();
     /* jump to entry point (entry_point) */
     asm volatile (" push %0             \n\
                     push %1             \n\
