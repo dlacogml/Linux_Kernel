@@ -373,16 +373,8 @@ void different_terminal(int32_t terminal_number){
     t_s[disp_ter].screen_x = screen_x;
     t_s[disp_ter].screen_y = screen_y;
 
-
     /* change display terminal */
     disp_ter = terminal_number;
-
-    // uint8_t* screen_start;
-    // // vidmap(&screen_start);
-    // if (cur_ter != disp_ter){
-    //     remap_vidmap_page(cur_ter);
-    // }
-
 
     /* copy video memory of new terminal buffer into actual video memory, restore screen positions and update the cursor */
     memcpy((uint8_t*)(VIDEO/ALIGNED_SIZE << ADDR_ALIGN), (uint8_t*)((VIDEO/ALIGNED_SIZE + 1 + disp_ter) << ADDR_ALIGN), PAGE_SIZE);
