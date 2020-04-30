@@ -77,7 +77,7 @@ int32_t rtc_open(const uint8_t* filename)
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* initialize rtc variables for pcb */
-    pcb_pointer->rtc_freq = 2;
+    pcb_pointer->rtc_freq = 2; // initial frequency is 2 Hz
     pcb_pointer->counter = 0;
     return 0;
 }
