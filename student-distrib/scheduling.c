@@ -1,7 +1,6 @@
 #include "scheduling.h"
 #include "keyboard.h"
 
-// int count = 10000;
 
 /* schedule
  * DESCRIPTION: called by PIT handler, switch the terminal that is currently processing
@@ -10,14 +9,6 @@
  * SIDE EFFECT: if terminal is not already started, just start a new shell
  */
 void schedule(){
-    
-    // int count = 10000;
-    // if(count > 0) {
-    //     count--;
-    //     return;
-    // } else {
-    //     count = 10000;
-    // }
     cli();
 
     /* save esp and ebp of previous process */

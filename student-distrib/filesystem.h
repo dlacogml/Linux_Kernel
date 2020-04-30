@@ -85,13 +85,11 @@ typedef struct file_descriptor {
 /* struct for pcb */
 typedef struct pcb{
     file_descriptor_t fdarray[NUM_FD];
-    uint8_t filename[32];
     uint32_t pid;
     uint32_t is_haltable;
     void* parent_pcb;
     uint32_t esp;
     uint32_t ebp;
-    uint32_t pstate;
     int32_t term_number;
     int rtc_freq;
     volatile int counter;
