@@ -37,6 +37,8 @@ typedef struct terminal{
     int32_t newline_flag;
     int32_t esp;
     int32_t ebp;
+    int32_t freq;
+    int32_t counter;
 } terminal_t;
 
 extern terminal_t t_s[NUM_TERMS];

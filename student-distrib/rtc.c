@@ -7,12 +7,14 @@
 #include "lib.h"
 #include "rtc.h"
 #include "i8259.h"
+#include "keyboard.h"
 
 #define RTC_IRQ     8
 #define BIT6        0x40
 #define HIGH_MASK   0xF0
 
-static volatile char INT_RECEIVED = 0; //check if an rtc int is received
+static volatile int8_t INT_RECEIVED = 0; //check if an rtc int is received
+// static volatile int8_t rate;
 /* rtc_init
  * DESCRIPTION: initializes the RTC, enables interrupt request for rtc
  * INPUT: nothing
@@ -40,12 +42,10 @@ void rtc_init()
 // {
 
 //     rate &= 0x0F; //rate is and-ed with 0x0F (15 base 10) to make sure rate is not above 15
-//     cli();
 //     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
 //     char curr = inb(RTC_DATA);	// get initial value of register A
 //     outb(RTC_A, RTC_PORT);		// reset index to A
 //     outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-//     sti();
 
 // }
 
@@ -56,13 +56,15 @@ void rtc_init()
  * SIDE EFFECT: 
  */
 void handler40(){     
-    disable_irq(RTC_IRQ);
-    send_eoi(RTC_IRQ);    
-    INT_RECEIVED = 1;       //enable INT_RECEIVED when an interrput is raised
+    // disable_irq(RTC_IRQ);
+    send_eoi(RTC_IRQ);  
+    t_s[cur_ter].counter--;
+    // printf("%d ", t_s[cur_ter].counter);
+    // INT_RECEIVED = 1;       //enable INT_RECEIVED when an interrput is raised
     // test_interrupts();      // checks if the rtc works
     outb(RTC_C, RTC_PORT);	// set index to register A, disable NMI
     inb(RTC_DATA);		    // retrieve rtc_data
-    enable_irq(RTC_IRQ);    
+    // enable_irq(RTC_IRQ);    
 }
 
 //uint32_t rtc_open(const uint8_t* filename)
@@ -74,11 +76,12 @@ void handler40(){
 int32_t rtc_open(const uint8_t* filename)
 {     
     //lowest freqency is 2HZ which is MAX_INT_RATE >> ((rate = 15)-1)
-    unsigned char rate = 15;
+    // t_s[cur_ter].rate = 6;
+    uint8_t rt = 6;
     outb(RTC_A, RTC_PORT);		// set index to register A, disable NMI
-    char curr = inb(RTC_DATA);	// get initial value of register A
+    int8_t curr = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_A, RTC_PORT);		// reset index to A
-    outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
+    outb((curr & HIGH_MASK) | rt, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     return 0;
 }
 //uint32_t rtc_close(int32_t fd)
@@ -102,12 +105,19 @@ int32_t rtc_close(int32_t fd)
 //side effect: block until the next interrupt is received
 int32_t rtc_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
-    INT_RECEIVED = 0; //reset INT_RECEIVED
+   disable_irq(0);
+   outb(RTC_A, RTC_PORT);  
+   t_s[cur_ter].freq = 32768 >> ((inb(RTC_DATA) & 0x0F) - 1);
+//    printf("%d", t_s[cur_ter].freq);
+   t_s[cur_ter].counter = 32 / t_s[cur_ter].freq;
+//    printf("%d", t_s[cur_ter].counter);
     //While an interrupt is not received
-    while(!INT_RECEIVED)
+    while(t_s[cur_ter].counter > 0)
     {
+        // t_s[cur_ter].rate++;
         //do nothing
     }
+    enable_irq(0);
     return 0;
 }
 //uint32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes);
@@ -132,7 +142,7 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
         rate++; //increment rate until we find the correct rate corresponding to the right frequency
     }
     outb(RTC_A, RTC_PORT);		          // set index to register A, disable NMI
-    char curr = inb(RTC_DATA);	          // get initial value of register A
+    int8_t curr = inb(RTC_DATA);	          // get initial value of register A
     outb(RTC_A, RTC_PORT);		          // reset index to A
     outb((curr & HIGH_MASK) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     return 0;
