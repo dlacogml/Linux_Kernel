@@ -50,7 +50,13 @@ int32_t halt (uint8_t status){
 
     /* load program page of parent */
     setup_program_page(parent_pid); 
-    close_vidmap_page();
+
+    /* close vidmap page */
+    if(cur_ter != disp_ter) {
+        close_different_vidmap_page(cur_ter);
+    } else {
+        close_vidmap_page();
+    }
 
     /* update global status */
     /* set the correct status to return from the parent process*/
@@ -62,6 +68,9 @@ int32_t halt (uint8_t status){
 
     /* free pid */
     pid_array[pcb_pointer->pid] = PID_FREE;
+
+    /* reset fish running flag */
+    t_s[cur_ter].fish_running = 0;
 
     /* link back to parent program */
     parent_esp = pcb_pointer->esp;
@@ -513,6 +522,10 @@ int32_t vidmap (uint8_t** screen_start){
     
     /* set screenstart to virtual address */
     *screen_start = (uint8_t * ) VIDMAP_V_ADDR;
+
+    /* mark fish as running */
+    t_s[cur_ter].fish_running = 1;
+
     return 0;
 }
 

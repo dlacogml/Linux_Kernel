@@ -339,6 +339,7 @@ void init_terminal(){
         t_s[i].video_mem_buf = (int8_t*)(VIDEO + PAGE_SIZE * (i + 1));
         t_s[i].base_shell_pid = -1;
         t_s[i].parent = NULL;
+        t_s[i].fish_running = 0;
     }
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++)
     {

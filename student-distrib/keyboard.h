@@ -39,6 +39,7 @@ typedef struct terminal{
     int32_t ebp;
     int32_t freq;
     int32_t counter;
+    int32_t fish_running;
 } terminal_t;
 
 extern terminal_t t_s[NUM_TERMS];

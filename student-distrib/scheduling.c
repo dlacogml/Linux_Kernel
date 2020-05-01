@@ -28,11 +28,13 @@ void schedule(){
         /* remap virtual program page to physical program page */
         setup_program_page(t_s[cur_ter].current_running_pid);
 
-        /* remap vidmap */
-        if(cur_ter != disp_ter) {
-            remap_vidmap_page(cur_ter);
-        } else {
-            setup_vidmap_page();
+        /* remap vidmap if fish is running in that terminal*/
+        if (t_s[cur_ter].fish_running){
+            if(cur_ter != disp_ter) {
+                remap_vidmap_page(cur_ter);
+            } else {
+                setup_vidmap_page();
+            }
         }
 
         /* set tss values */
