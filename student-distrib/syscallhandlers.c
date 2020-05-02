@@ -20,7 +20,8 @@ int32_t halt (uint8_t status){
     pcb_t* parent_pcb;
     uint32_t parent_pid, parent_esp, parent_ebp;
     int i;
-
+    clear_buffer();
+    t_s[cur_ter].newline_flag = 0;
     /* extract pcb pointer from current running pid */
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
