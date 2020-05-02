@@ -34,7 +34,7 @@ typedef struct terminal{
     int32_t base_shell_pid;
     void* parent;
     int32_t global_status;
-    int32_t newline_flag;
+    volatile int32_t newline_flag;
     int32_t esp;
     int32_t ebp;
     int32_t freq;
