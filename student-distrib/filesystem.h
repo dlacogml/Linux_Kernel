@@ -84,15 +84,15 @@ typedef struct file_descriptor {
 
 /* struct for pcb */
 typedef struct pcb{
-    file_descriptor_t fdarray[NUM_FD];
-    uint32_t pid;
-    uint32_t is_haltable;
-    void* parent_pcb;
-    uint32_t esp;
+    file_descriptor_t fdarray[NUM_FD]; //file array
+    uint32_t pid; //process id
+    uint32_t is_haltable; //flag to see if we can halt process
+    void* parent_pcb; //parent's process block
+    uint32_t esp; 
     uint32_t ebp;
-    int32_t term_number;
+    int32_t term_number; //terminal process is on
     int rtc_freq;
-    volatile int counter;
+    volatile int counter; //counter used for rtc virtualization
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];
 
