@@ -143,4 +143,36 @@ Bug 4:
     output for our filtered_command
     What we did: Changed to &&
 
-    
+Checkpoint 5:
+
+Bug 1:
+    Problem: we were page faulting after implementing for multiple terminals when halting
+    What was the issue: The way we were extracting the pcb pointer from the kernel stack was wrong
+    What we did: 0x8000000 - t_s[cur_ter].current_running_pid * 0x2000 - 4 since this was how we mapped it in paging and the pcb 
+    is at the top of each process's stack
+
+Bug 2:
+    Problem: The cur_ter that keeps track of the executing terminal wasn't changing even after implementing scheduling
+    What was the issue: We weren't calling the scheduling function because we didn't intialize pit in the kernel
+    What we did: Called init_pit in kernel.c
+
+Bug 3:
+    Problem: After implementing scheduling, when we typed a command in a terminal, it would execute in a different terminal and then page fault
+    What was the issue: One of the issues was that we confused disp_ter (the displaying terminal) and cur_ter (the current terminal executing) in a lot of our functions
+    What we did: we changed it the disp_ter and cur_ter approrpiately according to the function
+
+Bug 4:
+    Problem: After implementing scheduling, when we typed a command in a terminal, it would execute in a different terminal and page fault
+    What was the issue: One of the issues was that we weren't waiting for the the current terminal executing to be the same as the displaying terminal
+    before we read the terminal (the keyboard buffer)
+    What we did: we added disp_ter != cur_ter into the while loop that also waits for a newline signal to be triggered
+
+Bug 5:
+    Problem: When we called fish and then typed anything or pressed enter, it would show up in a different terminal
+    What was the issue: we should have been using cur_ter in all of the functions in the system call handler functions but we used the displaying terminal
+    What we did: we used cur_ter in all of the functions except in the keyboard handler and the function to switch to a different terminal
+
+Bug 6:
+    Problem: when we typed in the terminal it sometimes wouldn't show up in the currently displaying terminal
+    What was the issue: we weren't printing to the displaying terminal because the function didn't know to write to directly to the display terminal when we are typing
+    What we did: we added a keyboard flag that's set to 1 in the keyboard handler and check for if keyboard_flag is 1 in putc
