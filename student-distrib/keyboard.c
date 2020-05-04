@@ -224,7 +224,6 @@ void clear_buffer()
   }
   /* reseting the index */
   t_s[cur_ter].b_idx = 0;
-  // t_s[cur_ter].r_idx = 0;
 }
 /*
  * void terminal_open(const uint8_t* filename)
@@ -265,7 +264,6 @@ int32_t terminal_close(int32_t fd)
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
     sti();
-    // cli();
     if(nbytes < 1 || buf == NULL)
         return -1;
     //wait until the newline signal is triggered
@@ -278,17 +276,10 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes)
       buffer[i] = t_s[cur_ter].kb_buf[i]; //copy key board buffer to buf
       count++; //increment the count every time a byte is read into buf
       /*when we reach the end*/
-      // if(buffer[i] == '\n')
-      // {
-      //   t_s[disp_ter].newline_flag = 0; //reset the NEW_LINE FLAG
-      //   return count;
-      // }
     }
     clear_buffer();
-    // if(nbytes >= strlen((int8_t*)buf))
       t_s[cur_ter].newline_flag = 0;
     // //increment the number of times a keyboard string has being read
-    // t_s[disp_ter].r_idx++;
     return count;
 }
 /*
