@@ -224,6 +224,7 @@ void handler14(){
         :
         :"memory"
     );
+    /* Print the information of the page fault*/
     printf("linear address: %x\n", value);
     printf("error code: %x\n", error_code);
     register int32_t esp asm ("esp");

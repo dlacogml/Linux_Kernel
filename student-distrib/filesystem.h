@@ -87,11 +87,11 @@ typedef struct pcb{
     file_descriptor_t fdarray[NUM_FD]; //file array
     uint32_t pid; //process id
     uint32_t is_haltable; //flag to see if we can halt process
-    void* parent_pcb; //parent's process block
+    void* parent_pcb; //pointer to parent's process block
     uint32_t esp; 
-    uint32_t ebp;
+    uint32_t ebp; //esp, ebp of the process, used for context switch
     int32_t term_number; //terminal process is on
-    int rtc_freq;
+    int rtc_freq; //rtc frequency of the process running 
     volatile int counter; //counter used for rtc virtualization
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];

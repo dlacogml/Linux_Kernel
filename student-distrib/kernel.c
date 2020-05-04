@@ -23,6 +23,7 @@
 #define RTC_B       0x8B
 #define RTC_C       0x8C
 #define RTC_RATE_15 15
+#define PIT_FREQ    100
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
@@ -174,7 +175,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //enable rtc interrupt
     
     rtc_init();
-    init_pit(100);
+    init_pit(PIT_FREQ);
     init_terminal();
     
     sti();
