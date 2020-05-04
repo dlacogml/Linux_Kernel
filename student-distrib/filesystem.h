@@ -1,6 +1,6 @@
 /* 
  * 
- * idt.h - Defines used in interactions with the idt interrupt
+ * filesystem.h - header file for filesystem functions
  * 
  */
 
