@@ -111,7 +111,7 @@ int32_t rtc_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 
     while(pcb_pointer->counter > 0)
     {
-        //do nothing until counter hits 0
+        // do nothing until counter hits 0
     }
     return 0;
 }

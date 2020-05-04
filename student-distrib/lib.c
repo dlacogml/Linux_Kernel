@@ -44,6 +44,7 @@ void backspace(void)
 {
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
+    /* check if coming from keyboard or if we are executing the display terminal, then write directly to video memory*/
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
             //when it's at the top left corner, then do nothing
         if(screen_x == 0 && screen_y == 0)
@@ -69,6 +70,7 @@ void backspace(void)
 void scroll(void){
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
+    /* check if coming from keyboard or if we are executing the display terminal, then write directly to video memory*/
     if (keyboard_flag == 1|| pcb_pointer->term_number == disp_ter){
         /* check if at bottom of screen */
         if (screen_y == NUM_ROWS){
@@ -93,6 +95,7 @@ void scroll(void){
             screen_y = NUM_ROWS - 1;
         }
         keyboard_flag = 0;
+    /* else modify background buffer and screen position for currently executing terminal */
     } else {
                 /* check if at bottom of screen */
         if (t_s[pcb_pointer->term_number].screen_y == NUM_ROWS){
@@ -266,28 +269,30 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    // cli();
+    /* local vars */
     uint16_t pos;
     pcb_t* pcb_pointer = (pcb_t*)((_8MB - t_s[cur_ter].current_running_pid * _8KB - END_OFFSET) & PCB_MASK);
 
     /* new line character case */
     if(c == '\n' || c == '\r') {
-        if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
+        /* check if coming from keyboard or if we are executing the display terminal, then write directly to video memory*/
+        if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){  
             screen_y++;
             screen_x = 0;
             scroll();
             pos = screen_y * NUM_COLS + screen_x;
             update_cursor(pos);
             keyboard_flag = 0;
+        /* else modify background buffer and screen position for currently executing terminal */
         } else {
             t_s[pcb_pointer->term_number].screen_y++;
             t_s[pcb_pointer->term_number].screen_x = 0;
             scroll();
         }
 
-
     /* if screen_x is at the end of row, go to next row */
     } else if (screen_x == NUM_COLS - 1){
+        /* check if coming from keyboard or if we are executing the display terminal, then write directly to video memory*/
         if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = color[disp_ter];
@@ -297,6 +302,7 @@ void putc(uint8_t c) {
             pos = screen_y * NUM_COLS + screen_x;
             update_cursor(pos);
             keyboard_flag = 0;
+        /* else modify background buffer and screen position for currently executing terminal */
         } else{
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1)) = c;
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = color[cur_ter];
@@ -306,6 +312,7 @@ void putc(uint8_t c) {
         }
     /* else just place character in video memory */
     } else {
+        /* check if coming from keyboard or if we are executing the display terminal, then write directly to video memory*/
         if (keyboard_flag == 1 || pcb_pointer->term_number == disp_ter){
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = color[disp_ter];
@@ -315,6 +322,7 @@ void putc(uint8_t c) {
             pos = screen_y * NUM_COLS + screen_x;
             update_cursor(pos);
             keyboard_flag = 0;
+        /* else modify background buffer and screen position for currently executing terminal */
         } else{
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1)) = c;
             *(uint8_t *)(t_s[pcb_pointer->term_number].video_mem_buf + ((NUM_COLS * t_s[pcb_pointer->term_number].screen_y + t_s[pcb_pointer->term_number].screen_x) << 1) + 1) = color[cur_ter];
@@ -323,7 +331,6 @@ void putc(uint8_t c) {
             t_s[pcb_pointer->term_number].screen_y = (t_s[pcb_pointer->term_number].screen_y + (t_s[pcb_pointer->term_number].screen_x / NUM_COLS)) % NUM_ROWS;
         }
     }
-    // sti();
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

@@ -84,15 +84,15 @@ typedef struct file_descriptor {
 
 /* struct for pcb */
 typedef struct pcb{
-    file_descriptor_t fdarray[NUM_FD]; //file array
-    uint32_t pid; //process id
-    uint32_t is_haltable; //flag to see if we can halt process
-    void* parent_pcb; //pointer to parent's process block
-    uint32_t esp; 
-    uint32_t ebp; //esp, ebp of the process, used for context switch
-    int32_t term_number; //terminal process is on
-    int rtc_freq; //rtc frequency of the process running 
-    volatile int counter; //counter used for rtc virtualization
+    file_descriptor_t fdarray[NUM_FD];      // file array
+    uint32_t pid;                           // process id
+    uint32_t is_haltable;                   // flag to see if we can halt process (base shell or not)
+    void* parent_pcb;                       // pointer to parent's pcb
+    uint32_t esp;                           // esp of the process, used for context switch
+    uint32_t ebp;                           // ebp of the process, used for context switch
+    int32_t term_number;                    // terminal that the process is running on
+    int rtc_freq;                           // rtc frequency of the process running 
+    volatile int counter;                   // counter used for rtc virtualization
 } pcb_t;
 file_descriptor_t fdarray[NUM_FD];
 
